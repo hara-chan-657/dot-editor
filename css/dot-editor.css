@@ -1,0 +1,177 @@
+body {
+	background-color: ;
+	padding: 20px;
+}
+
+#preview-container {
+	display: none;
+	background-image:url("../image/dot-editor/background.png");
+	border:1px solid green;
+	padding: 30px;
+	max-width: 490px;
+}
+
+#preview {
+	background-color: white;
+}
+
+#canvas-container {
+	display: block;
+	border:1px solid green;
+	padding: 30px;
+	max-width: 730px;
+	background-image:url("../image/dot-editor/background.png");
+}
+
+#canvasBG-container {
+	background-color: white;
+	display: inline-block;
+}
+
+#canvasBG {
+	display: inline-block;
+}
+
+#canvas {
+}
+
+#hiddenCanvas {
+}
+
+#compareCanvas {
+	border: 1px black solid;
+	background-color: white;
+	float:right;
+}
+
+#downloadSize-container {
+	margin: 15px 0px;
+}
+
+#palette-container {
+	float:right;
+}
+
+#preview-link-container {
+	display: block;
+	margin-top: 10px;
+}
+
+#preview-link {
+	display: none;
+}
+
+#previewLinkButton {
+	background-color: darkorange;
+	color: white;
+	padding: 8px;
+	border-radius: 20px;
+	cursor: pointer;
+}
+
+#previewOptions-container {
+	display: none;
+}
+
+#back {
+
+}
+
+#currentColor {
+	height: 30px;
+	width: 30px;
+	border: 1px blue solid;
+}
+
+#currentColorCanvas {
+	border: 1px blue solid;
+}
+
+#palette td {
+	height: 12px;
+	width: 35px;
+	border: 1px solid gray;
+}
+
+.mode-on {
+	color: red;
+}
+
+.none {
+	display: none;
+}
+
+#options {
+	height: 33px;
+	background-color:white;
+	max-width: 860px;
+	padding: 2px;
+	margin-bottom:3px;
+}
+
+.option {
+	height: 33px;
+	display: inline-block;
+	border:1px solid gray;
+	position: relative;
+}
+
+
+.z1 {
+}
+
+.z2 {
+	text-align: center;
+	z-index:1;
+	font-size: 11px;
+	position: absolute;
+	width: 80px;
+	height: 20px;
+	top: -20px;
+	left: 16px;
+	border: 1px solid black;
+	background-color: lightgray;
+	display:none;
+
+}
+
+#readFileButton {
+	background-image:url("../image/dot-editor/readFile.png");
+ 	display:inline-block;
+	height:32px;
+	width:32px;
+}
+
+#readFile {
+	display: none;
+}
+
+#rewrite {
+	background-color: blue;
+	color: white;
+	padding: 8px;
+	border-radius: 20px;
+	display: inline-block;
+	margin-top: 20px;
+	cursor: pointer;
+}
+
+#download-link {
+	background-color: red;
+	color: white;
+	padding: 8px;
+	border-radius: 20px;
+	display: inline-block;
+	margin-top: 20px;
+	margin-left: 30px;
+	text-decoration: none;
+}
+
+#back {
+	display: none;
+}
+
+#forward {
+	display: none;
+}
+
