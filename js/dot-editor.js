@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 //================================ 各種変数 ===============================================//
+
 //パレット用色配列
 var paletteColors = [
 	 '#000000','#f0f8ff','#008b8b','#ffffe0','#ff7f50','#696969','#e6e6fa','#008080','#fafad2','#ff6347'
@@ -18,7 +19,9 @@ var paletteColors = [
 	,'#ffe4e1','#e0ffff','#9acd32','#a52a2a','#8b008b','#fff0f5','#00ffff','#556b2f','#b22222','#800080'
 	,'#fff5ee','#00ffff','#6b8e23','#cd5c5c','#4b0082','#fdf5e6','#40e0d0','#808000','#bc8f8f','#483d8b'
 	,'#fffff0','#48d1cc','#bdb76b','#e9967a','#8a2be2','#f0fff0','#00ced1','#eee8aa','#f08080','#9370db'
-	,'#f5fffa','#20b2aa','#fff8dc','#fa8072','#6a5acd','#f0ffff','#5f9ea0','#f5f5dc','#ffa07a','#7b68ee'];
+	,'#f5fffa','#20b2aa','#fff8dc','#fa8072','#6a5acd','#f0ffff','#5f9ea0','#f5f5dc','#ffa07a','#7b68ee'
+];
+
 //canvas縦
 var canvasHeight = 480;
 //canvas横
@@ -201,11 +204,12 @@ square.addEventListener('click', setCurrentMode, false);
 fillSquare.addEventListener('click', setCurrentMode, false);
 straightLine.addEventListener('click', setCurrentMode, false);
 colorPicker.addEventListener('click', setCurrentMode, false);
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////　　以下ファンクション   //////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-//ロード時、各デフォルトの値をセットするために呼ばれる(コンストラクタ的なやつ）
+//ロード時、各デフォルトの値をセットするために呼ばれる
 function setDefault() {
 	showPalette();
 	setCurrentMode();
@@ -568,50 +572,50 @@ function changeCellColor(evt) {
 	var cell = getCurrentCell(x,y);
 	//現在モードid取得
 	var currentModeId = currentModeElement[0].id;
-	//消しゴムモード
-	if (currentModeId == 'eraser') {
-		//ドラッグフラグ変更
-		setDraggingFlg(true);
-		//色付きかどうか調べる
-		if (isColoredCell(cell)) {
-			//現在ドットサイズでの塗りつぶしスタート位置
-			var startX = Math.floor(x/dotLength);
-			var startY = Math.floor(y/dotLength);
-			//消す
-			context.clearRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
-			//canvas変更フラグ変更
-			canvasChangeFlg = true
-		}
-		//色付きでなければ何もしない
-		return;
-	//塗りつぶしモード
-	} else if (currentModeId == 'fill') {
-		//ドラッグフラグ変更
-		setDraggingFlg(true);
-		//同じ色かどうか調べる
-		 var result = isSameColoredCell(cell);
-		if (!result) {
-//			figureColoredCells = [];
-			//塗りつぶし配列にプッシュ
-			fillingCells = [];
-			fillingCells.push(cell);
-			//次回チェックセル配列
-			var nextCheckCells = [];
-			//上下左右のセル
-			var aboveCell = [cell[0], cell[1]-1];
-			var rightCell = [cell[0]+1, cell[1]];
-			var belowCell = [cell[0], cell[1]+1];
-			var leftCell = [cell[0]-1, cell[1]];
-			//一個上のセルが一番上の行より上でない、かつ同じ色のセルならば、次回チェックセルにプッシュ
-			if (aboveCell[1] >= 0 && isSameColoredCell(aboveCell, cell)) nextCheckCells.push(aboveCell);
-			//一個右のセルが一番右の列より右でない、かつ同じ色のセルならば、次回チェックセルにプッシュ
-			if (rightCell[0] < minColNum && isSameColoredCell(rightCell, cell)) nextCheckCells.push(rightCell);
-			//一個下のセルが一番下の行より下でない、かつ同じ色のセルならばば、次回チェックセルにプッシュ
-			if (belowCell[1] < minRowNum && isSameColoredCell(belowCell, cell)) nextCheckCells.push(belowCell);
-			//一個左のセルが一番左の列より左でない、かつ同じ色のセルならば、次回チェックセルにプッシュ
-			if (leftCell[0] >= 0 && isSameColoredCell(leftCell, cell)) nextCheckCells.push(leftCell);
-			//次回チェックセル配列のセルを順番にチェックしていく
-			for (var i=0; i<nextCheckCells.length; i++) {
+
+	switch (currentModeId) {
+		case 'eraser':
+			//ドラッグフラグ変更
+			setDraggingFlg(true);
+			//色付きかどうか調べる
+			if (isColoredCell(cell)) {
+				//現在ドットサイズでの塗りつぶしスタート位置
+				var startX = Math.floor(x/dotLength);
+				var startY = Math.floor(y/dotLength);
+				//消す
+				context.clearRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
+				//canvas変更フラグ変更
+				canvasChangeFlg = true
+			}
+			//色付きでなければ何もしない
+			break;
+
+		case 'fill':
+			//ドラッグフラグ変更
+			setDraggingFlg(true);
+			//同じ色かどうか調べる
+			var result = isSameColoredCell(cell);
+			if (!result) {
+				//塗りつぶし配列にプッシュ
+				fillingCells = [];
+				fillingCells.push(cell);
+				//次回チェックセル配列
+				var nextCheckCells = [];
+				//上下左右のセル
+				var aboveCell = [cell[0], cell[1]-1];
+				var rightCell = [cell[0]+1, cell[1]];
+				var belowCell = [cell[0], cell[1]+1];
+				var leftCell = [cell[0]-1, cell[1]];
+				//一個上のセルが一番上の行より上でない、かつ同じ色のセルならば、次回チェックセルにプッシュ
+				if (aboveCell[1] >= 0 && isSameColoredCell(aboveCell, cell)) nextCheckCells.push(aboveCell);
+				//一個右のセルが一番右の列より右でない、かつ同じ色のセルならば、次回チェックセルにプッシュ
+				if (rightCell[0] < minColNum && isSameColoredCell(rightCell, cell)) nextCheckCells.push(rightCell);
+				//一個下のセルが一番下の行より下でない、かつ同じ色のセルならばば、次回チェックセルにプッシュ
+				if (belowCell[1] < minRowNum && isSameColoredCell(belowCell, cell)) nextCheckCells.push(belowCell);
+				//一個左のセルが一番左の列より左でない、かつ同じ色のセルならば、次回チェックセルにプッシュ
+				if (leftCell[0] >= 0 && isSameColoredCell(leftCell, cell)) nextCheckCells.push(leftCell);
+				//次回チェックセル配列のセルを順番にチェックしていく
+				for (var i=0; i<nextCheckCells.length; i++) {
 					//塗りつぶし配列にプッシュ
 					fillingCells.push(nextCheckCells[i]);
 					//上下左右のセルについて次回チェックセルに追加するかの判定
@@ -627,782 +631,789 @@ function changeCellColor(evt) {
 					if (belowCell[1] < minRowNum && isSameColoredCell(belowCell, cell) && !isCellExist(nextCheckCells, belowCell)) nextCheckCells.push(belowCell);
 					//一個左のセルが一番左の列より左でない、かつ同じ色のセル、かつ次回チェックセルにない場合、次回チェックセルにプッシュ
 					if (leftCell[0] >= 0 && isSameColoredCell(leftCell, cell) && !isCellExist(nextCheckCells, leftCell)) nextCheckCells.push(leftCell);
+				}
+				//塗りつぶし配列を、まとめて塗りつぶし
+				for (var i=0; i<fillingCells.length; i++) {
+					context.fillStyle = currentColor.style.backgroundColor;
+					context.fillRect(minCell*fillingCells[i][0],minCell*fillingCells[i][1],minCell,minCell);
+				}
+				//canvas変更フラグ変更
+				canvasChangeFlg = true;
 			}
-			//塗りつぶし配列を、まとめて塗りつぶし
-			for (var i=0; i<fillingCells.length; i++) {
+			//同じ色なら何もしない
+			break;
+
+		case 'normal':
+			//ドラッグフラグ変更
+			setDraggingFlg(true);
+			//同じ色かどうか調べる
+			if (!isSameColoredCell(cell)) {
+				//現在ドットサイズでの塗りつぶしスタート位置
+				var startX = Math.floor(x/dotLength);
+				var startY = Math.floor(y/dotLength);
+				//色ぬり
 				context.fillStyle = currentColor.style.backgroundColor;
-				context.fillRect(minCell*fillingCells[i][0],minCell*fillingCells[i][1],minCell,minCell);
-//				figureColoredCells.push([minCell*fillingCells[i][0],minCell*fillingCells[i][1]]);
+				context.fillRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
+				//canvas変更フラグ変更
+				canvasChangeFlg = true;
 			}
-			//canvas変更フラグ変更
-			canvasChangeFlg = true;
-		}
-		//同じ色なら何もしない
-	//普通のモード
-	} else if (currentModeId == 'normal') {
-		//ドラッグフラグ変更
-		setDraggingFlg(true);
-		//同じ色かどうか調べる
-		if (!isSameColoredCell(cell)) {
-			//現在ドットサイズでの塗りつぶしスタート位置
-			var startX = Math.floor(x/dotLength);
-			var startY = Math.floor(y/dotLength);
-			//色ぬり
+			//同じ色なら何もしない
+			break;
+			
+		case 'circle':
+			if (!draggingFlg) {
+				//キャンバスを退避
+				evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
+				var evacuateCanvasBG = canvas.toDataURL();
+				context.clearRect(0,0,canvasWidth,canvasHeight);
+				canvas.style.backgroundImage = 'url('+evacuateCanvasBG+')';
+				//マウスダウン始まったらドラッグフラグ変更
+				setDraggingFlg(true);
+				//スタートセット
+				sx = x;
+				sy = y;
+			}
+			//エンドセット
+			ex = x;
+			ey = y;
+			//中心xy
+			var centerX = Math.ceil((sx + ex)/2);
+			var centerY = Math.ceil((sy + ey)/2);
+			//縦横直径
+			var absX = Math.abs(sx - ex);
+			var absY = Math.abs(sy - ey);
+			//半径
+			var radius = 0
+			//縦横比率初期化
+			var horizontalRatio = 1;
+			var verticalRatio = 1;
+			if (absX != 0 && absY != 0) {
+				var radius = Math.ceil(Math.max(absX,absY)/2);
+				if (absY > absX) {
+					horizontalRatio = absX/absY;
+				} else if (absX > absY) {
+					verticalRatio = absY/absX;
+				} else {
+					//一緒の時は何もしない
+				}
+			} else if (absY == 0 && absX != 0) {
+				verticalRatio = 0;
+			} else if (absY != 0 && absX == 0) {
+				horizontalRatio = 0;
+			} else {
+				//なんでも無いとき（通らない）
+			}
+			hiddenContext.save();
+			hiddenContext.clearRect(0,0,canvasWidth,canvasHeight);
+			context.clearRect(0,0,canvasWidth,canvasHeight);
+			hiddenContext.beginPath();
+			hiddenContext.scale(horizontalRatio,verticalRatio);
+			hiddenContext.arc(centerX/horizontalRatio, centerY/verticalRatio, radius, 0, Math.PI*2, false);
+			hiddenContext.stroke();
+			hiddenContext.closePath();
+			hiddenContext.restore();
+			var sRowLine = Math.ceil(sy/dotLength)*dotLength;
+			var eRowLine = Math.ceil(ey/dotLength)*dotLength;
+			var sColLine = Math.ceil(sx/dotLength)*dotLength;
+			var eColLine = Math.ceil(ex/dotLength)*dotLength;
+			var checkLineNum = (Math.abs(sRowLine-eRowLine))/dotLength;
+			var checkColNum = (Math.abs(sColLine-eColLine))/dotLength;
+			var sFrameRowLine = Math.floor(sy/dotLength)*dotLength;
+			var eFrameRowLine = Math.floor(ey/dotLength)*dotLength;
+			var sFrameColLine = Math.floor(sx/dotLength)*dotLength;
+			var eFrameColLine = Math.floor(ex/dotLength)*dotLength;
+			figureColoredCells = [];
 			context.fillStyle = currentColor.style.backgroundColor;
-			context.fillRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
-			//canvas変更フラグ変更
-			canvasChangeFlg = true;
-		}
-		//同じ色なら何もしない
-		return;
-	//円モード
-	}  else if (currentModeId == 'circle') {
-		if (!draggingFlg) {
-			//キャンバスを退避
-			evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
-			var evacuateCanvasBG = canvas.toDataURL();
-			context.clearRect(0,0,canvasWidth,canvasHeight);
-			canvas.style.backgroundImage = 'url('+evacuateCanvasBG+')';
-			//マウスダウン始まったらドラッグフラグ変更
-			setDraggingFlg(true);
-			//スタートセット
-			sx = x;
-			sy = y;
-		}
-		//エンドセット
-		ex = x;
-		ey = y;
-		//中心xy
-		var centerX = Math.ceil((sx + ex)/2);
-		var centerY = Math.ceil((sy + ey)/2);
-		//縦横直径
-		var absX = Math.abs(sx - ex);
-		var absY = Math.abs(sy - ey);
-		//半径
-		var radius = 0
-		//縦横比率
-		var horizontalRatio = 1;
-		var verticalRatio = 1;
-		if (absX != 0 && absY != 0) {
-			var radius = Math.ceil(Math.max(absX,absY)/2);
-			if (absY > absX) {
-				horizontalRatio = absX/absY;
-			} else if (absX > absY) {
-				verticalRatio = absY/absX;
-			} else {
-				//一緒の時は何もしない
-			}
-		} else if (absY == 0 && absX != 0) {
-			verticalRatio = 0;
-		} else if (absY != 0 && absX == 0) {
-			horizontalRatio = 0;
-		} else {
-
-		}
-		hiddenContext.save();
-		hiddenContext.clearRect(0,0,canvasWidth,canvasHeight);
-		context.clearRect(0,0,canvasWidth,canvasHeight);
-		hiddenContext.beginPath();
-		hiddenContext.scale(horizontalRatio,verticalRatio);
-		hiddenContext.arc(centerX/horizontalRatio, centerY/verticalRatio, radius, 0, Math.PI*2, false);
-		hiddenContext.stroke();
-		hiddenContext.closePath();
-		hiddenContext.restore();
-		var sRowLine = Math.ceil(sy/dotLength)*dotLength;
-		var eRowLine = Math.ceil(ey/dotLength)*dotLength;
-		var sColLine = Math.ceil(sx/dotLength)*dotLength;
-		var eColLine = Math.ceil(ex/dotLength)*dotLength;
-		var checkLineNum = (Math.abs(sRowLine-eRowLine))/dotLength;
-		var checkColNum = (Math.abs(sColLine-eColLine))/dotLength;
-		var sFrameRowLine = Math.floor(sy/dotLength)*dotLength;
-		var eFrameRowLine = Math.floor(ey/dotLength)*dotLength;
-		var sFrameColLine = Math.floor(sx/dotLength)*dotLength;
-		var eFrameColLine = Math.floor(ex/dotLength)*dotLength;
-		figureColoredCells = [];
-		context.fillStyle = currentColor.style.backgroundColor;
-		if (sx > ex && sy > ey) {
-			//左上
-			for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
-				//左
-				for(var j=ex; j<sx; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(j,eRowLine+dotLength*i,1,1);
-					if (hiddenContextColor.data[3] != 0) {
-						var cellX = Math.ceil(j/dotLength)*dotLength;
-						var cellY = eRowLine+dotLength*i;
-						context.fillRect(cellX,cellY,dotLength,dotLength);
-						var distanceX = cellX - eFrameColLine;
-						context.fillRect(sFrameColLine-distanceX,cellY,dotLength,dotLength);
-						var distanceY = cellY - eFrameRowLine;
-						context.fillRect(cellX,sFrameRowLine-distanceY,dotLength,dotLength);
-						context.fillRect(sFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
-						figureColoredCells.push([cellX,cellY]);
-						figureColoredCells.push([sFrameColLine-distanceX,cellY]);
-						figureColoredCells.push([cellX,sFrameRowLine-distanceY]);
-						figureColoredCells.push([sFrameColLine-distanceX,sFrameRowLine-distanceY]);
-						break;
-					}
-				}
-			}
-			for (var i=0; i<Math.ceil(checkColNum/2); i++) {
+			if (sx > ex && sy > ey) {
 				//左上
-				for(var j=ey; j<sy; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(eColLine+dotLength*i,j,1,1);
-					if (hiddenContextColor.data[3] != 0 && j%dotLength != 0) {
-						var cellY = Math.ceil(j/dotLength)*dotLength;
-						var cellX = eColLine+dotLength*i;
-						context.fillRect(cellX,cellY,dotLength,dotLength);
-						var distanceX = cellX - eFrameColLine;
-						context.fillRect(sFrameColLine-distanceX,cellY,dotLength,dotLength);
-						var distanceY = cellY - eFrameRowLine;
-						context.fillRect(cellX,sFrameRowLine-distanceY,dotLength,dotLength);
-						context.fillRect(sFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
-						figureColoredCells.push([cellX,cellY]);
-						figureColoredCells.push([sFrameColLine-distanceX,cellY]);
-						figureColoredCells.push([cellX,sFrameRowLine-distanceY]);
-						figureColoredCells.push([sFrameColLine-distanceX,sFrameRowLine-distanceY]);
-						break;
-					}
-				}
-			}
-		} else if (sx < ex && sy > ey) {
-			//右上
-			for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
-				//左
-				for(var j=sx; j<ex; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(j,eRowLine+dotLength*i,1,1);
-					if (hiddenContextColor.data[3] != 0) {
-						var cellX = Math.ceil(j/dotLength)*dotLength;
-						var cellY = eRowLine+dotLength*i;
-						context.fillRect(cellX,cellY,dotLength,dotLength);
-						var distanceX = cellX - sFrameColLine;
-						context.fillRect(eFrameColLine-distanceX,cellY,dotLength,dotLength);
-						var distanceY = cellY - eFrameRowLine;
-						context.fillRect(cellX,sFrameRowLine-distanceY,dotLength,dotLength);
-						context.fillRect(eFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
-						figureColoredCells.push([cellX,cellY]);
-						figureColoredCells.push([eFrameColLine-distanceX,cellY]);
-						figureColoredCells.push([cellX,sFrameRowLine-distanceY]);
-						figureColoredCells.push([eFrameColLine-distanceX,sFrameRowLine-distanceY]);
-						break;
-					}
-				}
-			}
-			for (var i=0; i<Math.ceil(checkColNum/2); i++) {
-				//左上
-				for(var j=ey; j<sy; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(sColLine+dotLength*i,j,1,1);
-					if (hiddenContextColor.data[3] != 0 && j%dotLength != 0) {
-						var cellY = Math.ceil(j/dotLength)*dotLength;
-						var cellX = sColLine+dotLength*i;
-						context.fillRect(cellX,cellY,dotLength,dotLength);
-						var distanceX = cellX - eFrameColLine;
-						context.fillRect(sFrameColLine-distanceX,cellY,dotLength,dotLength);
-						var distanceY = cellY - eFrameRowLine;
-						context.fillRect(cellX,sFrameRowLine-distanceY,dotLength,dotLength);
-						context.fillRect(sFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
-						figureColoredCells.push([cellX,cellY]);
-						figureColoredCells.push([sFrameColLine-distanceX,cellY]);
-						figureColoredCells.push([cellX,sFrameRowLine-distanceY]);
-						figureColoredCells.push([sFrameColLine-distanceX,sFrameRowLine-distanceY]);
-						break;
-					}
-				}
-			}
-		} else if (sx > ex && sy < ey) {
-			//左下
-			for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
-				//左
-				for(var j=ex; j<sx; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
-					if (hiddenContextColor.data[3] != 0) {
-						var cellX = Math.ceil(j/dotLength)*dotLength;
-						var cellY = sRowLine+dotLength*i;
-						context.fillRect(cellX,cellY,dotLength,dotLength);
-						var distanceX = cellX - eFrameColLine;
-						context.fillRect(sFrameColLine-distanceX,cellY,dotLength,dotLength);
-						var distanceY = cellY - sFrameRowLine;
-						context.fillRect(cellX,eFrameRowLine-distanceY,dotLength,dotLength);
-						context.fillRect(sFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
-						figureColoredCells.push([cellX,cellY]);
-						figureColoredCells.push([sFrameColLine-distanceX,cellY]);
-						figureColoredCells.push([cellX,eFrameRowLine-distanceY]);
-						figureColoredCells.push([sFrameColLine-distanceX,eFrameRowLine-distanceY]);
-						break;
-					}
-				}
-			}
-			for (var i=0; i<Math.ceil(checkColNum/2); i++) {
-				//左上
-				for(var j=sy; j<ey; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(eColLine+dotLength*i,j,1,1);
-					if (hiddenContextColor.data[3] != 0 && j%dotLength != 0) {
-						var cellY = Math.ceil(j/dotLength)*dotLength;
-						var cellX = eColLine+dotLength*i;
-						context.fillRect(cellX,cellY,dotLength,dotLength);
-						var distanceX = cellX - eFrameColLine;
-						context.fillRect(sFrameColLine-distanceX,cellY,dotLength,dotLength);
-						var distanceY = cellY - sFrameRowLine;
-						context.fillRect(cellX,eFrameRowLine-distanceY,dotLength,dotLength);
-						context.fillRect(sFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
-						figureColoredCells.push([cellX,cellY]);
-						figureColoredCells.push([sFrameColLine-distanceX,cellY]);
-						figureColoredCells.push([cellX,eFrameRowLine-distanceY]);
-						figureColoredCells.push([sFrameColLine-distanceX,eFrameRowLine-distanceY]);
-						break;
-					}
-				}
-			}
-		} else if (sx < ex && sy < ey) {
-			//右下
-			for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
-				//左
-				for(var j=sx; j<ex; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
-					if (hiddenContextColor.data[3] != 0) {
-						var cellX = Math.ceil(j/dotLength)*dotLength;
-						var cellY = sRowLine+dotLength*i;
-						context.fillRect(cellX,cellY,dotLength,dotLength);
-						var distanceX = cellX - sFrameColLine;
-						context.fillRect(eFrameColLine-distanceX,cellY,dotLength,dotLength);
-						var distanceY = cellY - sFrameRowLine;
-						context.fillRect(cellX,eFrameRowLine-distanceY,dotLength,dotLength);
-						context.fillRect(eFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
-						figureColoredCells.push([cellX,cellY]);
-						figureColoredCells.push([eFrameColLine-distanceX,cellY]);
-						figureColoredCells.push([cellX,eFrameRowLine-distanceY]);
-						figureColoredCells.push([eFrameColLine-distanceX,eFrameRowLine-distanceY]);
-						break;
-					}
-				}
-			}
-			for (var i=0; i<Math.ceil(checkColNum/2); i++) {
-				//左上
-				for(var j=sy; j<ey; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(sColLine+dotLength*i,j,1,1);
-					if (hiddenContextColor.data[3] != 0 && j%dotLength != 0) {
-						var cellY = Math.ceil(j/dotLength)*dotLength;
-						var cellX = sColLine+dotLength*i;
-						context.fillRect(cellX,cellY,dotLength,dotLength);
-						var distanceX = cellX - sFrameColLine;
-						context.fillRect(eFrameColLine-distanceX,cellY,dotLength,dotLength);
-						var distanceY = cellY - sFrameRowLine;
-						context.fillRect(cellX,eFrameRowLine-distanceY,dotLength,dotLength);
-						context.fillRect(eFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
-						figureColoredCells.push([cellX,cellY]);
-						figureColoredCells.push([eFrameColLine-distanceX,cellY]);
-						figureColoredCells.push([cellX,eFrameRowLine-distanceY]);
-						figureColoredCells.push([eFrameColLine-distanceX,eFrameRowLine-distanceY]);
-						break;
-					}
-				}
-			}
-		} else {
-			//何もしない
-		}
-	} else if (currentModeId == 'fill-circle') {
-	//塗りつぶし円モード
-		if (!draggingFlg) {
-			//キャンバスを退避
-			evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
-			var evacuateCanvasBG = canvas.toDataURL();
-			context.clearRect(0,0,canvasWidth,canvasHeight);
-			canvas.style.backgroundImage = 'url('+evacuateCanvasBG+')';
-			//マウスダウン始まったらドラッグフラグ変更
-			setDraggingFlg(true);
-			//スタートセット
-			sx = x;
-			sy = y;
-		}
-		//エンドセット
-		ex = x;
-		ey = y;
-		//中心xy
-		var centerX = Math.ceil((sx + ex)/2);
-		var centerY = Math.ceil((sy + ey)/2);
-		//縦横直径
-		var absX = Math.abs(sx - ex);
-		var absY = Math.abs(sy - ey);
-		//半径
-		var radius = 0
-		//縦横比率
-		var horizontalRatio = 1;
-		var verticalRatio = 1;
-		if (absX != 0 && absY != 0) {
-			var radius = Math.ceil(Math.max(absX,absY)/2);
-			if (absY > absX) {
-				horizontalRatio = absX/absY;
-			} else if (absX > absY) {
-				verticalRatio = absY/absX;
-			} else {
-				//一緒の時は何もしない
-			}
-		} else if (absY == 0 && absX != 0) {
-			verticalRatio = 0;
-		} else if (absY != 0 && absX == 0) {
-			horizontalRatio = 0;
-		} else {
-
-		}
-		hiddenContext.save();
-		hiddenContext.clearRect(0,0,canvasWidth,canvasHeight);
-		context.clearRect(0,0,canvasWidth,canvasHeight);
-		hiddenContext.beginPath();
-		hiddenContext.scale(horizontalRatio,verticalRatio);
-		hiddenContext.arc(centerX/horizontalRatio, centerY/verticalRatio, radius, 0, Math.PI*2, false);
-		hiddenContext.stroke();
-		hiddenContext.closePath();
-		hiddenContext.restore();
-		var sRowLine = Math.ceil(sy/dotLength)*dotLength;
-		var eRowLine = Math.ceil(ey/dotLength)*dotLength;
-		var sColLine = Math.ceil(sx/dotLength)*dotLength;
-		var eColLine = Math.ceil(ex/dotLength)*dotLength;
-		var checkLineNum = (Math.abs(sRowLine-eRowLine))/dotLength;
-		figureColoredCells = [];
-		context.fillStyle = currentColor.style.backgroundColor;
-		if (sx > ex && sy > ey) {
-			//左上
-			for (var i=0; i<=Math.ceil(checkLineNum/2); i++) {
-				for(var j=ex; j<sx; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(j,eRowLine+dotLength*i,1,1);
-					if (hiddenContextColor.data[3] != 0) {
-						var cellX = Math.ceil(j/dotLength)*dotLength;
-						var cellY = eRowLine+dotLength*i;
-						var eCellX = Math.ceil((sColLine-(j-eColLine))/dotLength)*dotLength;
-						var eCellY = sRowLine-dotLength*i;
-						var fillXcolNum = Math.ceil((eCellX-cellX)/dotLength);
-						for (var k=0; k<fillXcolNum; k++) {
-							context.fillRect(cellX+dotLength*k,cellY,dotLength,dotLength);
-							context.fillRect(cellX+dotLength*k,eCellY,dotLength,dotLength);
-							figureColoredCells.push([cellX+dotLength*k,cellY]);
-							figureColoredCells.push([cellX+dotLength*k,eCellY]);
-						}
-					}
-				}
-			}
-		} else if (sx < ex && sy > ey) {
-			//右上
-			for (var i=0; i<=Math.ceil(checkLineNum/2); i++) {
-				for(var j=sx; j<ex; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(j,eRowLine+dotLength*i,1,1);
-					if (hiddenContextColor.data[3] != 0) {
-						var cellX = Math.ceil(j/dotLength)*dotLength;
-						var cellY = eRowLine+dotLength*i;
-						var eCellX = Math.ceil((eColLine-(j-sColLine))/dotLength)*dotLength;
-						var eCellY = sRowLine-dotLength*i;
-						var fillXcolNum = Math.ceil((eCellX-cellX)/dotLength);
-						for (var k=0; k<fillXcolNum; k++) {
-							context.fillRect(cellX+dotLength*k,cellY,dotLength,dotLength);
-							context.fillRect(cellX+dotLength*k,eCellY,dotLength,dotLength);
-							figureColoredCells.push([cellX+dotLength*k,cellY]);
-							figureColoredCells.push([cellX+dotLength*k,eCellY]);
-						}
-					}
-				}
-			}
-		} else if (sx > ex && sy < ey) {
-			//左下
-			for (var i=0; i<=Math.ceil(checkLineNum/2); i++) {
-				for(var j=ex; j<sx; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
-					if (hiddenContextColor.data[3] != 0) {
-						var cellX = Math.ceil(j/dotLength)*dotLength;
-						var cellY = sRowLine+dotLength*i;
-						var eCellX = Math.ceil((sColLine-(j-eColLine))/dotLength)*dotLength;
-						var eCellY = eRowLine-dotLength*i;
-						var fillXcolNum = Math.ceil((eCellX-cellX)/dotLength);
-						for (var k=0; k<fillXcolNum; k++) {
-							context.fillRect(cellX+dotLength*k,cellY,dotLength,dotLength);
-							context.fillRect(cellX+dotLength*k,eCellY,dotLength,dotLength);
-							figureColoredCells.push([cellX+dotLength*k,cellY]);
-							figureColoredCells.push([cellX+dotLength*k,eCellY]);
-						}
-					}
-				}
-			}
-		} else if (sx < ex && sy < ey) {
-			//右下
-			for (var i=0; i<=Math.ceil(checkLineNum/2); i++) {
-				for(var j=sx; j<ex; j++) {
-					var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
-					if (hiddenContextColor.data[3] != 0) {
-						var cellX = Math.ceil(j/dotLength)*dotLength;
-						var cellY = sRowLine+dotLength*i;
-						var eCellX = Math.ceil((eColLine-(j-sColLine))/dotLength)*dotLength;
-						var eCellY = eRowLine-dotLength*i;
-						var fillXcolNum = Math.ceil((eCellX-cellX)/dotLength);
-						for (var k=0; k<fillXcolNum; k++) {
-							context.fillRect(cellX+dotLength*k,cellY,dotLength,dotLength);
-							context.fillRect(cellX+dotLength*k,eCellY,dotLength,dotLength);
-							figureColoredCells.push([cellX+dotLength*k,cellY]);
-							figureColoredCells.push([cellX+dotLength*k,eCellY]);
-						}
-					}
-				}
-			}
-		} else {
-			//何もしない
-		}
-	} else if (currentModeId == 'square') {
-		//四角モード
-		if (!draggingFlg) {
-			//キャンバスを退避
-			evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
-			var evacuateCanvasBG = canvas.toDataURL();
-			context.clearRect(0,0,canvasWidth,canvasHeight);
-			canvas.style.backgroundImage = 'url('+evacuateCanvasBG+')';
-			//マウスダウン始まったらドラッグフラグ変更
-			setDraggingFlg(true);
-			//スタートセット
-			sx = x;
-			sy = y;
-		}
-		//エンドセット
-		ex = x;
-		ey = y;
-		context.clearRect(0,0,canvasWidth,canvasHeight);
-		var sRow = Math.floor(sy/dotLength);
-		var eRow = Math.floor(ey/dotLength);
-		var sCol = Math.floor(sx/dotLength);
-		var eCol = Math.floor(ex/dotLength);
-		figureColoredCells = [];
-		context.fillStyle = currentColor.style.backgroundColor;
-		if (sx > ex && sy > ey) {
-		//左上
-			//上と下のライン
-			for(var j=eCol; j<sCol; j++) {
-				context.fillRect(j*dotLength,eRow*dotLength,dotLength,dotLength);
-				context.fillRect(j*dotLength,sRow*dotLength,dotLength,dotLength);
-				figureColoredCells.push([j*dotLength,eRow*dotLength]);
-				figureColoredCells.push([j*dotLength,sRow*dotLength]);
-			}
-			//左と右のライン
-			for(var j=eRow; j<=sRow; j++) {
-				context.fillRect(eCol*dotLength,j*dotLength,dotLength,dotLength);
-				context.fillRect(sCol*dotLength,j*dotLength,dotLength,dotLength);
-				figureColoredCells.push([eCol*dotLength,j*dotLength]);
-				figureColoredCells.push([sCol*dotLength,j*dotLength]);
-			}
-		} else if (sx < ex && sy > ey) {
-		//右上
-			//上と下のライン
-			for(var j=sCol; j<eCol; j++) {
-				context.fillRect(j*dotLength,eRow*dotLength,dotLength,dotLength);
-				context.fillRect(j*dotLength,sRow*dotLength,dotLength,dotLength);
-				figureColoredCells.push([j*dotLength,eRow*dotLength]);
-				figureColoredCells.push([j*dotLength,sRow*dotLength]);
-			}
-			//左と右のライン
-			for(var j=eRow; j<=sRow; j++) {
-				context.fillRect(eCol*dotLength,j*dotLength,dotLength,dotLength);
-				context.fillRect(sCol*dotLength,j*dotLength,dotLength,dotLength);
-				figureColoredCells.push([eCol*dotLength,j*dotLength]);
-				figureColoredCells.push([sCol*dotLength,j*dotLength]);
-			}
-		} else if (sx > ex && sy < ey) {
-		//左下
-			//上と下のライン
-			for(var j=eCol; j<sCol; j++) {
-				context.fillRect(j*dotLength,eRow*dotLength,dotLength,dotLength);
-				context.fillRect(j*dotLength,sRow*dotLength,dotLength,dotLength);
-				figureColoredCells.push([j*dotLength,eRow*dotLength]);
-				figureColoredCells.push([j*dotLength,sRow*dotLength]);
-			}
-			//左と右のライン
-			for(var j=sRow; j<=eRow; j++) {
-				context.fillRect(eCol*dotLength,j*dotLength,dotLength,dotLength);
-				context.fillRect(sCol*dotLength,j*dotLength,dotLength,dotLength);
-				figureColoredCells.push([eCol*dotLength,j*dotLength]);
-				figureColoredCells.push([sCol*dotLength,j*dotLength]);
-			}
-		} else if (sx < ex && sy < ey) {
-		//右下
-			//上と下のライン
-			for(var j=sCol; j<eCol; j++) {
-				context.fillRect(j*dotLength,eRow*dotLength,dotLength,dotLength);
-				context.fillRect(j*dotLength,sRow*dotLength,dotLength,dotLength);
-				figureColoredCells.push([j*dotLength,eRow*dotLength]);
-				figureColoredCells.push([j*dotLength,sRow*dotLength]);
-			}
-			//左と右のライン
-			for(var j=sRow; j<=eRow; j++) {
-				context.fillRect(eCol*dotLength,j*dotLength,dotLength,dotLength);
-				context.fillRect(sCol*dotLength,j*dotLength,dotLength,dotLength);
-				figureColoredCells.push([eCol*dotLength,j*dotLength]);
-				figureColoredCells.push([sCol*dotLength,j*dotLength]);
-			}
-		}
-	} else if (currentModeId == 'fill-square') {
-	//塗りつぶし四角モード
-		if (!draggingFlg) {
-			//キャンバスを退避
-			evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
-			var evacuateCanvasBG = canvas.toDataURL();
-			context.clearRect(0,0,canvasWidth,canvasHeight);
-			canvas.style.backgroundImage = 'url('+evacuateCanvasBG+')';
-			//マウスダウン始まったらドラッグフラグ変更
-			setDraggingFlg(true);
-			//スタートセット
-			sx = x;
-			sy = y;
-		}
-		//エンドセット
-		ex = x;
-		ey = y;
-		context.clearRect(0,0,canvasWidth,canvasHeight);
-		var sRowLine = Math.floor(sy/dotLength)*dotLength;
-		var eRowLine = Math.floor(ey/dotLength)*dotLength;
-		var sColLine = Math.floor(sx/dotLength)*dotLength;
-		var eColLine = Math.floor(ex/dotLength)*dotLength;
-		var checkLineNum = (Math.abs(sRowLine-eRowLine))/dotLength;
-		var checkColNum = (Math.abs(sColLine-eColLine))/dotLength;
-		figureColoredCells = [];
-		context.fillStyle = currentColor.style.backgroundColor;
-		if (sx > ex && sy > ey) {
-		//左上
-			for(var i=0; i<=checkLineNum; i++) {
-				for(var j=0; j<=checkColNum; j++) {
-					context.fillRect(eColLine+j*dotLength,eRowLine+i*dotLength,dotLength,dotLength);
-					figureColoredCells.push([eColLine+j*dotLength,eRowLine+i*dotLength]);
-				}
-			}
-		} else if (sx < ex && sy > ey) {
-		//右上
-			for(var i=0; i<=checkLineNum; i++) {
-				for(var j=0; j<=checkColNum; j++) {
-					context.fillRect(sColLine+j*dotLength,eRowLine+i*dotLength,dotLength,dotLength);
-					figureColoredCells.push([sColLine+j*dotLength,eRowLine+i*dotLength]);
-				}
-			}
-		} else if (sx > ex && sy < ey) {
-		//左下
-			for(var i=0; i<=checkLineNum; i++) {
-				for(var j=0; j<=checkColNum; j++) {
-					context.fillRect(eColLine+j*dotLength,sRowLine+i*dotLength,dotLength,dotLength);
-					figureColoredCells.push([eColLine+j*dotLength,sRowLine+i*dotLength]);
-				}
-			}
-		} else if (sx < ex && sy < ey) {
-		//右下
-			for(var i=0; i<=checkLineNum; i++) {
-				for(var j=0; j<=checkColNum; j++) {
-					context.fillRect(sColLine+j*dotLength,sRowLine+i*dotLength,dotLength,dotLength);
-					figureColoredCells.push([sColLine+j*dotLength,sRowLine+i*dotLength]);
-				}
-			}
-		}
-	} else if (currentModeId == 'straight-line') {
-	//直線モード
-		if (!draggingFlg) {
-			//キャンバスを退避
-			evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
-			var evacuateCanvasBG = canvas.toDataURL();
-			context.clearRect(0,0,canvasWidth,canvasHeight);
-			canvas.style.backgroundImage = 'url('+evacuateCanvasBG+')';
-			//マウスダウン始まったらドラッグフラグ変更
-			setDraggingFlg(true);
-			//スタートセット
-			sx = x;
-			sy = y;
-		}
-		//エンドセット
-		ex = x;
-		ey = y;
-		hiddenContext.clearRect(0,0,canvasWidth,canvasHeight);
-		context.clearRect(0,0,canvasWidth,canvasHeight);
-		hiddenContext.beginPath();     // 1.Pathで描画を開始する
-		hiddenContext.moveTo(sx,sy); // 2.描画する位置を指定する
-		hiddenContext.lineTo(ex,ey); // 3.指定座標まで線を引く
-		hiddenContext.stroke();
-		hiddenContext.closePath();
-		var sRowLine = Math.ceil(sy/dotLength)*dotLength;
-		var eRowLine = Math.ceil(ey/dotLength)*dotLength;
-		var sColLine = Math.ceil(sx/dotLength)*dotLength;
-		var eColLine = Math.ceil(ex/dotLength)*dotLength;
-		var checkLineNum = (Math.abs(sRowLine-eRowLine))/dotLength;
-		var checkColNum = (Math.abs(sColLine-eColLine))/dotLength;
-		var sFrameRowLine = Math.floor(sy/dotLength)*dotLength;
-		var eFrameRowLine = Math.floor(ey/dotLength)*dotLength;
-		var sFrameColLine = Math.floor(sx/dotLength)*dotLength;
-		var eFrameColLine = Math.floor(ex/dotLength)*dotLength;
-		figureColoredCells = [];
-		context.fillStyle = currentColor.style.backgroundColor;
-		if (sx > ex && sy > ey) {
-		//左上
-			if (sx-ex > sy-ey) {
-			//270-315
-				for (var i=0; i<Math.ceil(checkColNum/2); i++) {
-					for(var j=ey; j<sy; j++) {
-						var hiddenContextColor = hiddenContext.getImageData(eColLine+dotLength*i,j,1,1);
-						if (hiddenContextColor.data[3] != 0) {
-							var cellY = Math.floor(j/dotLength)*dotLength;
-							var cellX = eColLine+dotLength*i;
-							context.fillRect(cellX,cellY,dotLength,dotLength);
-							var distanceX = cellX - eFrameColLine;
-							var distanceY = cellY - eFrameRowLine;
-							context.fillRect(sFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
-							figureColoredCells.push([cellX,cellY]);
-							figureColoredCells.push([sFrameColLine-distanceX,sFrameRowLine-distanceY]);
-							break;
-						}
-					}
-				}
-			} else if (sx-ex < sy-ey) {
-			//315-360
 				for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
+					//左
 					for(var j=ex; j<sx; j++) {
 						var hiddenContextColor = hiddenContext.getImageData(j,eRowLine+dotLength*i,1,1);
 						if (hiddenContextColor.data[3] != 0) {
-							var cellX = Math.floor(j/dotLength)*dotLength;
+							var cellX = Math.ceil(j/dotLength)*dotLength;
 							var cellY = eRowLine+dotLength*i;
 							context.fillRect(cellX,cellY,dotLength,dotLength);
 							var distanceX = cellX - eFrameColLine;
+							context.fillRect(sFrameColLine-distanceX,cellY,dotLength,dotLength);
 							var distanceY = cellY - eFrameRowLine;
+							context.fillRect(cellX,sFrameRowLine-distanceY,dotLength,dotLength);
 							context.fillRect(sFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
 							figureColoredCells.push([cellX,cellY]);
+							figureColoredCells.push([sFrameColLine-distanceX,cellY]);
+							figureColoredCells.push([cellX,sFrameRowLine-distanceY]);
 							figureColoredCells.push([sFrameColLine-distanceX,sFrameRowLine-distanceY]);
 							break;
 						}
 					}
 				}
-			}
-		} else if (sx < ex && sy > ey) {
-		//右上
-			if (ex-sx < sy-ey) {
-			//0-45
+				for (var i=0; i<Math.ceil(checkColNum/2); i++) {
+					//左上
+					for(var j=ey; j<sy; j++) {
+						var hiddenContextColor = hiddenContext.getImageData(eColLine+dotLength*i,j,1,1);
+						if (hiddenContextColor.data[3] != 0 && j%dotLength != 0) {
+							var cellY = Math.ceil(j/dotLength)*dotLength;
+							var cellX = eColLine+dotLength*i;
+							context.fillRect(cellX,cellY,dotLength,dotLength);
+							var distanceX = cellX - eFrameColLine;
+							context.fillRect(sFrameColLine-distanceX,cellY,dotLength,dotLength);
+							var distanceY = cellY - eFrameRowLine;
+							context.fillRect(cellX,sFrameRowLine-distanceY,dotLength,dotLength);
+							context.fillRect(sFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
+							figureColoredCells.push([cellX,cellY]);
+							figureColoredCells.push([sFrameColLine-distanceX,cellY]);
+							figureColoredCells.push([cellX,sFrameRowLine-distanceY]);
+							figureColoredCells.push([sFrameColLine-distanceX,sFrameRowLine-distanceY]);
+							break;
+						}
+					}
+				}
+			} else if (sx < ex && sy > ey) {
+				//右上
 				for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
+					//左
 					for(var j=sx; j<ex; j++) {
 						var hiddenContextColor = hiddenContext.getImageData(j,eRowLine+dotLength*i,1,1);
 						if (hiddenContextColor.data[3] != 0) {
-							var cellX = Math.floor(j/dotLength)*dotLength;
+							var cellX = Math.ceil(j/dotLength)*dotLength;
 							var cellY = eRowLine+dotLength*i;
 							context.fillRect(cellX,cellY,dotLength,dotLength);
 							var distanceX = cellX - sFrameColLine;
+							context.fillRect(eFrameColLine-distanceX,cellY,dotLength,dotLength);
 							var distanceY = cellY - eFrameRowLine;
+							context.fillRect(cellX,sFrameRowLine-distanceY,dotLength,dotLength);
 							context.fillRect(eFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
 							figureColoredCells.push([cellX,cellY]);
+							figureColoredCells.push([eFrameColLine-distanceX,cellY]);
+							figureColoredCells.push([cellX,sFrameRowLine-distanceY]);
 							figureColoredCells.push([eFrameColLine-distanceX,sFrameRowLine-distanceY]);
 							break;
 						}
 					}
 				}
-			} else if (ex-sx > sy-ey) {
-			//45-90
 				for (var i=0; i<Math.ceil(checkColNum/2); i++) {
+					//左上
 					for(var j=ey; j<sy; j++) {
 						var hiddenContextColor = hiddenContext.getImageData(sColLine+dotLength*i,j,1,1);
+						if (hiddenContextColor.data[3] != 0 && j%dotLength != 0) {
+							var cellY = Math.ceil(j/dotLength)*dotLength;
+							var cellX = sColLine+dotLength*i;
+							context.fillRect(cellX,cellY,dotLength,dotLength);
+							var distanceX = cellX - eFrameColLine;
+							context.fillRect(sFrameColLine-distanceX,cellY,dotLength,dotLength);
+							var distanceY = cellY - eFrameRowLine;
+							context.fillRect(cellX,sFrameRowLine-distanceY,dotLength,dotLength);
+							context.fillRect(sFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
+							figureColoredCells.push([cellX,cellY]);
+							figureColoredCells.push([sFrameColLine-distanceX,cellY]);
+							figureColoredCells.push([cellX,sFrameRowLine-distanceY]);
+							figureColoredCells.push([sFrameColLine-distanceX,sFrameRowLine-distanceY]);
+							break;
+						}
+					}
+				}
+			} else if (sx > ex && sy < ey) {
+				//左下
+				for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
+					//左
+					for(var j=ex; j<sx; j++) {
+						var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
 						if (hiddenContextColor.data[3] != 0) {
-							var cellY = Math.floor(j/dotLength)*dotLength;
+							var cellX = Math.ceil(j/dotLength)*dotLength;
+							var cellY = sRowLine+dotLength*i;
+							context.fillRect(cellX,cellY,dotLength,dotLength);
+							var distanceX = cellX - eFrameColLine;
+							context.fillRect(sFrameColLine-distanceX,cellY,dotLength,dotLength);
+							var distanceY = cellY - sFrameRowLine;
+							context.fillRect(cellX,eFrameRowLine-distanceY,dotLength,dotLength);
+							context.fillRect(sFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
+							figureColoredCells.push([cellX,cellY]);
+							figureColoredCells.push([sFrameColLine-distanceX,cellY]);
+							figureColoredCells.push([cellX,eFrameRowLine-distanceY]);
+							figureColoredCells.push([sFrameColLine-distanceX,eFrameRowLine-distanceY]);
+							break;
+						}
+					}
+				}
+				for (var i=0; i<Math.ceil(checkColNum/2); i++) {
+					//左上
+					for(var j=sy; j<ey; j++) {
+						var hiddenContextColor = hiddenContext.getImageData(eColLine+dotLength*i,j,1,1);
+						if (hiddenContextColor.data[3] != 0 && j%dotLength != 0) {
+							var cellY = Math.ceil(j/dotLength)*dotLength;
+							var cellX = eColLine+dotLength*i;
+							context.fillRect(cellX,cellY,dotLength,dotLength);
+							var distanceX = cellX - eFrameColLine;
+							context.fillRect(sFrameColLine-distanceX,cellY,dotLength,dotLength);
+							var distanceY = cellY - sFrameRowLine;
+							context.fillRect(cellX,eFrameRowLine-distanceY,dotLength,dotLength);
+							context.fillRect(sFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
+							figureColoredCells.push([cellX,cellY]);
+							figureColoredCells.push([sFrameColLine-distanceX,cellY]);
+							figureColoredCells.push([cellX,eFrameRowLine-distanceY]);
+							figureColoredCells.push([sFrameColLine-distanceX,eFrameRowLine-distanceY]);
+							break;
+						}
+					}
+				}
+			} else if (sx < ex && sy < ey) {
+				//右下
+				for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
+					//左
+					for(var j=sx; j<ex; j++) {
+						var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
+						if (hiddenContextColor.data[3] != 0) {
+							var cellX = Math.ceil(j/dotLength)*dotLength;
+							var cellY = sRowLine+dotLength*i;
+							context.fillRect(cellX,cellY,dotLength,dotLength);
+							var distanceX = cellX - sFrameColLine;
+							context.fillRect(eFrameColLine-distanceX,cellY,dotLength,dotLength);
+							var distanceY = cellY - sFrameRowLine;
+							context.fillRect(cellX,eFrameRowLine-distanceY,dotLength,dotLength);
+							context.fillRect(eFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
+							figureColoredCells.push([cellX,cellY]);
+							figureColoredCells.push([eFrameColLine-distanceX,cellY]);
+							figureColoredCells.push([cellX,eFrameRowLine-distanceY]);
+							figureColoredCells.push([eFrameColLine-distanceX,eFrameRowLine-distanceY]);
+							break;
+						}
+					}
+				}
+				for (var i=0; i<Math.ceil(checkColNum/2); i++) {
+					//左上
+					for(var j=sy; j<ey; j++) {
+						var hiddenContextColor = hiddenContext.getImageData(sColLine+dotLength*i,j,1,1);
+						if (hiddenContextColor.data[3] != 0 && j%dotLength != 0) {
+							var cellY = Math.ceil(j/dotLength)*dotLength;
 							var cellX = sColLine+dotLength*i;
 							context.fillRect(cellX,cellY,dotLength,dotLength);
 							var distanceX = cellX - sFrameColLine;
-							var distanceY = cellY - eFrameRowLine;
-							context.fillRect(eFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
+							context.fillRect(eFrameColLine-distanceX,cellY,dotLength,dotLength);
+							var distanceY = cellY - sFrameRowLine;
+							context.fillRect(cellX,eFrameRowLine-distanceY,dotLength,dotLength);
+							context.fillRect(eFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
 							figureColoredCells.push([cellX,cellY]);
-							figureColoredCells.push([eFrameColLine-distanceX,sFrameRowLine-distanceY]);
+							figureColoredCells.push([eFrameColLine-distanceX,cellY]);
+							figureColoredCells.push([cellX,eFrameRowLine-distanceY]);
+							figureColoredCells.push([eFrameColLine-distanceX,eFrameRowLine-distanceY]);
 							break;
 						}
 					}
 				}
 			}
-		} else if (sx > ex && sy < ey) {
-		//左下
-			if (sx-ex < ey-sy) {
+			break;
+			
+		case 'fill-circle':
+			//塗りつぶし円モード
+			if (!draggingFlg) {
+				//キャンバスを退避
+				evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
+				var evacuateCanvasBG = canvas.toDataURL();
+				context.clearRect(0,0,canvasWidth,canvasHeight);
+				canvas.style.backgroundImage = 'url('+evacuateCanvasBG+')';
+				//マウスダウン始まったらドラッグフラグ変更
+				setDraggingFlg(true);
+				//スタートセット
+				sx = x;
+				sy = y;
+			}
+			//エンドセット
+			ex = x;
+			ey = y;
+			//中心xy
+			var centerX = Math.ceil((sx + ex)/2);
+			var centerY = Math.ceil((sy + ey)/2);
+			//縦横直径
+			var absX = Math.abs(sx - ex);
+			var absY = Math.abs(sy - ey);
+			//半径
+			var radius = 0
+			//縦横比率
+			var horizontalRatio = 1;
+			var verticalRatio = 1;
+			if (absX != 0 && absY != 0) {
+				var radius = Math.ceil(Math.max(absX,absY)/2);
+				if (absY > absX) {
+					horizontalRatio = absX/absY;
+				} else if (absX > absY) {
+					verticalRatio = absY/absX;
+				} else {
+					//一緒の時は何もしない
+				}
+			} else if (absY == 0 && absX != 0) {
+				verticalRatio = 0;
+			} else if (absY != 0 && absX == 0) {
+				horizontalRatio = 0;
+			} else {
+				//なんでも無いとき（通らない）
+			}
+			hiddenContext.save();
+			hiddenContext.clearRect(0,0,canvasWidth,canvasHeight);
+			context.clearRect(0,0,canvasWidth,canvasHeight);
+			hiddenContext.beginPath();
+			hiddenContext.scale(horizontalRatio,verticalRatio);
+			hiddenContext.arc(centerX/horizontalRatio, centerY/verticalRatio, radius, 0, Math.PI*2, false);
+			hiddenContext.stroke();
+			hiddenContext.closePath();
+			hiddenContext.restore();
+			var sRowLine = Math.ceil(sy/dotLength)*dotLength;
+			var eRowLine = Math.ceil(ey/dotLength)*dotLength;
+			var sColLine = Math.ceil(sx/dotLength)*dotLength;
+			var eColLine = Math.ceil(ex/dotLength)*dotLength;
+			var checkLineNum = (Math.abs(sRowLine-eRowLine))/dotLength;
+			figureColoredCells = [];
+			context.fillStyle = currentColor.style.backgroundColor;
+			if (sx > ex && sy > ey) {
+				//左上
+				for (var i=0; i<=Math.ceil(checkLineNum/2); i++) {
+					for(var j=ex; j<sx; j++) {
+						var hiddenContextColor = hiddenContext.getImageData(j,eRowLine+dotLength*i,1,1);
+						if (hiddenContextColor.data[3] != 0) {
+							var cellX = Math.ceil(j/dotLength)*dotLength;
+							var cellY = eRowLine+dotLength*i;
+							var eCellX = Math.ceil((sColLine-(j-eColLine))/dotLength)*dotLength;
+							var eCellY = sRowLine-dotLength*i;
+							var fillXcolNum = Math.ceil((eCellX-cellX)/dotLength);
+							for (var k=0; k<fillXcolNum; k++) {
+								context.fillRect(cellX+dotLength*k,cellY,dotLength,dotLength);
+								context.fillRect(cellX+dotLength*k,eCellY,dotLength,dotLength);
+								figureColoredCells.push([cellX+dotLength*k,cellY]);
+								figureColoredCells.push([cellX+dotLength*k,eCellY]);
+							}
+						}
+					}
+				}
+			} else if (sx < ex && sy > ey) {
+				//右上
+				for (var i=0; i<=Math.ceil(checkLineNum/2); i++) {
+					for(var j=sx; j<ex; j++) {
+						var hiddenContextColor = hiddenContext.getImageData(j,eRowLine+dotLength*i,1,1);
+						if (hiddenContextColor.data[3] != 0) {
+							var cellX = Math.ceil(j/dotLength)*dotLength;
+							var cellY = eRowLine+dotLength*i;
+							var eCellX = Math.ceil((eColLine-(j-sColLine))/dotLength)*dotLength;
+							var eCellY = sRowLine-dotLength*i;
+							var fillXcolNum = Math.ceil((eCellX-cellX)/dotLength);
+							for (var k=0; k<fillXcolNum; k++) {
+								context.fillRect(cellX+dotLength*k,cellY,dotLength,dotLength);
+								context.fillRect(cellX+dotLength*k,eCellY,dotLength,dotLength);
+								figureColoredCells.push([cellX+dotLength*k,cellY]);
+								figureColoredCells.push([cellX+dotLength*k,eCellY]);
+							}
+						}
+					}
+				}
+			} else if (sx > ex && sy < ey) {
+				//左下
+				for (var i=0; i<=Math.ceil(checkLineNum/2); i++) {
+					for(var j=ex; j<sx; j++) {
+						var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
+						if (hiddenContextColor.data[3] != 0) {
+							var cellX = Math.ceil(j/dotLength)*dotLength;
+							var cellY = sRowLine+dotLength*i;
+							var eCellX = Math.ceil((sColLine-(j-eColLine))/dotLength)*dotLength;
+							var eCellY = eRowLine-dotLength*i;
+							var fillXcolNum = Math.ceil((eCellX-cellX)/dotLength);
+							for (var k=0; k<fillXcolNum; k++) {
+								context.fillRect(cellX+dotLength*k,cellY,dotLength,dotLength);
+								context.fillRect(cellX+dotLength*k,eCellY,dotLength,dotLength);
+								figureColoredCells.push([cellX+dotLength*k,cellY]);
+								figureColoredCells.push([cellX+dotLength*k,eCellY]);
+							}
+						}
+					}
+				}
+			} else if (sx < ex && sy < ey) {
+				//右下
+				for (var i=0; i<=Math.ceil(checkLineNum/2); i++) {
+					for(var j=sx; j<ex; j++) {
+						var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
+						if (hiddenContextColor.data[3] != 0) {
+							var cellX = Math.ceil(j/dotLength)*dotLength;
+							var cellY = sRowLine+dotLength*i;
+							var eCellX = Math.ceil((eColLine-(j-sColLine))/dotLength)*dotLength;
+							var eCellY = eRowLine-dotLength*i;
+							var fillXcolNum = Math.ceil((eCellX-cellX)/dotLength);
+							for (var k=0; k<fillXcolNum; k++) {
+								context.fillRect(cellX+dotLength*k,cellY,dotLength,dotLength);
+								context.fillRect(cellX+dotLength*k,eCellY,dotLength,dotLength);
+								figureColoredCells.push([cellX+dotLength*k,cellY]);
+								figureColoredCells.push([cellX+dotLength*k,eCellY]);
+							}
+						}
+					}
+				}
+			} else {
+				//何もしない
+			}
+			break;
+			
+		case 'square':
+			//四角モード
+			if (!draggingFlg) {
+				//キャンバスを退避
+				evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
+				var evacuateCanvasBG = canvas.toDataURL();
+				context.clearRect(0,0,canvasWidth,canvasHeight);
+				canvas.style.backgroundImage = 'url('+evacuateCanvasBG+')';
+				//マウスダウン始まったらドラッグフラグ変更
+				setDraggingFlg(true);
+				//スタートセット
+				sx = x;
+				sy = y;
+			}
+			//エンドセット
+			ex = x;
+			ey = y;
+			context.clearRect(0,0,canvasWidth,canvasHeight);
+			var sRow = Math.floor(sy/dotLength);
+			var eRow = Math.floor(ey/dotLength);
+			var sCol = Math.floor(sx/dotLength);
+			var eCol = Math.floor(ex/dotLength);
+			figureColoredCells = [];
+			context.fillStyle = currentColor.style.backgroundColor;
+			if (sx > ex && sy > ey) {
+				//左上
+				//上と下のライン
+				for(var j=eCol; j<sCol; j++) {
+					context.fillRect(j*dotLength,eRow*dotLength,dotLength,dotLength);
+					context.fillRect(j*dotLength,sRow*dotLength,dotLength,dotLength);
+					figureColoredCells.push([j*dotLength,eRow*dotLength]);
+					figureColoredCells.push([j*dotLength,sRow*dotLength]);
+				}
+				//左と右のライン
+				for(var j=eRow; j<=sRow; j++) {
+					context.fillRect(eCol*dotLength,j*dotLength,dotLength,dotLength);
+					context.fillRect(sCol*dotLength,j*dotLength,dotLength,dotLength);
+					figureColoredCells.push([eCol*dotLength,j*dotLength]);
+					figureColoredCells.push([sCol*dotLength,j*dotLength]);
+				}
+			} else if (sx < ex && sy > ey) {
+				//右上
+				//上と下のライン
+				for(var j=sCol; j<eCol; j++) {
+					context.fillRect(j*dotLength,eRow*dotLength,dotLength,dotLength);
+					context.fillRect(j*dotLength,sRow*dotLength,dotLength,dotLength);
+					figureColoredCells.push([j*dotLength,eRow*dotLength]);
+					figureColoredCells.push([j*dotLength,sRow*dotLength]);
+				}
+				//左と右のライン
+				for(var j=eRow; j<=sRow; j++) {
+					context.fillRect(eCol*dotLength,j*dotLength,dotLength,dotLength);
+					context.fillRect(sCol*dotLength,j*dotLength,dotLength,dotLength);
+					figureColoredCells.push([eCol*dotLength,j*dotLength]);
+					figureColoredCells.push([sCol*dotLength,j*dotLength]);
+				}
+			} else if (sx > ex && sy < ey) {
+				//左下
+				//上と下のライン
+				for(var j=eCol; j<sCol; j++) {
+					context.fillRect(j*dotLength,eRow*dotLength,dotLength,dotLength);
+					context.fillRect(j*dotLength,sRow*dotLength,dotLength,dotLength);
+					figureColoredCells.push([j*dotLength,eRow*dotLength]);
+					figureColoredCells.push([j*dotLength,sRow*dotLength]);
+				}
+				//左と右のライン
+				for(var j=sRow; j<=eRow; j++) {
+					context.fillRect(eCol*dotLength,j*dotLength,dotLength,dotLength);
+					context.fillRect(sCol*dotLength,j*dotLength,dotLength,dotLength);
+					figureColoredCells.push([eCol*dotLength,j*dotLength]);
+					figureColoredCells.push([sCol*dotLength,j*dotLength]);
+				}
+			} else if (sx < ex && sy < ey) {
+				//右下
+				//上と下のライン
+				for(var j=sCol; j<eCol; j++) {
+					context.fillRect(j*dotLength,eRow*dotLength,dotLength,dotLength);
+					context.fillRect(j*dotLength,sRow*dotLength,dotLength,dotLength);
+					figureColoredCells.push([j*dotLength,eRow*dotLength]);
+					figureColoredCells.push([j*dotLength,sRow*dotLength]);
+				}
+				//左と右のライン
+				for(var j=sRow; j<=eRow; j++) {
+					context.fillRect(eCol*dotLength,j*dotLength,dotLength,dotLength);
+					context.fillRect(sCol*dotLength,j*dotLength,dotLength,dotLength);
+					figureColoredCells.push([eCol*dotLength,j*dotLength]);
+					figureColoredCells.push([sCol*dotLength,j*dotLength]);
+				}
+			}
+			break;
+			
+		case 'fill-square':
+			//塗りつぶし四角モード
+			if (!draggingFlg) {
+				//キャンバスを退避
+				evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
+				var evacuateCanvasBG = canvas.toDataURL();
+				context.clearRect(0,0,canvasWidth,canvasHeight);
+				canvas.style.backgroundImage = 'url('+evacuateCanvasBG+')';
+				//マウスダウン始まったらドラッグフラグ変更
+				setDraggingFlg(true);
+				//スタートセット
+				sx = x;
+				sy = y;
+			}
+			//エンドセット
+			ex = x;
+			ey = y;
+			context.clearRect(0,0,canvasWidth,canvasHeight);
+			var sRowLine = Math.floor(sy/dotLength)*dotLength;
+			var eRowLine = Math.floor(ey/dotLength)*dotLength;
+			var sColLine = Math.floor(sx/dotLength)*dotLength;
+			var eColLine = Math.floor(ex/dotLength)*dotLength;
+			var checkLineNum = (Math.abs(sRowLine-eRowLine))/dotLength;
+			var checkColNum = (Math.abs(sColLine-eColLine))/dotLength;
+			figureColoredCells = [];
+			context.fillStyle = currentColor.style.backgroundColor;
+			if (sx > ex && sy > ey) {
+			//左上
+				for(var i=0; i<=checkLineNum; i++) {
+					for(var j=0; j<=checkColNum; j++) {
+						context.fillRect(eColLine+j*dotLength,eRowLine+i*dotLength,dotLength,dotLength);
+						figureColoredCells.push([eColLine+j*dotLength,eRowLine+i*dotLength]);
+					}
+				}
+			} else if (sx < ex && sy > ey) {
+			//右上
+				for(var i=0; i<=checkLineNum; i++) {
+					for(var j=0; j<=checkColNum; j++) {
+						context.fillRect(sColLine+j*dotLength,eRowLine+i*dotLength,dotLength,dotLength);
+						figureColoredCells.push([sColLine+j*dotLength,eRowLine+i*dotLength]);
+					}
+				}
+			} else if (sx > ex && sy < ey) {
+			//左下
+				for(var i=0; i<=checkLineNum; i++) {
+					for(var j=0; j<=checkColNum; j++) {
+						context.fillRect(eColLine+j*dotLength,sRowLine+i*dotLength,dotLength,dotLength);
+						figureColoredCells.push([eColLine+j*dotLength,sRowLine+i*dotLength]);
+					}
+				}
+			} else if (sx < ex && sy < ey) {
+			//右下
+				for(var i=0; i<=checkLineNum; i++) {
+					for(var j=0; j<=checkColNum; j++) {
+						context.fillRect(sColLine+j*dotLength,sRowLine+i*dotLength,dotLength,dotLength);
+						figureColoredCells.push([sColLine+j*dotLength,sRowLine+i*dotLength]);
+					}
+				}
+			}
+			break;
+			
+		case 'straight-line':
+			//直線モード
+			if (!draggingFlg) {
+				//キャンバスを退避
+				evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
+				var evacuateCanvasBG = canvas.toDataURL();
+				context.clearRect(0,0,canvasWidth,canvasHeight);
+				canvas.style.backgroundImage = 'url('+evacuateCanvasBG+')';
+				//マウスダウン始まったらドラッグフラグ変更
+				setDraggingFlg(true);
+				//スタートセット
+				sx = x;
+				sy = y;
+			}
+			//エンドセット
+			ex = x;
+			ey = y;
+			hiddenContext.clearRect(0,0,canvasWidth,canvasHeight);
+			context.clearRect(0,0,canvasWidth,canvasHeight);
+			hiddenContext.beginPath();     // 1.Pathで描画を開始する
+			hiddenContext.moveTo(sx,sy); // 2.描画する位置を指定する
+			hiddenContext.lineTo(ex,ey); // 3.指定座標まで線を引く
+			hiddenContext.stroke();
+			hiddenContext.closePath();
+			var sRowLine = Math.ceil(sy/dotLength)*dotLength;
+			var eRowLine = Math.ceil(ey/dotLength)*dotLength;
+			var sColLine = Math.ceil(sx/dotLength)*dotLength;
+			var eColLine = Math.ceil(ex/dotLength)*dotLength;
+			var checkLineNum = (Math.abs(sRowLine-eRowLine))/dotLength;
+			var checkColNum = (Math.abs(sColLine-eColLine))/dotLength;
+			var sFrameRowLine = Math.floor(sy/dotLength)*dotLength;
+			var eFrameRowLine = Math.floor(ey/dotLength)*dotLength;
+			var sFrameColLine = Math.floor(sx/dotLength)*dotLength;
+			var eFrameColLine = Math.floor(ex/dotLength)*dotLength;
+			figureColoredCells = [];
+			context.fillStyle = currentColor.style.backgroundColor;
+			if (sx > ex && sy > ey) {
+			//左上
+				if (sx-ex > sy-ey) {
+				//270-315
+					for (var i=0; i<Math.ceil(checkColNum/2); i++) {
+						for(var j=ey; j<sy; j++) {
+							var hiddenContextColor = hiddenContext.getImageData(eColLine+dotLength*i,j,1,1);
+							if (hiddenContextColor.data[3] != 0) {
+								var cellY = Math.floor(j/dotLength)*dotLength;
+								var cellX = eColLine+dotLength*i;
+								context.fillRect(cellX,cellY,dotLength,dotLength);
+								var distanceX = cellX - eFrameColLine;
+								var distanceY = cellY - eFrameRowLine;
+								context.fillRect(sFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
+								figureColoredCells.push([cellX,cellY]);
+								figureColoredCells.push([sFrameColLine-distanceX,sFrameRowLine-distanceY]);
+								break;
+							}
+						}
+					}
+				} else if (sx-ex < sy-ey) {
+				//315-360
+					for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
+						for(var j=ex; j<sx; j++) {
+							var hiddenContextColor = hiddenContext.getImageData(j,eRowLine+dotLength*i,1,1);
+							if (hiddenContextColor.data[3] != 0) {
+								var cellX = Math.floor(j/dotLength)*dotLength;
+								var cellY = eRowLine+dotLength*i;
+								context.fillRect(cellX,cellY,dotLength,dotLength);
+								var distanceX = cellX - eFrameColLine;
+								var distanceY = cellY - eFrameRowLine;
+								context.fillRect(sFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
+								figureColoredCells.push([cellX,cellY]);
+								figureColoredCells.push([sFrameColLine-distanceX,sFrameRowLine-distanceY]);
+								break;
+							}
+						}
+					}
+				}
+			} else if (sx < ex && sy > ey) {
+			//右上
+				if (ex-sx < sy-ey) {
+				//0-45
+					for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
+						for(var j=sx; j<ex; j++) {
+							var hiddenContextColor = hiddenContext.getImageData(j,eRowLine+dotLength*i,1,1);
+							if (hiddenContextColor.data[3] != 0) {
+								var cellX = Math.floor(j/dotLength)*dotLength;
+								var cellY = eRowLine+dotLength*i;
+								context.fillRect(cellX,cellY,dotLength,dotLength);
+								var distanceX = cellX - sFrameColLine;
+								var distanceY = cellY - eFrameRowLine;
+								context.fillRect(eFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
+								figureColoredCells.push([cellX,cellY]);
+								figureColoredCells.push([eFrameColLine-distanceX,sFrameRowLine-distanceY]);
+								break;
+							}
+						}
+					}
+				} else if (ex-sx > sy-ey) {
+				//45-90
+					for (var i=0; i<Math.ceil(checkColNum/2); i++) {
+						for(var j=ey; j<sy; j++) {
+							var hiddenContextColor = hiddenContext.getImageData(sColLine+dotLength*i,j,1,1);
+							if (hiddenContextColor.data[3] != 0) {
+								var cellY = Math.floor(j/dotLength)*dotLength;
+								var cellX = sColLine+dotLength*i;
+								context.fillRect(cellX,cellY,dotLength,dotLength);
+								var distanceX = cellX - sFrameColLine;
+								var distanceY = cellY - eFrameRowLine;
+								context.fillRect(eFrameColLine-distanceX,sFrameRowLine-distanceY,dotLength,dotLength);
+								figureColoredCells.push([cellX,cellY]);
+								figureColoredCells.push([eFrameColLine-distanceX,sFrameRowLine-distanceY]);
+								break;
+							}
+						}
+					}
+				}
+			} else if (sx > ex && sy < ey) {
+			//左下
+				if (sx-ex < ey-sy) {
 				//180-225
-				for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
-					for(var j=ex; j<sx; j++) {
-						var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
-						if (hiddenContextColor.data[3] != 0) {
-							var cellX = Math.floor(j/dotLength)*dotLength;
-							var cellY = sRowLine+dotLength*i;
-							context.fillRect(cellX,cellY,dotLength,dotLength);
-							var distanceX = cellX - eFrameColLine;
-							var distanceY = cellY - sFrameRowLine;
-							context.fillRect(sFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
-							figureColoredCells.push([cellX,cellY]);
-							figureColoredCells.push([sFrameColLine-distanceX,eFrameRowLine-distanceY]);
-							break;
+					for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
+						for(var j=ex; j<sx; j++) {
+							var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
+							if (hiddenContextColor.data[3] != 0) {
+								var cellX = Math.floor(j/dotLength)*dotLength;
+								var cellY = sRowLine+dotLength*i;
+								context.fillRect(cellX,cellY,dotLength,dotLength);
+								var distanceX = cellX - eFrameColLine;
+								var distanceY = cellY - sFrameRowLine;
+								context.fillRect(sFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
+								figureColoredCells.push([cellX,cellY]);
+								figureColoredCells.push([sFrameColLine-distanceX,eFrameRowLine-distanceY]);
+								break;
+							}
+						}
+					}
+				} else if (sx-ex > ey-sy) {
+				//225-270
+					for (var i=0; i<Math.ceil(checkColNum/2); i++) {
+						for(var j=sy; j<ey; j++) {
+							var hiddenContextColor = hiddenContext.getImageData(eColLine+dotLength*i,j,1,1);
+							if (hiddenContextColor.data[3] != 0) {
+								var cellY = Math.floor(j/dotLength)*dotLength;
+								var cellX = eColLine+dotLength*i;
+								context.fillRect(cellX,cellY,dotLength,dotLength);
+								var distanceX = cellX - eFrameColLine;
+								var distanceY = cellY - sFrameRowLine;
+								context.fillRect(sFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
+								figureColoredCells.push([cellX,cellY]);
+								figureColoredCells.push([sFrameColLine-distanceX,eFrameRowLine-distanceY]);
+								break;
+							}
 						}
 					}
 				}
-			} else if (sx-ex > ey-sy) {
-			//225-270
-				for (var i=0; i<Math.ceil(checkColNum/2); i++) {
-					for(var j=sy; j<ey; j++) {
-						var hiddenContextColor = hiddenContext.getImageData(eColLine+dotLength*i,j,1,1);
-						if (hiddenContextColor.data[3] != 0) {
-							var cellY = Math.floor(j/dotLength)*dotLength;
-							var cellX = eColLine+dotLength*i;
-							context.fillRect(cellX,cellY,dotLength,dotLength);
-							var distanceX = cellX - eFrameColLine;
-							var distanceY = cellY - sFrameRowLine;
-							context.fillRect(sFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
-							figureColoredCells.push([cellX,cellY]);
-							figureColoredCells.push([sFrameColLine-distanceX,eFrameRowLine-distanceY]);
-							break;
+			} else if (sx < ex && sy < ey) {
+			//右下
+				if (ex-sx > ey-sy) {
+				//90-135
+					for (var i=0; i<Math.ceil(checkColNum/2); i++) {
+						for(var j=sy; j<ey; j++) {
+							var hiddenContextColor = hiddenContext.getImageData(sColLine+dotLength*i,j,1,1);
+							if (hiddenContextColor.data[3] != 0) {
+								var cellY = Math.floor(j/dotLength)*dotLength;
+								var cellX = sColLine+dotLength*i;
+								context.fillRect(cellX,cellY,dotLength,dotLength);
+								var distanceX = cellX - sFrameColLine;
+								var distanceY = cellY - sFrameRowLine;
+								context.fillRect(eFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
+								figureColoredCells.push([cellX,cellY]);
+								figureColoredCells.push([eFrameColLine-distanceX,eFrameRowLine-distanceY]);
+								break;
+							}
+						}
+					}
+				} else if (ex-sx < ey-sy) {
+				//135-180
+					for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
+						for(var j=sx; j<ex; j++) {
+							var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
+							if (hiddenContextColor.data[3] != 0) {
+								var cellX = Math.floor(j/dotLength)*dotLength;
+								var cellY = sRowLine+dotLength*i;
+								context.fillRect(cellX,cellY,dotLength,dotLength);
+								var distanceX = cellX - sFrameColLine;
+								var distanceY = cellY - sFrameRowLine;
+								context.fillRect(eFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
+								figureColoredCells.push([cellX,cellY]);
+								figureColoredCells.push([eFrameColLine-distanceX,eFrameRowLine-distanceY]);
+								break;
+							}
 						}
 					}
 				}
+			} else {
+				//何もしない
 			}
-		} else if (sx < ex && sy < ey) {
-		//右下
-			if (ex-sx > ey-sy) {
-			//90-135
-				for (var i=0; i<Math.ceil(checkColNum/2); i++) {
-					for(var j=sy; j<ey; j++) {
-						var hiddenContextColor = hiddenContext.getImageData(sColLine+dotLength*i,j,1,1);
-						if (hiddenContextColor.data[3] != 0) {
-							var cellY = Math.floor(j/dotLength)*dotLength;
-							var cellX = sColLine+dotLength*i;
-							context.fillRect(cellX,cellY,dotLength,dotLength);
-							var distanceX = cellX - sFrameColLine;
-							var distanceY = cellY - sFrameRowLine;
-							context.fillRect(eFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
-							figureColoredCells.push([cellX,cellY]);
-							figureColoredCells.push([eFrameColLine-distanceX,eFrameRowLine-distanceY]);
-							break;
-						}
-					}
-				}
-			} else if (ex-sx < ey-sy) {
-			//135-180
-				for (var i=0; i<Math.ceil(checkLineNum/2); i++) {
-					for(var j=sx; j<ex; j++) {
-						var hiddenContextColor = hiddenContext.getImageData(j,sRowLine+dotLength*i,1,1);
-						if (hiddenContextColor.data[3] != 0) {
-							var cellX = Math.floor(j/dotLength)*dotLength;
-							var cellY = sRowLine+dotLength*i;
-							context.fillRect(cellX,cellY,dotLength,dotLength);
-							var distanceX = cellX - sFrameColLine;
-							var distanceY = cellY - sFrameRowLine;
-							context.fillRect(eFrameColLine-distanceX,eFrameRowLine-distanceY,dotLength,dotLength);
-							figureColoredCells.push([cellX,cellY]);
-							figureColoredCells.push([eFrameColLine-distanceX,eFrameRowLine-distanceY]);
-							break;
-						}
-					}
-				}
+			break;
+			
+		case 'eraser':
+			//現在色にパレットの色をセットする
+			var gotColor = context.getImageData(cell[0]*minCell, cell[1]*minCell, 1, 1);
+			var r = gotColor.data[0];
+			var g = gotColor.data[1];
+			var b = gotColor.data[2];
+			var a = gotColor.data[3];
+			if (r == 0 && g == 0 && b == 0 && a == 0) {
+				return;
+			} else {
+				currentColor.style.backgroundColor = "rgba("+r+","+g+","+b+","+a+")";
+				//現在色を非表示canvasに描画
+				context2.fillStyle = currentColor.style.backgroundColor
+				context2.fillRect(0,0,30,30);
 			}
-		} else {
-			//何もしない
-		}
-	//カラーピッカーモード
-	} else if (currentModeId == 'colorPicker') {
-		//現在色にパレットの色をセットする
-		var gotColor = context.getImageData(cell[0]*minCell, cell[1]*minCell, 1, 1);
-		var r = gotColor.data[0];
-		var g = gotColor.data[1];
-		var b = gotColor.data[2];
-		var a = gotColor.data[3];
-		if (r == 0 && g == 0 && b == 0 && a == 0) {
-			return;
-		} else {
-			currentColor.style.backgroundColor = "rgba("+r+","+g+","+b+","+a+")";
-			//現在色を非表示canvasに描画
-			context2.fillStyle = currentColor.style.backgroundColor
-			context2.fillRect(0,0,30,30);
-		}
-	} else {
-		//なんのモードでもなければ何もしない
+			break;
+
 	}
 }
 
