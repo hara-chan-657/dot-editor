@@ -26,6 +26,12 @@ var paletteColors = [
 var canvasHeight = 480;
 //canvas横
 var canvasWidth = 480;
+//canvasBGcontainerPadding
+var canvasBGcontainerPadding = 32;
+//canvasBGcontainer縦
+var canvasBGcontainerHeight = canvasHeight;
+//canvasBGcontainer横
+var canvasBGcontainerWidth = canvasWidth;
 //ダウンロード用縦
 var downloadHeight = 0;
 //ダウンロード用横
@@ -76,6 +82,8 @@ var previewContainer = document.getElementById('preview-container');
 var preview = document.getElementById('preview');
 //キャンバスコンテナ
 var canvasContainer = document.getElementById('canvas-container');
+//キャンバスBGコンテナ
+var canvasBGcontainer = document.getElementById('canvasBG-container');
 //キャンバスBG
 var canvasBG = document.getElementById('canvasBG');
 //キャンバス
@@ -1523,21 +1531,30 @@ function downloadCanvas(evt) {
 }
 
 //ダウンロードするサイズをセットする
-function setDownloadSize(mode) {
+function setDownloadSize (mode) {
 	//ロード時はセレクトボックスの一番目のサイズをセット
 	if (mode == 'load') {
 		var size =  downloadSizeSelect.firstElementChild.value;
 		downloadHeight = size;
 		downloadWidth = size;
+		//キャンバスBGコンテナの背景をセット
+		setSingleMaptipBG(size);
 	//セレクトボックスが変更された場合変更された値にセット
 	} else if (mode == 'change') {
 		var downloadSizeIndex =  downloadSizeSelect.selectedIndex;
 		var size = downloadSizeSelect.options[downloadSizeIndex].value;
 		downloadHeight =  size;
 		downloadWidth =  size;
+		//キャンバスBGコンテナの背景をセット
+		setSingleMaptipBG(size);
 	} else {
 		return;
 	}
+}
+
+//キャンバスBGコンテナの背景のマップチップの大きさを、ダウンロードサイズに合わせてセットする
+function setSingleMaptipBG (size) {
+	canvasBGcontainer.style.backgroundImage = 'url(./image/dot-editor/canvasBGcontainer' + size + '.png)';
 }
 
 //ドットのサイズをセットする。同時に背景の罫線も同じマス目のものに変更する。
@@ -1583,6 +1600,10 @@ function setCanvas() {
 	canvas.setAttribute('width', canvasWidth);
 	canvasBG.style.height = canvasHeight + 'px';
 	canvasBG.style.width = canvasWidth + 'px';
+	canvasBGcontainer.style.height = canvasBGcontainerHeight + 'px';
+	canvasBGcontainer.style.width = canvasBGcontainerWidth + 'px';
+	canvasBGcontainer.style.padding = canvasBGcontainerPadding + 'px';
+	canvasBGcontainer.style.backgroundImage = 'url(./image/dot-editor/canvasBGcontainer.png)';
 	hiddenCanvas.setAttribute('height', canvasHeight);
 	hiddenCanvas.setAttribute('width', canvasWidth);
 }
