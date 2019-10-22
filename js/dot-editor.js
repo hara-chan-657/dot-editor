@@ -163,6 +163,8 @@ var context2 = currentColorCanvas.getContext('2d');
 ///////////////////////////////　　以下イベント   ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 window.addEventListener('load', setDefault, false);
+window.addEventListener('beforeunload', function (evt) {evt.returnValue =  'ほんと？'}, false);
+document.addEventListener('keydown', function (evt) {doKeyEvent(evt);}, false);
 //options.addEventListener('mouseenter', showDetail, false);
 for (var i=0; i<option.length; i++) {
 	option[i].addEventListener('mouseenter', function(evt) {showDetail(evt);}, false);
@@ -228,6 +230,23 @@ function setDefault() {
 	setMinCell();
 	setMinRowAndCol();
 //	setBackGround();//背景の罫線を描画する為だけのファンクション。普段はoff
+}
+
+//キーボードからの入力でイベントを実行する
+function doKeyEvent (evt) {
+	//戻る
+	if (evt.key === 'z' && (evt.ctrlKey || evt.metaKey)) {
+		if (backArray.length > 0) {
+			doBack();
+		}
+	//進む
+	} else if (evt.key === 'u' && (evt.ctrlKey || event.metaKey)) {
+		if (forwardArray.length > 0) {
+			doForward();
+		}
+	} else {
+		return;
+	}
 }
 
 //オプションの詳細を表示する
