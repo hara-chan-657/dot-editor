@@ -163,6 +163,24 @@ var context2 = currentColorCanvas.getContext('2d');
 ///////////////////////////////　　以下イベント   ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 window.addEventListener('load', setDefault, false);
+// History APIが使用可能ブラウザか確認
+if(history && history.pushState && history.state != undefined){
+	// ブラウザの履歴に戻る無効を追加
+	history.pushState(null, null, null);
+	// 戻るボタン押下でイベント発動
+	window.addEventListener("popstate", function() {
+	// 確認メッセージ表示
+	window.onbeforeunload = function(e) {
+	return 'このページから離れますか？';
+	};
+	// このページを離れるを押した場合さらに１つ履歴を戻る
+	// (通常のブラウザバックと同じ挙動)
+	// ページを離れない場合は再度ブラウザ戻るボタンを押した時用に
+	// 履歴無効を追加
+	history.go(-1);
+	history.pushState(null, null, null);
+	});
+}
 window.addEventListener('beforeunload', function (evt) {evt.returnValue =  'ほんと？'}, false);
 document.addEventListener('keydown', function (evt) {doKeyEvent(evt);}, false);
 //options.addEventListener('mouseenter', showDetail, false);
