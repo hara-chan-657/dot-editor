@@ -1688,6 +1688,11 @@ function setCurrentMode(evt) {
 
 //画像を保存
 function saveMaptip() {
+	//canvasの縦横を変更
+	canvas.height = downloadHeight;
+	canvas.width = downloadWidth;
+	//previewをcanvasに描画
+	context.drawImage(preview, 0, 0, downloadWidth, downloadHeight);
 	var data = canvas.toDataURL("image/png");
 	data = data.replace("data:image/png;base64,", "");
 	document.forms['maptip_data'].elements['maptip_image_data'].value = data;
