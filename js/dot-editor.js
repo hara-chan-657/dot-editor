@@ -158,6 +158,8 @@ var currentColor = document.getElementById('currentColor');
 //現在色canvas
 var currentColorCanvas = document.getElementById('currentColorCanvas');
 var context2 = currentColorCanvas.getContext('2d');
+//この内容で保存ボタン
+var saveMaptipData = document.getElementById('save-maptip-data');
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////　　以下イベント   ////////////////////////////////////////////
@@ -232,6 +234,7 @@ square.addEventListener('click', setCurrentMode, false);
 fillSquare.addEventListener('click', setCurrentMode, false);
 straightLine.addEventListener('click', setCurrentMode, false);
 colorPicker.addEventListener('click', setCurrentMode, false);
+saveMaptipData.addEventListener('click', saveMaptipDataToSever, false);
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////　　以下ファンクション   //////////////////////////////////////////
@@ -1680,5 +1683,28 @@ function setCurrentMode(evt) {
 			currentModeElement[0] = evt.target;
 			currentModeElement[0].parentNode.style.backgroundColor = "yellow";
 		}
+	}
+}
+
+//画像を保存
+function saveMaptip() {
+	var data = canvas.toDataURL("image/png");
+	data = data.replace("data:image/png;base64,", "");
+	document.forms['maptip_data'].elements['maptip_image_data'].value = data;
+}
+
+//マップチップデータをサーバに保存する
+function saveMaptipDataToSever() {
+	//フォーム取得
+	var MaptipDataForm = document.forms['maptip_data'];
+	var maptipType = MaptipDataForm.maptipTypes.value;
+	var maptipData = 'マップチップタイプ：' + maptipType;
+	//いったん本当に良いかアラート
+	var confirmTxt = '下記の情報でマップデータをサーバに保存します。\n\n' + maptipData + '\n\n編集画面には戻れません。\nよろしいですか？';
+	var ret = confirm(confirmTxt);
+	if (ret) {
+		//アラートの結果もよければ、マップチップデータを保存して、サブミット
+		saveMaptip();
+		MaptipDataForm.submit();
 	}
 }

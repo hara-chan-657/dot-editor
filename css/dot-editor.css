@@ -175,3 +175,13 @@ body {
 	display: none;
 }
 
+#save-maptip-data {
+	background-color: green;
+	color: white;
+	padding: 8px;
+	border-radius: 20px;
+	display: inline-block;
+	margin-top: 20px;
+	margin-left: 30px;
+	cursor: pointer;
+}
