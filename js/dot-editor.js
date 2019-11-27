@@ -125,8 +125,10 @@ var back = document.getElementById('back');
 var forward = document.getElementById('forward');
 //ダウンロードサイズセレクトコンテナ
 var downloadSizeContainer = document.getElementById('downloadSize-container');
-//ダウンロードサイズ
-var downloadSizeSelect = document.getElementById('downloadSizeSelect');
+//ダウンロードサイズ縦
+var downloadSizeSelectHeight = document.getElementById('downloadSizeSelectHeight');
+//ダウンロードサイズ横
+var downloadSizeSelectWidth = document.getElementById('downloadSizeSelectWidth');
 //ドットサイズセレクトボックス
 var dotSizeSelect = document.getElementById('dotSizeSelect');
 //現在モード要素
@@ -223,7 +225,8 @@ shiftLeft.addEventListener('click', function () {shiftCanvas('left');}, false);
 shiftRight.addEventListener('click', function () {shiftCanvas('right');}, false);
 shiftAbove.addEventListener('click', function () {shiftCanvas('above');}, false);
 shiftBelow.addEventListener('click', function () {shiftCanvas('below');}, false);
-downloadSizeSelect.addEventListener('change', function () {setDownloadSize('change');}, false);
+downloadSizeSelectHeight.addEventListener('change', function () {setDownloadSize('change');}, false);
+downloadSizeSelectWidth.addEventListener('change', function () {setDownloadSize('change');}, false);
 dotSizeSelect.addEventListener('change', function () {setDotSize('change');}, false);
 eraser.addEventListener('click', setCurrentMode, false);
 fill.addEventListener('click', setCurrentMode, false);
@@ -244,7 +247,7 @@ saveMaptipData.addEventListener('click', saveMaptipDataToSever, false);
 function setDefault() {
 	showPalette();
 	setCurrentMode();
-	setCanvas();
+	setCanvas('load');
 	setCurrentColor();
 	setDotSize('load');
 	setDownloadSize('load');
@@ -480,16 +483,6 @@ function doForward () {
 	}
 }
 
-// canvasの列数を取得する
-function getColNum () {
-	return canvasWidth/minCell;
-}
-
-//canvasの行数を取得する
-function getRowNum () {
-	return canvasHeight/minCell;
-}
-
 //canvasの最小のセルの一辺の長さを設定する
 function setMinCell () {
 	var options = dotSizeSelect.children;
@@ -502,8 +495,8 @@ function setMinCell () {
 
 //canvasの最小行数と最小列数をセットする
 function setMinRowAndCol() {
-	minRowNum = canvasWidth/minCell;
-	minColNum = canvasHeight/minCell;
+	minRowNum = canvasHeight/minCell;
+	minColNum = canvasWidth/minCell;
 }
 
 //ドラッグフラグをセットする
@@ -1509,17 +1502,20 @@ function isCellExist(cellsArray, cell) {
 function showPreview () {
 	//ダウンロードサイズを取得する
 	//最初からダウンロードサイズをいじってない場合、一個目のやつをセレクト
-	if (downloadSizeSelect.selectedIndex === null) {
-		downloadSizeSelect.options[0].selected = true;
-	}
-	var downloadSizeIndex =  downloadSizeSelect.selectedIndex;
-	downloadSize = downloadSizeSelect.options[downloadSizeIndex].value;
+	// if (downloadSizeSelectHeight.selectedIndex === null && downloadSizeSelectWidth.selectedIndex === null) {
+	// 	downloadSizeSelectHeight.options[0].selected = true;
+	// 	downloadSizeSelectWidth.options[0].selected = true;
+	// }
+	// var downloadSizeIndexHeight =  downloadSizeSelectHeight.selectedIndex;
+	// var downloadSizeIndexWidth =  downloadSizeSelectWidth.selectedIndex;
+	// downloadSize = downloadSizeSelect.options[downloadSizeIndexHeight].value;
+	// downloadSize = downloadSizeSelect.options[downloadSizeIndexWidth].value;
 	//canvasのデータURLをpreviewimgにセット
 	preview.src = canvas.toDataURL();
 	//プレビューの表示
 	previewContainer.style.display = 'block';
-	preview.style.height = downloadSize + 'px';
-	preview.style.width = downloadSize + 'px';
+	preview.style.height = downloadHeight + 'px';
+	preview.style.width = downloadWidth + 'px';
 	//canvasを非表示に
 	canvasContainer.style.display = 'none';
 	//プレビュー誘導ボタン以下は非表示に
@@ -1562,7 +1558,7 @@ function downloadCanvas(evt) {
 	//aタグにデータをセット
 	const a = evt.target; //e.targetはクリックされた要素を指す（<a>タグ）
 	a.href = canvas.toDataURL(); //Canvasからdata:URLを取得
-	a.download = new Date().getTime() + '_' + downloadWidth +'.png'; //ダウンロードファイル名はタイムスタンプに設定
+	a.download = new Date().getTime() + '_H' + downloadHeight + '_W' + downloadWidth + '.png'; //ダウンロードファイル名はタイムスタンプに設定
 	//ダウンロードが終わったら退避canvasを復元
 	canvas.height = canvasHeight;
 	canvas.width = canvasWidth;
@@ -1574,21 +1570,76 @@ function downloadCanvas(evt) {
 function setDownloadSize (mode) {
 	//ロード時はセレクトボックスの一番目のサイズをセット
 	if (mode == 'load') {
-		var size =  downloadSizeSelect.firstElementChild.value;
-		downloadHeight = size;
-		downloadWidth = size;
+		downloadHeight = Number(downloadSizeSelectHeight.firstElementChild.value);
+		downloadWidth = Number(downloadSizeSelectWidth.firstElementChild.value);
 		//キャンバスBGコンテナの背景をセット
-		setSingleMaptipBG(size);
+		var singleSize = Math.min(downloadHeight, downloadWidth);
+		setSingleMaptipBG(singleSize);
 	//セレクトボックスが変更された場合変更された値にセット
 	} else if (mode == 'change') {
-		var downloadSizeIndex =  downloadSizeSelect.selectedIndex;
-		var size = downloadSizeSelect.options[downloadSizeIndex].value;
-		downloadHeight =  size;
-		downloadWidth =  size;
+		//縦横セレクトボックスの選択中インデックスを取得
+		var downloadSizeIndexHeight =  downloadSizeSelectHeight.selectedIndex;
+		var downloadSizeIndexWidth =  downloadSizeSelectWidth.selectedIndex;
+		//選択中の縦横の値をダウンロードサイズにセット
+		downloadHeight = Number(downloadSizeSelectHeight.options[downloadSizeIndexHeight].value);
+		downloadWidth = Number(downloadSizeSelectWidth.options[downloadSizeIndexWidth].value);
+		//キャンバスBGコンテナの背景画像（１マップの大きさを表示するやつ）のサイズを取得（縦横の小さい方が基準）
+		var singleSize = Math.min(downloadHeight, downloadWidth);
 		//キャンバスBGコンテナの背景をセット
-		setSingleMaptipBG(size);
+		setSingleMaptipBG(singleSize);
+		//キャンバスの大きさを変更する
+		setCanvas('change');
+		//キャンバスの行数とカラム数をリセット
+		setMinRowAndCol();
+		//キャンバスの大きさを変更するとキャンバスがクリアされてしまう。
+		//そのため、一個戻って一個進むの処理を実施し、変更前のキャンバスを描画する
+		doBack();
+		doForward();
 	} else {
 		return;
+	}
+}
+
+//canvasの縦横の大きさをセットする
+//※あくまでダウンロードサイズに対する画面のキャンバスの縦横比を変化させるもの
+function setCanvas(mode) {
+	if (mode == 'load') {
+		canvas.setAttribute('height', canvasHeight);
+		canvas.setAttribute('width', canvasWidth);
+		canvasBG.style.height = canvasHeight + 'px';
+		canvasBG.style.width = canvasWidth + 'px';
+		canvasBGcontainer.style.height = canvasBGcontainerHeight + 'px';
+		canvasBGcontainer.style.width = canvasBGcontainerWidth + 'px';
+		canvasBGcontainer.style.padding = canvasBGcontainerPadding + 'px';
+		canvasBGcontainer.style.backgroundImage = 'url(./image/dot-editor/canvasBGcontainer.png)';
+		hiddenCanvas.setAttribute('height', canvasHeight);
+		hiddenCanvas.setAttribute('width', canvasWidth);
+	} else if (mode == 'change') {
+		//ダウンロードサイズの縦横の割合を元に、canvasの縦横の割合を設定
+		var smallerSize = Math.min(downloadHeight, downloadWidth);
+		var biggerSize = Math.max(downloadHeight, downloadWidth);
+		var smallerCanvasSize =  480 * (smallerSize/biggerSize);
+		if (downloadHeight > downloadWidth) {
+			canvasHeight = 480;
+			canvasWidth = smallerCanvasSize;
+		} else if (downloadHeight < downloadWidth) {
+			canvasHeight = smallerCanvasSize;
+			canvasWidth = 480;
+		} else {
+			canvasHeight = 480;
+			canvasWidth = 480;
+		}
+		canvas.setAttribute('height', canvasHeight);
+		canvas.setAttribute('width', canvasWidth);
+		canvasBG.style.height = canvasHeight + 'px';
+		canvasBG.style.width = canvasWidth + 'px';
+		canvasBGcontainer.style.height = canvasBGcontainerHeight + 'px';
+		canvasBGcontainer.style.width = canvasBGcontainerWidth + 'px';
+		canvasBGcontainer.style.padding = canvasBGcontainerPadding + 'px';
+		canvasBGcontainer.style.backgroundImage = 'url(./image/dot-editor/canvasBGcontainer.png)';
+		hiddenCanvas.setAttribute('height', canvasHeight);
+		hiddenCanvas.setAttribute('width', canvasWidth);
+		setSingleMaptipBG(biggerSize);
 	}
 }
 
@@ -1632,20 +1683,6 @@ function showPalette() {
 	}
 	//全ての行をパレットにセット
 	for (var i=0; i<tr.length; i++) palette.appendChild(tr[i]);
-}
-
-//canvasの縦横の大きさをセットする
-function setCanvas() {
-	canvas.setAttribute('height', canvasHeight);
-	canvas.setAttribute('width', canvasWidth);
-	canvasBG.style.height = canvasHeight + 'px';
-	canvasBG.style.width = canvasWidth + 'px';
-	canvasBGcontainer.style.height = canvasBGcontainerHeight + 'px';
-	canvasBGcontainer.style.width = canvasBGcontainerWidth + 'px';
-	canvasBGcontainer.style.padding = canvasBGcontainerPadding + 'px';
-	canvasBGcontainer.style.backgroundImage = 'url(./image/dot-editor/canvasBGcontainer.png)';
-	hiddenCanvas.setAttribute('height', canvasHeight);
-	hiddenCanvas.setAttribute('width', canvasWidth);
 }
 
 //現在色にパレットの色をセットする
@@ -1696,6 +1733,8 @@ function saveMaptip() {
 	var data = canvas.toDataURL("image/png");
 	data = data.replace("data:image/png;base64,", "");
 	document.forms['maptip_data'].elements['maptip_image_data'].value = data;
+	document.forms['maptip_data'].elements['maptip_height'].value = downloadHeight;
+	document.forms['maptip_data'].elements['maptip_width'].value = downloadWidth;
 }
 
 //マップチップデータをサーバに保存する
@@ -1713,3 +1752,4 @@ function saveMaptipDataToSever() {
 		MaptipDataForm.submit();
 	}
 }
+

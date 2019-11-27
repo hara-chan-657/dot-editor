@@ -47,7 +47,7 @@ class dotEditor {
      * param2 : param1 : マップ画像データ(ベース64エンコードずみのもの)
      * return bool
      */
-    function addMaptipData($maptipTypeName, $maptipImageData) {
+    function addMaptipData($maptipTypeName, $maptipImageData, $maptipHeight, $maptipWidth) {
         //新規マップチップのパスを保存
         $MaptipPath = $this->maptipTypeDirPath . $maptipTypeName;
         //新規プロジェクトディレクトリ作成
@@ -57,7 +57,7 @@ class dotEditor {
             //名前用時刻取得
             $date = date('YmdHis');
             //マップ画像を保存
-            $fp = fopen($MaptipPath . "/" . $date . ".png", "wb");
+            $fp = fopen($MaptipPath . "/" . $date . "_H" . $maptipHeight . "_W" . $maptipWidth . ".png", "wb");
             fwrite($fp, $decodedImageData);
             fclose($fp);
 

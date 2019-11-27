@@ -7,9 +7,11 @@ if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
     //マップ画像データとマップオブジェクトデータを取得
 	$maptipImageData = $_POST['maptip_image_data'];
 	$maptipType = $_POST['maptipTypes'];
+	$maptipHeight = $_POST['maptip_height'];
+	$maptipWidth = $_POST['maptip_width'];
 
     //マップチップをサーバに保存
-    $ret = $obj->addMaptipData($maptipType, $maptipImageData);
+    $ret = $obj->addMaptipData($maptipType, $maptipImageData, $maptipHeight, $maptipWidth);
     if ($ret) {
 		echo '保存しました！';
 	}
@@ -87,16 +89,29 @@ $maptipSelect = $obj->getMaptipTypes();
 		<canvas id="hiddenCanvas" class="none"></canvas>
 		<div id="downloadSize-container">
 			<span>ダウンロードサイズ</span>
-			<select id="downloadSizeSelect">
+			<span>H:</span>
+			<select id="downloadSizeSelectHeight">
 				<!-- <option value="544">544×544</option> -->
-				<option value="480">480×480</option>
-				<option value="352">352×352</option>
-				<option value="224">224×224</option>
-				<option value="160">160×160</option>
-				<option value="128">128×128</option>
-				<option value="96">96×96</option>
-				<option value="64">64×64</option>
-				<option value="32">32×32</option>
+				<option value="480">480</option>
+				<option value="352">352</option>
+				<option value="224">224</option>
+				<option value="160">160</option>
+				<option value="128">128</option>
+				<option value="96">96</option>
+				<option value="64">64</option>
+				<option value="32">32</option>
+			</select>
+			<span>W:</span>
+			<select id="downloadSizeSelectWidth">
+				<!-- <option value="544">544×544</option> -->
+				<option value="480">480</option>
+				<option value="352">352</option>
+				<option value="224">224</option>
+				<option value="160">160</option>
+				<option value="128">128</option>
+				<option value="96">96</option>
+				<option value="64">64</option>
+				<option value="32">32</option>
 			</select>
 		</div>
 		<div id="preview-link-container">
@@ -112,6 +127,8 @@ $maptipSelect = $obj->getMaptipTypes();
 				<?php echo $maptipSelect ?><br>
 				<span id="save-maptip-data">この内容でサーバに保存</span>
 				<input type="hidden" name="maptip_image_data" value="" />
+				<input type="hidden" name="maptip_height" value="" />
+				<input type="hidden" name="maptip_width" value="" />
 			</form>
 		</div>
 	</div>
