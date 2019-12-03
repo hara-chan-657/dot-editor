@@ -3,6 +3,17 @@ require_once("dot-editor-model.php");
 
 $obj = new dotEditor();
 
+if(isset($_GET['id']) && isset($_GET['pas'])) {
+	$id = $_GET['id'];
+	$pas = $_GET['pas'];
+	$adminRes = $obj->isAdmin($id, $pas);
+	if ($adminRes) {
+		$saveMaptipContainer = $obj->getSaveMaptipContainer();
+	}
+} else {
+	$saveMaptipContainer = '';
+}
+
 if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
     //マップ画像データとマップオブジェクトデータを取得
 	$maptipImageData = $_POST['maptip_image_data'];
@@ -16,13 +27,7 @@ if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
 		echo '保存しました！';
 	}
 }
-
-//プロジェクトリスト(セレクトボックス)を取得
-$maptipSelect = $obj->getMaptipTypes();
-
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -122,15 +127,7 @@ $maptipSelect = $obj->getMaptipTypes();
 	<div id="previewOptions-container">
 		<span id="rewrite">書き直す</span>
 		<a id="download-link" href="" download="">ダウンロード</a>
-		<div id="save-maptip-container">
-			<form name="maptip_data" action="" method="post">
-				<?php echo $maptipSelect ?><br>
-				<span id="save-maptip-data">この内容でサーバに保存</span>
-				<input type="hidden" name="maptip_image_data" value="" />
-				<input type="hidden" name="maptip_height" value="" />
-				<input type="hidden" name="maptip_width" value="" />
-			</form>
-		</div>
+		<?php echo $saveMaptipContainer ?>
 	</div>
 <script src="./js/dot-editor.js"></script>
 </body>

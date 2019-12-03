@@ -1,6 +1,7 @@
 <?php
 //dot-editorのmodel
 //クラスを作って、コンストラクタと各ファンクションを記述する
+require("admin.php");
 
 class dotEditor {
 
@@ -64,6 +65,25 @@ class dotEditor {
             return true;
         };
     return false;
+    }
+
+    function isAdmin ($id, $pas) {
+        global $adminId;
+        global $adminPas;
+        if ($id == $adminId && $pas == $adminPas) {
+            return true;
+        }
+        return false;
+    }
+
+    function getSaveMaptipContainer() {
+        $html = '<div id="save-maptip-container"><form name="maptip_data" action="" method="post"><br><p>マップチップ属性</p>';
+        $html .= $this->getMaptipTypes();
+        $html .= '<br><span id="save-maptip-data">この内容でサーバに保存</span>';
+        $html .= '<input type="hidden" name="maptip_image_data" value="" />';
+        $html .= '<input type="hidden" name="maptip_height" value="" />';
+        $html .= '<input type="hidden" name="maptip_width" value="" /></form></div>';
+        return $html;
     }
 }
 
