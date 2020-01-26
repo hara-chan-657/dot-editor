@@ -245,40 +245,6 @@ makeDotsPic.addEventListener('click', makeDotsPicture, false);
 ////////////////////////////　　以下ファンクション   //////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-//画像をドット絵に変換する
-function makeDotsPicture() {
-	var dotsArray = [];
-	var r_sum = 0;
-	var g_sum = 0;
-	var b_sum = 0;
-	var a_sum = 0;
-	var dotsNumX = canvasWidth/dotLength;
-	var dotsNumY = canvasHeight/dotLength;
-	for (var i=0; i<dotsNumY; i++) {
-		for (var j=0; j<dotsNumX; j++) {
-			for (var k=0; k<dotLength; k++) {
-				for (var l=0; l<dotLength; l++) {
-					var dotData = context.getImageData(j*dotLength+l, i*dotLength+k, 1, 1);
-					r_sum += dotData.data[0];
-					g_sum += dotData.data[1];
-					b_sum += dotData.data[2];
-					a_sum += dotData.data[3];
-				}
-			}
-			var r_avg = r_sum/dotLength/dotLength;
-			var g_avg = g_sum/dotLength/dotLength;
-			var b_avg = b_sum/dotLength/dotLength;
-			var a_avg = a_sum/dotLength/dotLength;
-			context.fillStyle = 'rgba(' + r_avg + ',' + g_avg + ',' + b_avg + ',' + a_avg + ')'; //塗りつぶしの色
-			context.fillRect(j*dotLength, i*dotLength, dotLength, dotLength);
-			r_sum = 0;
-			g_sum = 0;
-			b_sum = 0;
-			a_sum = 0;
-		}
-	}
-}
-
 //ロード時、各デフォルトの値をセットするために呼ばれる
 function setDefault() {
 	showPalette();
@@ -1789,4 +1755,36 @@ function saveMaptipDataToSever() {
 	}
 }
 
-
+//画像をドット絵に変換する
+function makeDotsPicture() {
+	var dotsArray = [];
+	var r_sum = 0;
+	var g_sum = 0;
+	var b_sum = 0;
+	var a_sum = 0;
+	var dotsNumX = canvasWidth/dotLength;
+	var dotsNumY = canvasHeight/dotLength;
+	for (var i=0; i<dotsNumY; i++) {
+		for (var j=0; j<dotsNumX; j++) {
+			for (var k=0; k<dotLength; k++) {
+				for (var l=0; l<dotLength; l++) {
+					var dotData = context.getImageData(j*dotLength+l, i*dotLength+k, 1, 1);
+					r_sum += dotData.data[0];
+					g_sum += dotData.data[1];
+					b_sum += dotData.data[2];
+					a_sum += dotData.data[3];
+				}
+			}
+			var r_avg = r_sum/dotLength/dotLength;
+			var g_avg = g_sum/dotLength/dotLength;
+			var b_avg = b_sum/dotLength/dotLength;
+			var a_avg = a_sum/dotLength/dotLength;
+			context.fillStyle = 'rgba(' + r_avg + ',' + g_avg + ',' + b_avg + ',' + a_avg + ')'; //塗りつぶしの色
+			context.fillRect(j*dotLength, i*dotLength, dotLength, dotLength);
+			r_sum = 0;
+			g_sum = 0;
+			b_sum = 0;
+			a_sum = 0;
+		}
+	}
+}
