@@ -122,6 +122,7 @@ if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
 		<div id="preview-link-container">
 			<span><label for="preview-link" id="previewLinkButton">プレビュー&ダウンロード</label></span>
 			<button id="preview-link">プレビュー&ダウンロード</button>
+			<button id="make-dots-pictute">ドットに変換</button>
 		</div>
 	</div>
 	<div id="previewOptions-container">
