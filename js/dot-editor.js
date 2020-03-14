@@ -1440,7 +1440,7 @@ function changeCellColor(evt) {
 			}
 			break;
 			
-		case 'eraser':
+		case 'colorPicker':
 			//現在色にパレットの色をセットする
 			var gotColor = context.getImageData(cell[0]*minCell, cell[1]*minCell, 1, 1);
 			var r = gotColor.data[0];
@@ -1456,7 +1456,6 @@ function changeCellColor(evt) {
 				context2.fillRect(0,0,30,30);
 			}
 			break;
-
 	}
 }
 
