@@ -142,6 +142,13 @@ body {
 	width:32px;
 }
 
+#make-dots-picture {
+	background-image:url("../image/dot-editor/make-dots-picture.png");
+ 	display:inline-block;
+	height:32px;
+	width:32px;
+}
+
 #readFile {
 	display: none;
 }

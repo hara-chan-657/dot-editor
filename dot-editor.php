@@ -65,6 +65,7 @@ if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
 			<span class="option"><img src="./image/dot-editor/shiftAbove.png" alt="上シフト" id="shiftAbove" class="z1"><span class="z2">上シフト</span></span>
 			<span class="option"><img src="./image/dot-editor/shiftBelow.png" alt="下シフト" id="shiftBelow" class="z1"><span class="z2">下シフト</span></span>
 			<span class="option"><label for="readFile" id="readFileButton" class="z1"></label><span class="z2">画像を読み込む</span></span>
+			<span class="option"><label for="make-dots-picture" id="make-dots-picture" class="z1"></label><span class="z2">ドットに変換</span></span>
 			<input type="file" id="readFile" value="画像を読み込む">
 	</div>
 	<div id="preview-container">
@@ -122,7 +123,6 @@ if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
 		<div id="preview-link-container">
 			<span><label for="preview-link" id="previewLinkButton">プレビュー&ダウンロード</label></span>
 			<button id="preview-link">プレビュー&ダウンロード</button>
-			<button id="make-dots-pictute">ドットに変換</button>
 		</div>
 	</div>
 	<div id="previewOptions-container">
