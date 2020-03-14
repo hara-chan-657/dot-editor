@@ -161,9 +161,12 @@ var currentColor = document.getElementById('currentColor');
 var currentColorCanvas = document.getElementById('currentColorCanvas');
 var context2 = currentColorCanvas.getContext('2d');
 //この内容で保存ボタン
-var saveMaptipData = document.getElementById('save-maptip-data');
+if (document.getElementById('save-maptip-data') != null) {
+	var saveMaptipData = document.getElementById('save-maptip-data');
+	saveMaptipData.addEventListener('click', saveMaptipDataToSever, false);
+}
 //ドット絵変換
-var makeDotsPic = document.getElementById('make-dots-pictute');
+var makeDotsPic = document.getElementById('make-dots-picture');
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////　　以下イベント   ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +241,6 @@ square.addEventListener('click', setCurrentMode, false);
 fillSquare.addEventListener('click', setCurrentMode, false);
 straightLine.addEventListener('click', setCurrentMode, false);
 colorPicker.addEventListener('click', setCurrentMode, false);
-saveMaptipData.addEventListener('click', saveMaptipDataToSever, false);
 makeDotsPic.addEventListener('click', makeDotsPicture, false);
 
 ///////////////////////////////////////////////////////////////////////////////////////////
