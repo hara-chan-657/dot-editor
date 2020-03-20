@@ -33,7 +33,7 @@ if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>dot-editor</title>
+<title>dotEditor</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="./css/dot-editor.css">
 <link rel="stylesheet"
