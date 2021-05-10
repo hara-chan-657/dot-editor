@@ -3,30 +3,126 @@ require_once("dot-editor-model.php");
 
 $obj = new dotEditor();
 
+if (isset($_POST['del_img_path'])) {
+    $ret = $obj->delBkImage($_POST['del_img_path']);
+    if ($ret) {
+		echo $_POST['del_img_path'] . ' を削除しました！';
+	} else {
+		echo '削除できませんでした。';
+	}
+}
+
 if(isset($_GET['id']) && isset($_GET['pas'])) {
 	$id = $_GET['id'];
 	$pas = $_GET['pas'];
 	$adminRes = $obj->isAdmin($id, $pas);
 	if ($adminRes) {
+		$bkMapChips = $obj->getBkMapChips();
+		$bkMapChipContainer = $obj->getBkMapChipContainer($bkMapChips);
+		$makeProjectContainer = $obj->getMakeProjectContainer();
 		$saveMaptipContainer = $obj->getSaveMaptipContainer();
+		$saveCharacterContainer = $obj->getSaveCharacterContainer();
+		$saveObjectContainer = $obj->getSaveObjectContainer();
+		$multiMapChipNames = $obj->getMultiMapChipNames();
+		$WipeCharaNames = $obj->getWipeCharaNames();
+		$CharaObjectNames = $obj->getCharaObjectNames();
 	}
 } else {
 	$saveMaptipContainer = '';
+	$saveCharacterContainer = '';
+	$saveObjectContainer = '';
+}
+
+if (isset($_POST['new_project_name'])) {
+	//マップ画像データとマップオブジェクトデータを取得
+	$newProjectName = $_POST['new_project_name'];
+    //プロジェクトをサーバに作成
+    $ret = $obj->makeNewProject($newProjectName);
+    if ($ret) {
+		echo 'プロジェクトを作成しました！';
+	}
 }
 
 if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
-    //マップ画像データとマップオブジェクトデータを取得
+	//マップ画像データとマップオブジェクトデータを取得
+	$project = $_POST['projectsForMapChip'];
+	$maptipBackUpImageData = $_POST['maptip_backUpImage_data'];
+	$maptipBackUpImageHeight = $_POST['maptip_backUpImage_height'];
+	$maptipBackUpImageWidth = $_POST['maptip_backUpImage_width'];
 	$maptipImageData = $_POST['maptip_image_data'];
 	$maptipType = $_POST['maptipTypes'];
 	$maptipHeight = $_POST['maptip_height'];
 	$maptipWidth = $_POST['maptip_width'];
+	$multiMapChipName = $_POST['mapchip_name'];
 
     //マップチップをサーバに保存
-    $ret = $obj->addMaptipData($maptipType, $maptipImageData, $maptipHeight, $maptipWidth);
+    $ret = $obj->addMaptipData($project, $maptipBackUpImageData, $maptipBackUpImageHeight, $maptipBackUpImageWidth, $maptipType, $maptipImageData, $maptipHeight, $maptipWidth, $multiMapChipName);
     if ($ret) {
-		echo '保存しました！';
+		echo '保存しました！（マップチップ）';
 	}
 }
+
+if (isset($_POST['character_image_data']) && isset($_POST['projects']) && isset($_POST['characterImageTypes'])) {
+	//キャラクター画像データとマップオブジェクトデータを取得
+	$characterBackUpImageData = $_POST['character_backUpImage_data'];
+	$characterBackUpImageHeight = $_POST['character_backUpImage_height'];
+	$characterBackUpImageWidth = $_POST['character_backUpImage_width'];
+	$characterImageData = $_POST['character_image_data'];
+	$project = $_POST['projects'];
+	$characterImageType = $_POST['characterImageTypes'];
+	$characterHeight = $_POST['character_height'];
+	$characterWidth = $_POST['character_width'];
+	$charaName = $_POST['chara_name'];
+	//$charaObjPatern = $_POST['charaObjPatern'];
+	
+    //キャラクター画像をサーバに保存
+    $obj->addCharacterToProject($characterBackUpImageData, $characterBackUpImageHeight, $characterBackUpImageWidth, $characterImageData, $project, $characterImageType, $characterHeight, $characterWidth, $charaName);
+    echo '保存しました！（キャラクター）';
+}
+
+//オブジェクト登録。結構ややこしくなるかも。
+//ifの条件は、toolか、charaのオブジェクトが送信されたらで良いのかな。その先は、caseで拾う。
+if ((isset($_POST['tool_object_data']) || isset($_POST['character_object_data'])) && isset($_POST['projects']) && isset($_POST['objectTypes'])) {
+	$objectType = $_POST['objectTypes'];
+	//オブジェクトタイプでケース分けする
+	switch ($objectType) {
+		case 'tool':
+			//キャラクター画像データとマップオブジェクトデータを取得
+			$toolBackUpImageData = $_POST['tool_backUpImage_data'];
+			$toolBackUpImageHeight = $_POST['tool_backUpImage_height'];
+			$toolBackUpImageWidth = $_POST['tool_backUpImage_width'];
+			$toolObjectData = $_POST['tool_object_data'];
+			$project = $_POST['projects'];
+			//$objectType = $_POST['objectTypes'];
+			$toolHeight = $_POST['tool_height'];
+			$toolWidth = $_POST['tool_width'];
+			$toolName = $_POST['tool_name'];
+    		//キャラクター画像をサーバに保存
+    		$obj->addToolObjToProject($toolBackUpImageData, $toolBackUpImageHeight, $toolBackUpImageWidth, $toolObjectData, $project, $toolHeight, $toolWidth, $toolName);
+    		echo '保存しました！（ツールオブジェクト）';
+			break;
+		case 'character':
+			//キャラクター画像データとマップオブジェクトデータを取得
+			$characterBackUpImageData = $_POST['character_backUpImage_data'];
+			$characterBackUpImageHeight = $_POST['character_backUpImage_height'];
+			$characterBackUpImageWidth = $_POST['character_backUpImage_width'];
+			$characterObjectData = $_POST['character_object_data'];
+			$project = $_POST['projects'];
+			//$objectType = $_POST['objectTypes'];
+			$characterHeight = $_POST['character_height'];
+			$characterWidth = $_POST['character_width'];
+			$characterName = $_POST['character_name'];
+			$characterPattern = $_POST['character_pattern'];
+    		//キャラクター画像をサーバに保存
+    		$obj->addCharacterObjToProject($characterBackUpImageData, $characterBackUpImageHeight, $characterBackUpImageWidth, $characterObjectData, $project, $characterHeight, $characterWidth, $characterName, $characterPattern);
+    		echo '保存しました！（キャラクターオブジェクト）';
+			break;
+	}
+}
+
+//バックアップ画像取得
+$mapChips = $obj->getBkImages();
+
 ?>
 
 <!DOCTYPE html>
@@ -77,6 +173,13 @@ if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
 				<canvas id="canvas"></canvas>
 			</div>
 		</div>
+		<?php 
+			if ($adminRes) {
+				echo '<div id="bkMapChipContainer">';
+				echo $bkMapChipContainer;
+				echo '</div>';
+			} 
+		?>
 		<div id="palette-container">
 			<table id="selectedColor">
 				<tr><th>現在色<th><td id="currentColor"></td><td><span style="font-weight:bold">ドット</span>
@@ -90,8 +193,46 @@ if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
 				</tr>
 			</table>
 			<table id="palette">
-		</table>
+			</table>
 		</div>
+		<!-- <div id="backUpImg-container">
+			<div id="bkMapChip">
+                <p class="mapCategory">
+                <span class="unfoldButton">＋</span>
+                <span class="foldButton">ー</span>マップチップ
+                </p>
+            <div class="acordion">
+                <?php
+                    // foreach ($bkImages['mapChip'] AS $file) {
+                    //     echo '<img src="'.$file.'" alt="マップチップ" class="mapchip">';
+                    // }
+                ?>
+            </div>
+			<div id="bkBattleCharacter">
+                <p class="mapCategory">
+                <span class="unfoldButton">＋</span>
+                <span class="foldButton">ー</span>バトルキャラ
+                </p>
+            <div class="acordion">
+                <?php
+                    // foreach ($bkImages['battleCharacter'] AS $file) {
+                    //     echo '<img src="'.$file.'" alt="バトルキャラ" class="mapchip">';
+                    // }
+                ?>
+            </div>
+			<div id="bkWipe">
+                <p class="mapCategory">
+                <span class="unfoldButton">＋</span>
+                <span class="foldButton">ー</span>ワイプ
+                </p>
+            <div class="acordion">
+                <?php
+                    // foreach ($bkImages['wipe'] AS $file) {
+                    //     echo '<img src="'.$file.'" alt="wipe" class="mapchip">';
+                    // }
+                ?>
+            </div>
+		</div> -->
 		<canvas id="hiddenCanvas" class="none"></canvas>
 		<div id="downloadSize-container">
 			<span>ダウンロードサイズ</span>
@@ -128,7 +269,17 @@ if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
 	<div id="previewOptions-container">
 		<span id="rewrite">書き直す</span>
 		<a id="download-link" href="" download="">ダウンロード</a>
-		<?php echo $saveMaptipContainer ?>
+		<?php
+			if ($adminRes) {
+				echo $makeProjectContainer;
+				echo $saveMaptipContainer;
+				echo $saveCharacterContainer;
+				echo $saveObjectContainer;
+				echo $multiMapChipNames;
+				echo $WipeCharaNames;
+				echo $CharaObjectNames;
+			}
+		?>
 	</div>
 <script src="./js/dot-editor.js"></script>
 </body>

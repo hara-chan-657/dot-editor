@@ -160,13 +160,36 @@ var currentColor = document.getElementById('currentColor');
 //現在色canvas
 var currentColorCanvas = document.getElementById('currentColorCanvas');
 var context2 = currentColorCanvas.getContext('2d');
-//この内容で保存ボタン
+//新規プロジェクト作成ボタン
+if (document.getElementById('make-project') != null) {
+	var makeProject = document.getElementById('make-project');
+	makeProject.addEventListener('click', makeProjectToSever, false);
+}
+//この内容で保存ボタン(マップチップ)
 if (document.getElementById('save-maptip-data') != null) {
 	var saveMaptipData = document.getElementById('save-maptip-data');
 	saveMaptipData.addEventListener('click', saveMaptipDataToSever, false);
 }
+//この内容で保存ボタン（キャラクター）
+if (document.getElementById('save-character-data') != null) {
+	var saveMaptipData = document.getElementById('save-character-data');
+	saveMaptipData.addEventListener('click', saveCharacterImageDataToSever, false);
+}
+//この内容で保存ボタン（オブジェクト）
+if (document.getElementById('save-object-data') != null) {
+	var saveObjectData = document.getElementById('save-object-data');
+	saveObjectData.addEventListener('click', saveObjectDataToSever, false);
+}
 //ドット絵変換
 var makeDotsPic = document.getElementById('make-dots-picture');
+//展開ボタン
+var unfoldButtons = document.getElementsByClassName('unfoldButton');
+//折り込みボタン
+var foldButtons = document.getElementsByClassName('foldButton');
+//バックアップイメージ
+var bkImages = document.getElementsByClassName('bkImages');
+//バックアップイメージ削除
+var delBkImg = document.getElementsByClassName('delBkImg');
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////　　以下イベント   ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -242,7 +265,18 @@ fillSquare.addEventListener('click', setCurrentMode, false);
 straightLine.addEventListener('click', setCurrentMode, false);
 colorPicker.addEventListener('click', setCurrentMode, false);
 makeDotsPic.addEventListener('click', makeDotsPicture, false);
-
+for (var i=0; i<unfoldButtons.length; i++) {
+	unfoldButtons[i].addEventListener('click', function(evt) {changeCategoryDisplay(evt, 'unfold');}, false);
+}
+for (var i=0; i<foldButtons.length; i++) {
+	foldButtons[i].addEventListener('click', function(evt) {changeCategoryDisplay(evt, 'fold');}, false);
+}
+for (var i=0; i<bkImages.length; i++) {
+	bkImages[i].addEventListener('click', function(evt) {setBkImage(evt);}, false);
+}
+for (var i=0; i<delBkImg.length; i++) {
+	delBkImg[i].addEventListener('click', function(evt) {deleteBkImg(evt);}, false);
+}
 ///////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////　　以下ファンクション   //////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -1501,6 +1535,50 @@ function isCellExist(cellsArray, cell) {
 	return false;
 }
 
+//カテゴリを展開する or たたむ
+function changeCategoryDisplay (evt, mode) {
+	if (mode == 'unfold') {
+		//プラスボタンを非表示に
+		evt.target.style.display = 'none';
+		//マイナスボタンを表示
+		var minus = evt.target.nextElementSibling;
+		minus.style.display = 'inline';
+		// コンテンツを表示
+		var parent = evt.target.parentNode;
+		var div = parent.nextElementSibling;
+		div.style.display = 'block';
+	} else if (mode == 'fold') {
+		//マイナスボタンを非表示に
+		evt.target.style.display = 'none';
+		//プラスボタンを表示
+		var plus = evt.target.previousElementSibling;
+		plus.style.display = 'inline';
+		// コンテンツを非表示
+		var parent = evt.target.parentNode;
+		var div = parent.nextElementSibling;
+		div.style.display = 'none';
+	} else {
+
+	}
+}
+
+//クリックしたバックアップ画像をキャンバスへ描画する。
+function setBkImage (evt) {
+	var img = evt.target;
+	//context.putImageData(img,0,0);
+	context.drawImage(img, 0, 0);
+	            //戻る・進む用
+				canvasChangeFlg = true;
+				setDraggingFlg(false, true);
+}
+
+//BKイメージを削除する
+function deleteBkImg(evt) {
+	var img = evt.target.previousElementSibling;
+	document.forms['del_bk_image'].elements['del_img_path'].value = img.src;
+	document.forms['del_bk_image'].submit();
+}
+
 //プレビューを表示する
 function showPreview () {
 	//ダウンロードサイズを取得する
@@ -1514,6 +1592,7 @@ function showPreview () {
 	// downloadSize = downloadSizeSelect.options[downloadSizeIndexHeight].value;
 	// downloadSize = downloadSizeSelect.options[downloadSizeIndexWidth].value;
 	//canvasのデータURLをpreviewimgにセット
+	//backUpImg.src = canvas.toDataURL();
 	preview.src = canvas.toDataURL();
 	//プレビューの表示
 	previewContainer.style.display = 'block';
@@ -1726,8 +1805,11 @@ function setCurrentMode(evt) {
 	}
 }
 
-//画像を保存
+//マップチップを保存
 function saveMaptip() {
+	//キャンバスの大きさを変更する前にまずはバックアップ用のデータを作成
+	var bkData = canvas.toDataURL("image/png");
+	bkData = bkData.replace("data:image/png;base64,", "");
 	//canvasの縦横を変更
 	canvas.height = downloadHeight;
 	canvas.width = downloadWidth;
@@ -1736,8 +1818,11 @@ function saveMaptip() {
 	var data = canvas.toDataURL("image/png");
 	data = data.replace("data:image/png;base64,", "");
 	document.forms['maptip_data'].elements['maptip_image_data'].value = data;
-	document.forms['maptip_data'].elements['maptip_height'].value = downloadHeight;
-	document.forms['maptip_data'].elements['maptip_width'].value = downloadWidth;
+	document.forms['maptip_data'].elements['maptip_height'].value = downloadHeight; //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+	document.forms['maptip_data'].elements['maptip_width'].value = downloadWidth;   //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+	document.forms['maptip_data'].elements['maptip_backUpImage_data'].value = bkData;
+	document.forms['maptip_data'].elements['maptip_backUpImage_height'].value = 480; //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+	document.forms['maptip_data'].elements['maptip_backUpImage_width'].value = 480;  //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
 }
 
 //マップチップデータをサーバに保存する
@@ -1753,6 +1838,290 @@ function saveMaptipDataToSever() {
 		//アラートの結果もよければ、マップチップデータを保存して、サブミット
 		saveMaptip();
 		MaptipDataForm.submit();
+	}
+}
+
+//キャラクター画像データをサーバに保存する
+function saveCharacterImageDataToSever() {
+	//フォーム取得
+	var characterDataForm = document.forms['character_data'];
+	var project = characterDataForm.projectsForCharacters.value;
+	var characterImageType = characterDataForm.characterImageTypes.value;
+	var projectData = 'プロジェクト：' + project;
+	var characterImageData = 'キャラクター画像タイプ：' + characterImageType;
+
+	//小さい224でないサイズの場合はリターン
+	if (characterImageType == 'wipe') {
+		if (downloadHeight != 96 || downloadWidth != 96) {
+			alert("タイプ：wipeを選択中です。\n縦横のサイズを96にしてください。");
+			return;
+		}
+	} else if (characterImageType == 'battle') {
+		if (downloadHeight != 224 || downloadWidth != 224) {
+			alert("タイプ：battleを選択中です。\n縦横のサイズを224にしてください。");
+			return;
+		}
+	}
+
+	//いったん本当に良いかアラート
+	var confirmTxt = '下記の情報でキャラクター画像データをサーバに保存します。\n\n' + projectData + '\n' + characterImageData + '\n\n編集画面には戻れません。\nよろしいですか？';
+	var ret = confirm(confirmTxt);
+	if (ret) {
+		//アラートの結果もよければ、キャラクター画像データを保存して、サブミット
+		saveCharacter(characterImageType);
+		characterDataForm.submit();
+	}
+}
+
+//キャラクターを保存（ここから）
+function saveCharacter(characterImageType) {
+	//キャンバスの大きさを変更する前にまずはバックアップ用のデータを作成
+	var bkData = canvas.toDataURL("image/png");
+	bkData = bkData.replace("data:image/png;base64,", "");
+	//canvasの縦横を変更
+	canvas.height = downloadHeight;
+	canvas.width = downloadWidth;
+	//previewをcanvasに描画
+	context.drawImage(preview, 0, 0, downloadWidth, downloadHeight);
+	var data = canvas.toDataURL("image/png");
+	data = data.replace("data:image/png;base64,", "");
+	document.forms['character_data'].elements['character_image_data'].value = data;
+	document.forms['character_data'].elements['character_height'].value = downloadHeight;   //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+	document.forms['character_data'].elements['character_width'].value = downloadWidth;     //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+	document.forms['character_data'].elements['character_backUpImage_data'].value = bkData;
+	document.forms['character_data'].elements['character_backUpImage_height'].value = 480;  //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+	document.forms['character_data'].elements['character_backUpImage_width'].value = 480;   //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+}
+
+//オブジェクトデータをサーバに保存する
+function saveObjectDataToSever() {
+	//フォーム取得
+	var objectDataForm = document.forms['object_data'];
+	//選択中のオブジェクトタイプを取得する
+	var objectType = document.getElementById('objectTypes').value;
+
+	//選択中のオブジェクトタイプで処理を分ける（idで値を取得）
+	switch (objectType) {
+		case 'tool':
+			//キャンバスの大きさを変更する前にまずはバックアップ用のデータを作成
+			var bkData = canvas.toDataURL("image/png");
+			bkData = bkData.replace("data:image/png;base64,", "");
+			//canvasの縦横を変更
+			canvas.height = downloadHeight;
+			canvas.width = downloadWidth;
+			//previewをcanvasに描画
+			context.drawImage(preview, 0, 0, downloadWidth, downloadHeight);
+			var data = canvas.toDataURL("image/png");
+			data = data.replace("data:image/png;base64,", "");
+			document.forms['object_data'].elements['tool_object_data'].value = data;
+			document.forms['object_data'].elements['tool_height'].value = downloadHeight;   //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+			document.forms['object_data'].elements['tool_width'].value = downloadWidth;     //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+			document.forms['object_data'].elements['tool_backUpImage_data'].value = bkData;
+			document.forms['object_data'].elements['tool_backUpImage_height'].value = 480;  //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+			document.forms['object_data'].elements['tool_backUpImage_width'].value = 480;   //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+			break;
+
+		case 'character':
+			//キャンバスの大きさを変更する前にまずはバックアップ用のデータを作成
+			var bkData = canvas.toDataURL("image/png");
+			bkData = bkData.replace("data:image/png;base64,", "");
+			//canvasの縦横を変更
+			canvas.height = downloadHeight;
+			canvas.width = downloadWidth;
+			//previewをcanvasに描画
+			context.drawImage(preview, 0, 0, downloadWidth, downloadHeight);
+			var data = canvas.toDataURL("image/png");
+			data = data.replace("data:image/png;base64,", "");
+			document.forms['object_data'].elements['character_object_data'].value = data;
+			document.forms['object_data'].elements['character_height'].value = downloadHeight;   //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+			document.forms['object_data'].elements['character_width'].value = downloadWidth;     //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+			document.forms['object_data'].elements['character_backUpImage_data'].value = bkData;
+			document.forms['object_data'].elements['character_backUpImage_height'].value = 480;  //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+			document.forms['object_data'].elements['character_backUpImage_width'].value = 480;   //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+			break;
+	}
+
+	var confirmTxt = '登録します';
+	var ret = confirm(confirmTxt);
+	if (ret) {
+		objectDataForm.submit();
+	}
+}
+
+//マップチップタイプをchangeした際にコールされる
+function showMapChipRegisterContainer() {
+	var html = '';
+	var maptipTypes = document.getElementById('maptipTypes').value;
+	html += '<span>複数構成マップチップ名（※新規のみ入力）</span><input type="text" id="mapchip_name" name="mapchip_name"></input>';
+	html += getMultiMapChipNames(maptipTypes);
+	document.getElementById('editMapChipInfo').innerHTML = html;
+}
+
+//キャラクタータイプをchangeした際にコールされる
+function showCharacterRegisterContainer() {
+	var html = '';
+	var characterImageType = document.getElementById('characterImageTypes').value;
+	if (characterImageType == 'wipe') {
+		html += '<span>キャラ名（※新規のみ入力）</span><input type="text" id="chara_name" name="chara_name"></input>';
+		html += getWipeCharaNames();
+	} else if (characterImageType == 'battle') {
+		// html += getCharaObjPatterns();
+		// html += '<br>';
+		// html += '<span>キャラ名（※新規のみ入力）</span><input type="text" id="chara_name" name="character_name"></input>';
+		// html += getCharaObjNames();
+		html = '';
+	} else {
+		html = '';
+	}
+	document.getElementById('editCharaInfo').innerHTML = html;
+}
+
+//オブジェクトタイプをchangeした際にコールされる
+function showObjectRegisterContainer() {
+	var html = '';
+	var objectType = document.getElementById('objectTypes').value;
+	if (objectType == 'tool') {
+		html += '<span>ツール名</span><input type="text" id="tool_name" name="tool_name"></input><br>';
+	} else if (objectType == 'character') {
+		html += getCharaObjPatterns();
+		html += '<br>';
+		html += '<span>キャラ名（※新規のみ入力）</span><input type="text" id="chara_name" name="character_name"></input>';
+		html += getCharaObjNames();
+		html += '<div id="registeredCharaObjImage">新規オブジェクトのためテーブル非表示</div>';
+	} else {
+		html = '';
+	}
+	document.getElementById('editObjInfo').innerHTML = html;
+}
+
+//選択中プロジェクトに紐づくキャラオブジェクト名を取得する。
+//キャラオブジェクト名の一覧は、事前にphpで取得し、どこかに保持しておく
+function getMultiMapChipNames(chipType) {
+	var prj = document.getElementById('projectsForMapChip').value;
+	var multiChip = document.getElementById('MMN_' + prj + '_' + chipType);
+	if (multiChip == null) {
+		return '<span>マルチチップは登録されてません</span>'
+	} else {
+		return multiChip.innerHTML;
+	}
+}
+
+//選択中プロジェクトに紐づくキャラオブジェクト名を取得する。
+//キャラオブジェクト名の一覧は、事前にphpで取得し、どこかに保持しておく
+function getWipeCharaNames() {
+	var prj = document.getElementById('projectsForCharacters').value;
+	var charaSelect = document.getElementById('WCN_' + prj);
+	if (charaSelect == null) {
+		return '<span>キャラクター（ワイプ）は登録されてません</span>'
+	} else {
+		return charaSelect.innerHTML;
+	}
+}
+
+//選択中プロジェクトに紐づくキャラオブジェクト名を取得する。
+//キャラオブジェクト名の一覧は、事前にphpで取得し、どこかに保持しておく
+function getCharaObjNames() {
+	var prj = document.getElementById('projectsForObj').value;
+	var charaSelect = document.getElementById('CON_' + prj);
+	if (charaSelect == null) {
+		return '<span>キャラオブジェクトは登録されてません</span>'
+	} else {
+		return charaSelect.innerHTML;
+	}
+}
+
+//切り替える
+//
+function changeMMN(obj) {
+	var idx = obj.selectedIndex;
+	var value = obj.options[idx].value; // 値
+	if (value == 'new') {
+		document.getElementById('mapchip_name').value = '';
+		document.getElementById('mapchip_name').readOnly = false;;
+	} else {
+		document.getElementById('mapchip_name').value = value;
+		document.getElementById('mapchip_name').readOnly = true;;
+	}
+}
+
+//キャラクターオブジェクトの名前入力値を切り替える
+//新規を選んだ場合⇨テキストをenableに、それいがいはテキストをdisableにし、選択値のバリューをいれる。
+function changeWCN(obj) {
+	var idx = obj.selectedIndex;
+	var value = obj.options[idx].value; // 値
+	if (value == 'new') {
+		document.getElementById('chara_name').value = '';
+		document.getElementById('chara_name').readOnly = false;;
+	} else {
+		document.getElementById('chara_name').value = value;
+		document.getElementById('chara_name').readOnly = true;;
+	}
+}
+
+//キャラクターオブジェクトの名前入力値を切り替える
+//新規を選んだ場合⇨テキストをenableに、それいがいはテキストをdisableにし、選択値のバリューをいれる。
+function changeCON(obj) {
+	var idx = obj.selectedIndex;
+	var value = obj.options[idx].value; // 値
+	if (value == 'new') {
+		document.getElementById('chara_name').value = '';
+		document.getElementById('chara_name').readOnly = false;
+		document.getElementById('registeredCharaObjImage').innerHTML = '新規オブジェクトのためテーブル非表示';
+	} else {
+		document.getElementById('chara_name').value = value;
+		document.getElementById('chara_name').readOnly = true;
+		document.getElementById('registeredCharaObjImage').innerHTML = document.getElementById('tbl_'+value).innerHTML;
+	}
+}
+
+function resetMapChipRegisterContainer() {
+	document.getElementById('maptipTypes').options[0].selected = true; //選択してくださいに戻す
+	document.getElementById('editMapChipInfo').innerHTML = '';             //エディットエリアをクリアする	
+}
+
+//キャラオブジェクト登録先を変更した際、入力内容をリセットする。
+function resetCharacterRegisterContainer() {
+	document.getElementById('characterImageTypes').options[0].selected = true; //選択してくださいに戻す
+	document.getElementById('editCharaInfo').innerHTML = '';             //エディットエリアをクリアする
+}
+
+//キャラオブジェクト登録先を変更した際、入力内容をリセットする。
+function resetObjectRegisterContainer() {
+	document.getElementById('objectTypes').options[0].selected = true; //選択してくださいに戻す
+	document.getElementById('editObjInfo').innerHTML = '';             //エディットエリアをクリアする
+}
+
+
+var charaObjPatterns = [
+	['f','前向'],
+	['fr','前向右足前'],
+	['fl','前向左足前'],
+	['b','後向'],
+	['br','後向右足前'],
+	['bl','後向左足前'],
+	['r','右向'],
+	['rr','右向足前'],
+	['l','左向'],
+	['ll','左向足前'],
+	['ot','その他'],
+];
+function getCharaObjPatterns() {
+	var html = '';
+	html += '<select id="character_pattern" name="character_pattern">';
+	for (var i=0; i<charaObjPatterns.length; i++) {
+		html += '<option value="' + charaObjPatterns[i][0] + '">' + charaObjPatterns[i][1] + '</option>';
+	}
+	html += '</select>';
+	return html;
+}
+
+function makeProjectToSever() {
+	//フォーム取得
+	var form = document.forms['make_project'];
+	var confirmTxt = 'プロジェクトを作成します。よろしいですか？';
+	var ret = confirm(confirmTxt);
+	if (ret) {
+		form.submit();
 	}
 }
 
@@ -1789,3 +2158,4 @@ function makeDotsPicture() {
 		}
 	}
 }
+

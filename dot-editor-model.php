@@ -5,13 +5,609 @@ require("admin.php");
 
 class dotEditor {
 
-    private $maptipTypeDirPath; //プロジェクトディレクトリパス
+    private $maptipTypes; //マップチップ種類
+    private $maptipTypeDirPath; //マップチップディレクトリパス（マップエディター）
+    private $rpgEditorPrjDirPath; //マップエディターディレクトリパス
+    private $projectDirPath;    //プロジェクトディレクトリパス（RPGプレイヤー）
+    private $characterImageTypes; //キャラクター画像タイプ
+    private $objectTypes; //オブジェクトタイプ
+    private $backUpDirPath; //バックアップディレクトリパス
 
     /**
      * ドットエディタコンストラクタ
      */
     function __construct() {
+        $this->MaptipTypes = array(
+            '選択してください',
+            'character',
+            'map',
+            'mapPass',
+            'tool',
+            'building',
+            'mapRepeat',
+            'mapTurn'
+        );
         $this->maptipTypeDirPath = '../map-editor/image/map-editor/map-chip/';
+        $this->rpgEditorPrjDirPath = '../rpg-editor/public/projects/';
+        $this->projectDirPath = '../rpg-player/public/projects/';
+        $this->characterImageTypes = ['選択してください', 'wipe', 'battle']; //必要に応じて足していく
+        $this->objectTypes = ['選択してください','tool', 'character']; //必要に応じて足していく
+        $this->backUpDirPath = './image/dot-editor/backUp/';
+    }
+
+    /**
+     * マップチップを取得する
+     */
+    function getBkMapChips(){
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        $retArray = array();
+        //マップチップディレクトリのディレクトリ（カテゴリ）を取得する
+        $bkTypes = scandir($this->backUpDirPath); // charactersとmapChipsとobjects
+        if ($this->checkIsDirEmpty($bkTypes)) {
+            $retArray[0] = 'バックアップ画像がありません';
+            return $retArray;
+        }
+        foreach($bkTypes AS $bkType) { // charactersとmapChipsとobjects
+            if (in_array($bkType, $excludes)) continue;
+            switch ($bkType) { // charactersとmapChipsとobjects
+                case 'characters':
+                    $charaImageTypes = scandir($this->backUpDirPath . 'characters'); //battleとwipe
+                    if ($this->checkIsDirEmpty($charaImageTypes)) {
+                        $retArray['characters'][0] = 'characters/は空です';
+                    continue 2;
+                    }
+                    foreach($charaImageTypes AS $charaImageType) {
+                        if (in_array($charaImageType, $excludes)) continue;
+                        // if ($this->checkIsDirEmpty($charaImageType)) {
+                        //     $retArray['characters'][$charaImageType][0] = 'characters/' . $charaImageType . 'には画像がありません';
+                        //     return $retArray;
+                        // }
+                        switch ($charaImageType) { //battleとwipe
+                            case 'battle':
+                                $projects = scandir($this->backUpDirPath . 'characters/battle'); //プロジェクト毎
+                                if ($this->checkIsDirEmpty($projects)) {
+                                    $retArray['characters']['battle'][0] = 'characters/battle/は空です';
+                                    continue 2;
+                                }
+                                foreach($projects AS $project) { //プロジェクト毎
+                                    if (in_array($project, $excludes)) continue;
+                                    $files = scandir($this->backUpDirPath . 'characters/battle' . '/' . $project); //バトルキャラのpmg
+                                    foreach($files AS $file) {
+                                        if (in_array($file, $excludes)) continue;
+                                        $retArray['characters']['battle'][$project][] = $file;
+                                    }
+                                }
+                            break;
+                            case 'wipe': //wipeの場合複数構成。
+                                $projects = scandir($this->backUpDirPath . 'characters/wipe'); //プロジェクト毎
+                                if ($this->checkIsDirEmpty($projects)) {
+                                    $retArray['characters']['wipe'][0] = 'characters/wipe/は空です';
+                                    continue 2;
+                                }
+                                foreach($projects AS $project) { //プロジェクト毎
+                                    if (in_array($project, $excludes)) continue;
+                                    $charaDirs = scandir($this->backUpDirPath . 'characters/wipe/' . $project); //バトルキャラのディレクトリ
+                                    if ($this->checkIsDirEmpty($charaDirs)) {
+                                        $retArray['characters']['wipe'][$project][0] = 'characters/wipe/' . $project . 'は空です';
+                                        continue;
+                                    }
+                                    foreach($charaDirs AS $charaDir) {
+                                        if (in_array($charaDir, $excludes)) continue;
+                                        $files = scandir($this->backUpDirPath . 'characters/wipe/' . $project . '/' . $charaDir); //バトルキャラのディレクトリ
+                                        foreach($files AS $file) {
+                                            if (in_array($file, $excludes)) continue;
+                                            $retArray['characters']['wipe'][$project][$charaDir][] = $file;
+                                        }
+                                    }
+                                }  
+                            break;
+                        }
+                    }
+                break;
+                case 'mapChips':
+                    $projects = scandir($this->backUpDirPath . 'mapChips'); //プロジェクト毎
+                    if ($this->checkIsDirEmpty($projects)) {
+                        $retArray['mapChips'][0] = $project .'mapChips/は空です';
+                        continue 2;
+                    }
+                    foreach ($projects AS $project) {
+                        //特定のディレクトリの場合は表示させない
+                        if (in_array($project, $excludes)) continue;
+                        $mapTypes = scandir($this->backUpDirPath . 'mapChips/' . $project);
+                        if ($this->checkIsDirEmpty($mapTypes)) {
+                            $retArray['mapChips'][$project][0] = $project .'は空です';
+                            continue;
+                        }
+                        foreach ($mapTypes AS $mapType) {
+                            //特定のディレクトリの場合は表示させない
+                            if (in_array($mapType, $excludes)) continue;
+                            //ここからはファイルとディレクトリが混在する。
+                            $rets = scandir($this->backUpDirPath . 'mapChips/' . $project . '/' . $mapType);
+                            if ($this->checkIsDirEmpty($rets)) {
+                                $retArray['mapChips'][$project][$mapType][0] = $mapType .'は空です';
+                                continue;
+                            }
+                            foreach ($rets AS $ret) {
+                                //特定のディレクトリの場合は表示させない
+                                if (in_array($ret, $excludes)) continue;
+                                if (substr($ret, -4) == '.png') {
+                                    //マップファイルの場合
+                                    $retArray['mapChips'][$project][$mapType][] = $ret;
+                                } else {
+                                    //ディレクトリの場合
+                                    //正直ここからはマップチップの構成が変わると階層をいじる必要が出てくるかも。まあそん時はそん時。
+                                    //var_dump($rets);
+                                    $files = scandir($this->backUpDirPath . 'mapChips/' . $project . '/' . $mapType . '/' . $ret);
+                                    if ($this->checkIsDirEmpty($files)) {
+                                        //$retArray[$project][$mapType][$ret][0] = $project . '/' . $mapType . '/' . $ret. 'は空です';
+                                        $retArray['mapChips'][$project][$mapType][$ret][0] = $ret. 'は空です';
+                                        continue;
+                                    }
+                                    foreach ($files AS $file) {
+                                        //特定のディレクトリの場合は表示させない
+                                        if (in_array($file, $excludes)) continue;
+                                        $retArray['mapChips'][$project][$mapType][$ret][] = $file;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 'objects':
+                    $objectTypes = scandir($this->backUpDirPath . 'objects'); //battleとwipe
+                    if ($this->checkIsDirEmpty($objectTypes)) {
+                        $retArray['objects'][0] = 'objects/は空です';
+                    continue 2;
+                    }
+                    foreach($objectTypes AS $objectType) {
+                        if (in_array($objectType, $excludes)) continue;
+                        // if ($this->checkIsDirEmpty($charaImageType)) {
+                        //     $retArray['characters'][$charaImageType][0] = 'characters/' . $charaImageType . 'には画像がありません';
+                        //     return $retArray;
+                        // }
+                        switch ($objectType) { //charactersとtools
+                            case 'characters': //wipeの場合複数構成。
+                                $projects = scandir($this->backUpDirPath . 'objects/characters'); //プロジェクト毎
+                                if ($this->checkIsDirEmpty($projects)) {
+                                    $retArray['objects']['characters'][0] = 'objects/characters/は空です';
+                                    continue 2;
+                                }
+                                foreach($projects AS $project) { //プロジェクト毎
+                                    if (in_array($project, $excludes)) continue;
+                                    $charaDirs = scandir($this->backUpDirPath . 'objects/characters/' . $project); //バトルキャラのディレクトリ
+                                    if ($this->checkIsDirEmpty($charaDirs)) {
+                                        $retArray['objects']['characters'][$project][0] = 'objects/characters/' . $project . 'は空です';
+                                        continue;
+                                    }
+                                    foreach($charaDirs AS $charaDir) {
+                                        if (in_array($charaDir, $excludes)) continue;
+                                        $files = scandir($this->backUpDirPath . 'objects/characters/' . $project . '/' . $charaDir); //バトルキャラのディレクトリ
+                                        foreach($files AS $file) {
+                                            if (in_array($file, $excludes)) continue;
+                                            $retArray['objects']['characters'][$project][$charaDir][] = $file;
+                                        }
+                                    }
+                                }  
+                            break;
+                            case 'tools':
+                                $projects = scandir($this->backUpDirPath . 'objects/tools'); //プロジェクト毎
+                                if ($this->checkIsDirEmpty($projects)) {
+                                    $retArray['objects']['tools'][0] = 'objects/tools/は空です';
+                                    continue 2;
+                                }
+                                foreach($projects AS $project) { //プロジェクト毎
+                                    if (in_array($project, $excludes)) continue;
+                                    $files = scandir($this->backUpDirPath . 'objects/tools' . '/' . $project); //バトルキャラのpmg
+                                    foreach($files AS $file) {
+                                        if (in_array($file, $excludes)) continue;
+                                        $retArray['objects']['tools'][$project][] = $file;
+                                    }
+                                }
+                            break;
+                        }
+                    }
+                break;
+            }
+        }
+        return $retArray;
+    }
+
+    function checkIsDirEmpty($dir) {
+        //var_dump($dir);
+        if (count($dir) == 0) return true;
+        foreach ($dir AS $file) {
+            if ($file == '.' || $file == '..') continue;
+            return false;
+        }
+        return true;
+    }
+
+
+
+    function getBkMapChipContainer($mapChips) {
+        $html = '';
+        if ($mapChips[0] == 'バックアップ画像がありません') {
+            $html .= '<div>バックアップ画像がありません</div>';
+            return $html;
+        }
+        foreach($mapChips AS $bkTypeKey => $bkType){
+            if (substr($bkType[0], -9) == '空です') {
+                $html .= '<div style="color:red;">' . $bkType[0] . '</div>';
+                continue;
+            }
+            if ($bkTypeKey == 'characters') {
+                $html .= '<div class="Cprojects" style="color:red">';
+                //$html .= '<p>';
+                $html .= '<span class="unfoldButton">＋</span>';
+                $html .= '<span class="foldButton">ー</span>' . $bkTypeKey;
+                //$html .= '</p>';
+                $html .= '</div>';
+                $html .= '<div class="acordion">';
+                foreach ($bkType AS $charaImageTypeKey => $charaImageType) {
+                    if (substr($charaImageType[0], -9) == '空です') {
+                        $html .= '<div style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">' . $charaImageType[0] . '</div>';
+                        continue;
+                    }
+                    $html .= '<div class="CmapTypes" style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">';
+                    //$html .= '<p>';
+                    $html .= '<span class="unfoldButton">＋</span>';
+                    $html .= '<span class="foldButton">ー</span>' . $charaImageTypeKey;
+                    //$html .= '</p>';
+                    $html .= '</div>';
+                    $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
+                    foreach ($charaImageType AS $projectKey => $project) {
+                        if (substr($project[0], -9) == '空です') {
+                            $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
+                            // $html .= '</div>';
+                            continue;
+                        }
+                        $html .= '<div class="Cmaps" style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
+                        //$html .= '<p class="projects">';
+                        $html .= '<span class="unfoldButton">＋</span>';
+                        $html .= '<span class="foldButton">ー</span>' . $projectKey;
+                        //$html .= '</p>';
+                        $html .= '</div>';
+                        $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
+                        foreach ($project AS $fileKey => $file) {
+                            if (is_array($file)) {
+                                if (substr($file[0], -9) == '空です') {
+                                    $html .= '<div style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
+                                    // $html .= '</div>';
+                                    continue;
+                                }
+                                $html .= '<div class="Cmaps" style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
+                                //$html .= '<p class="projects">';
+                                $html .= '<span class="unfoldButton">＋</span>';
+                                $html .= '<span class="foldButton">ー</span>' . $fileKey;
+                                //$html .= '</p>';
+                                $html .= '</div>';
+                                $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
+                                foreach ($file AS $png) {
+                                    //今のところここが最下層
+                                    $html .= '<span><img src="'. $this->backUpDirPath . $bkTypeKey . '/' . $charaImageTypeKey . '/' . $projectKey . '/' . $fileKey . '/' .$png.'" alt="' . $png . '" class="bkImages"><button class="delBkImg">削除</button></span>';
+                                }
+                                $html .= '</div>';
+                            } else {
+                                //ここにはこないけど書いちゃった
+                                $html .= '<span><img src="'. $this->backUpDirPath . $bkTypeKey . '/' . $charaImageTypeKey . '/' . $projectKey . '/' .$file.'" alt="' . $file . '" class="bkImages"><button class="delBkImg">削除</button></span>';
+                            }
+                        }
+                        $html .= '</div>';
+                    }
+                    $html .= '</div>';
+                }
+                $html .= '</div>';
+
+            } else if ($bkTypeKey == 'mapChips') {
+                $html .= '<div class="Cprojects" style="color:red">';
+                //$html .= '<p>';
+                $html .= '<span class="unfoldButton">＋</span>';
+                $html .= '<span class="foldButton">ー</span>' . $bkTypeKey;
+                //$html .= '</p>';
+                $html .= '</div>';
+                $html .= '<div class="acordion">';
+                foreach ($bkType AS $projectKey => $project) {
+                    if (substr($project[0], -9) == '空です') {
+                        $html .= '<div style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
+                        continue;
+                    }
+                    $html .= '<div class="CmapTypes" style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">';
+                    //$html .= '<p>';
+                    $html .= '<span class="unfoldButton">＋</span>';
+                    $html .= '<span class="foldButton">ー</span>' . $projectKey;
+                    //$html .= '</p>';
+                    $html .= '</div>';
+                    $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
+                    foreach ($project AS $mapTypeKey => $mapType) {
+                        if (substr($mapType[0], -9) == '空です') {
+                            $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $mapType[0] . '</div>';
+                            // $html .= '</div>';
+                            continue;
+                        }
+                        $html .= '<div class="Cmaps" style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
+                        //$html .= '<p class="projects">';
+                        $html .= '<span class="unfoldButton">＋</span>';
+                        $html .= '<span class="foldButton">ー</span>' . $mapTypeKey;
+                        //$html .= '</p>';
+                        $html .= '</div>';
+                        $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
+                        foreach ($mapType AS $fileKey => $file) {
+                            if (is_array($file)) {
+                                if (substr($file[0], -9) == '空です') {
+                                    $html .= '<div style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
+                                    // $html .= '</div>';
+                                    continue;
+                                }
+                                $html .= '<div class="Cmaps" style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
+                                //$html .= '<p class="projects">';
+                                $html .= '<span class="unfoldButton">＋</span>';
+                                $html .= '<span class="foldButton">ー</span>' . $fileKey;
+                                //$html .= '</p>';
+                                $html .= '</div>';
+                                $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
+                                foreach ($file AS $png) {
+                                    //今のところここが最下層
+                                    $html .= '<span><img src="'. $this->backUpDirPath . $bkTypeKey . '/' . $projectKey . '/' . $mapTypeKey . '/' . $fileKey . '/' .$png.'" alt="' . $png . '" class="bkImages"><button class="delBkImg">削除</button></span>';
+                                }
+                                $html .= '</div>';
+                            } else {
+                                //ここにはこないけど書いちゃった
+                                $html .= '<span><img src="'. $this->backUpDirPath . $bkTypeKey . '/' . $projectKey . '/' . $mapTypeKey . '/' .$file.'" alt="' . $file . '" class="bkImages"><button class="delBkImg">削除</button></span>';
+                            }
+                        }
+                        $html .= '</div>';
+                    }
+                    $html .= '</div>';
+                }
+                $html .= '</div>';
+
+            } else if ($bkTypeKey == 'objects') {
+                $html .= '<div class="Cprojects" style="color:red">';
+                //$html .= '<p>';
+                $html .= '<span class="unfoldButton">＋</span>';
+                $html .= '<span class="foldButton">ー</span>' . $bkTypeKey;
+                //$html .= '</p>';
+                $html .= '</div>';
+                $html .= '<div class="acordion">';
+                foreach ($bkType AS $objectTypeKey => $objectType) {
+                    if (substr($objectType[0], -9) == '空です') {
+                        $html .= '<div style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">' . $objectType[0] . '</div>';
+                        continue;
+                    }
+                    $html .= '<div class="CmapTypes" style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">';
+                    //$html .= '<p>';
+                    $html .= '<span class="unfoldButton">＋</span>';
+                    $html .= '<span class="foldButton">ー</span>' . $objectTypeKey;
+                    //$html .= '</p>';
+                    $html .= '</div>';
+                    $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
+                    foreach ($objectType AS $projectKey => $project) {
+                        if (substr($project[0], -9) == '空です') {
+                            $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
+                            // $html .= '</div>';
+                            continue;
+                        }
+                        $html .= '<div class="Cmaps" style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
+                        //$html .= '<p class="projects">';
+                        $html .= '<span class="unfoldButton">＋</span>';
+                        $html .= '<span class="foldButton">ー</span>' . $projectKey;
+                        //$html .= '</p>';
+                        $html .= '</div>';
+                        $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
+                        foreach ($project AS $fileKey => $file) {
+                            if (is_array($file)) {
+                                if (substr($file[0], -9) == '空です') {
+                                    $html .= '<div style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
+                                    // $html .= '</div>';
+                                    continue;
+                                }
+                                $html .= '<div class="Cmaps" style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
+                                //$html .= '<p class="projects">';
+                                $html .= '<span class="unfoldButton">＋</span>';
+                                $html .= '<span class="foldButton">ー</span>' . $fileKey;
+                                //$html .= '</p>';
+                                $html .= '</div>';
+                                $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
+                                foreach ($file AS $png) {
+                                    //今のところここが最下層
+                                    $html .= '<span><img src="'. $this->backUpDirPath . $bkTypeKey . '/' . $objectTypeKey . '/' . $projectKey . '/' . $fileKey . '/' .$png.'" alt="' . $png . '" class="bkImages"><button class="delBkImg">削除</button></span>';
+                                }
+                                $html .= '</div>';
+                            } else {
+                                //ここにはこないけど書いちゃった
+                                $html .= '<span><img src="'. $this->backUpDirPath . $bkTypeKey . '/' . $objectTypeKey . '/' . $projectKey . '/' .$file.'" alt="' . $file . '" class="bkImages"><button class="delBkImg">削除</button></span>';
+                            }
+                        }
+                        $html .= '</div>';
+                    }
+                    $html .= '</div>';
+                }
+                $html .= '</div>';
+                $html .= '<form name="del_bk_image" action="" method="post">';
+                $html .= '<input type="hidden" name="del_img_path" value="" />';
+                $html .= '</form>';
+            } else {
+
+            }
+        }
+        return $html;
+    }
+
+
+    /**
+     * 既存のプロジェクトのデータを取得する
+     * return プロジェクトのセレクトボックス
+     */
+    function getProjectsData() {
+        $dirs = scandir($this->projectDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        $projects = '<select id="projects" name="projects">';
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            //最初の要素を選択状態に
+            if ($dir === reset($dirs)) {
+                $projects .= '<option value="' . $dir . '" selected>' . $dir . '</option>';
+            }
+            $projects .= '<option value="' . $dir . '">' . $dir . '</option>';
+        }
+        $projects .= '</select>';
+        return $projects;
+    }
+
+    /**
+     * プロジェクト作成コンテナを作成する
+     * return 作成するプロジェクト名のテキストボックス
+     */
+    function getMakeProjectContainer() {
+        $html = '<div id="make-project-container"><form name="make_project" action="" method="post"><br><p>新規プロジェクト作成</p>'; 
+        $html .= '<span>プロジェクト名</span><input type="text" id="new_project_name" name="new_project_name"></input>共通ディレクトリ作成の時は「共通」と入力';
+        $html .= '<br><span id="make-project">プロジェクトを作成する</span>';
+        $html .= '</form></div>';
+        return $html;
+    }
+
+    /**
+     * 新規プロジェクト作成する
+     */
+    function makeNewProject($newProjectName) {
+        //プロジェクトディレクトリが必要な各所にプロジェクトディレクトリを作成する。
+        if ($newProjectName == '共通') {
+            //ドットエディタ
+            if(!file_exists($this->backUpDirPath . 'characters/battle/common')) mkdir($this->backUpDirPath . 'characters/battle/common', 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'characters/wipe/common')) mkdir($this->backUpDirPath . 'characters/wipe/common', 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'mapChips/common')) mkdir($this->backUpDirPath . 'mapChips/common', 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'objects/characters/common')) mkdir($this->backUpDirPath . 'objects/characters/common', 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'objects/tools/common')) mkdir($this->backUpDirPath . 'objects/tools/common', 0755, TRUE);
+            //マップエディタ
+            if(!file_exists($this->maptipTypeDirPath . 'common')) mkdir($this->maptipTypeDirPath . 'common', 0755, TRUE);
+            //rpgエディタ
+            //if(!file_exists($this->rpgEditorPrjDirPath . 'common')) mkdir($this->rpgEditorPrjDirPath . 'common', 0755, TRUE);
+            //rpgプレイヤ
+            if(!file_exists($this->projectDirPath . 'common/characters/battle')) mkdir($this->projectDirPath . 'common/characters/battle', 0755, TRUE);
+            if(!file_exists($this->projectDirPath . 'common/characters/wipe')) mkdir($this->projectDirPath . 'common/characters/wipe', 0755, TRUE);
+            if(!file_exists($this->projectDirPath . 'common/objects/characters')) mkdir($this->projectDirPath . 'common/objects/characters', 0755, TRUE);
+            if(!file_exists($this->projectDirPath . 'common/objects/tools')) mkdir($this->projectDirPath . 'common/objects/tools', 0755, TRUE);
+        } else {
+            if(!file_exists($this->backUpDirPath . 'characters/battle/'.$newProjectName)) mkdir($this->backUpDirPath . 'characters/battle/'.$newProjectName, 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'characters/wipe/'.$newProjectName)) mkdir($this->backUpDirPath . 'characters/wipe/'.$newProjectName, 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'mapChips/'.$newProjectName)) mkdir($this->backUpDirPath . 'mapChips/'.$newProjectName, 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'objects/characters/'.$newProjectName)) mkdir($this->backUpDirPath . 'objects/characters/'.$newProjectName, 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'objects/tools/'.$newProjectName)) mkdir($this->backUpDirPath . 'objects/tools/'.$newProjectName, 0755, TRUE);
+            //マップエディタ
+            if(!file_exists($this->maptipTypeDirPath .$newProjectName)) mkdir($this->maptipTypeDirPath .$newProjectName, 0755, TRUE);
+            //rpgエディタ
+            if(!file_exists($this->rpgEditorPrjDirPath .$newProjectName)) mkdir($this->rpgEditorPrjDirPath .$newProjectName, 0755, TRUE);
+            //rpgプレイヤ
+            if(!file_exists($this->projectDirPath . $newProjectName .'/characters/battle')) mkdir($this->projectDirPath . $newProjectName .'/characters/battle', 0755, TRUE);
+            if(!file_exists($this->projectDirPath . $newProjectName .'/characters/wipe')) mkdir($this->projectDirPath . $newProjectName . '/characters/wipe', 0755, TRUE);
+            if(!file_exists($this->projectDirPath . $newProjectName .'/objects/characters')) mkdir($this->projectDirPath . $newProjectName . '/objects/characters', 0755, TRUE);
+            if(!file_exists($this->projectDirPath . $newProjectName .'/objects/tools')) mkdir($this->projectDirPath . $newProjectName . '/objects/tools', 0755, TRUE);
+        }
+
+        return true;
+    }
+
+    /**
+     * 既存のプロジェクトのデータを取得する(オブジェクト登録時)
+     * return プロジェクトのセレクトボックス
+     */
+    function getProjectsDataForMapChip() {
+        $dirs = scandir($this->projectDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store',
+            'common' //commonを除外対象に。ベタがきと重複されるため。
+        );
+        $projects = '<select id="projectsForMapChip" name="projectsForMapChip" onchange="resetMapChipRegisterContainer()">';
+        $projects .= '<option value="common">common</option>';
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            //最初の要素を選択状態に
+            if ($dir === reset($dirs)) {
+                $projects .= '<option value="' . $dir . '" selected>' . $dir . '</option>';
+            }
+            $projects .= '<option value="' . $dir . '">' . $dir . '</option>';
+        }
+        $projects .= '</select>';
+        return $projects;
+    }
+
+    /**
+     * 既存のプロジェクトのデータを取得する(オブジェクト登録時)
+     * return プロジェクトのセレクトボックス
+     */
+    function getProjectsDataForCharacter() {
+        $dirs = scandir($this->projectDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store',
+            'common' //commonを除外対象に。ベタがきと重複されるため。
+        );
+        $projects = '<select id="projectsForCharacters" name="projects" onchange="resetCharacterRegisterContainer()">';
+        $projects .= '<option value="common">common</option>';
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            //最初の要素を選択状態に
+            if ($dir === reset($dirs)) {
+                $projects .= '<option value="' . $dir . '" selected>' . $dir . '</option>';
+            }
+            $projects .= '<option value="' . $dir . '">' . $dir . '</option>';
+        }
+        $projects .= '</select>';
+        return $projects;
+    }
+
+    /**
+     * 既存のプロジェクトのデータを取得する(オブジェクト登録時)
+     * return プロジェクトのセレクトボックス
+     */
+    function getProjectsDataForObj() {
+        $dirs = scandir($this->projectDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store',
+            'common' //commonを除外対象に。ベタがきと重複されるため。
+        );
+        $projects = '<select id="projectsForObj" name="projects" onchange="resetObjectRegisterContainer()">';
+        $projects .= '<option value="common">common</option>';
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            //最初の要素を選択状態に
+            if ($dir === reset($dirs)) {
+                $projects .= '<option value="' . $dir . '" selected>' . $dir . '</option>';
+            }
+            $projects .= '<option value="' . $dir . '">' . $dir . '</option>';
+        }
+        $projects .= '</select>';
+        return $projects;
     }
 
     /**
@@ -19,6 +615,506 @@ class dotEditor {
      * return マップチップタイプのセレクトボックス
      */
     function getMaptipTypes() {
+        $html = '<select id="maptipTypes" name="maptipTypes" onchange="showMapChipRegisterContainer()">';
+        foreach ($this->MaptipTypes AS $MaptipType) {
+            $html .= '<option value="' . $MaptipType . '">' . $MaptipType . '</option>';
+        }
+        $html .= '</select>';
+        $html .= '<div id="editMapChipInfo"></div>'; //キャラクタータイプ毎に、登録内容を変化させて表示するコンテナ
+        return $html;
+    }
+
+    /**
+     * キャラクター画像タイプを取得する
+     * return キャラクター画像タイプのセレクトボックス
+     */
+    function getCharacterImageTypes() {
+        $charaImgTypes = '<select id="characterImageTypes" name="characterImageTypes" onchange="showCharacterRegisterContainer()">';
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        foreach ($this->characterImageTypes AS $type) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($type, $excludes)) {
+                continue;
+            }
+            $charaImgTypes .= '<option value="' . $type . '">' . $type . '</option>';
+        }
+        $charaImgTypes .= '</select>';
+        $charaImgTypes .= '<div id="editCharaInfo"></div>'; //キャラクタータイプ毎に、登録内容を変化させて表示するコンテナ
+        return $charaImgTypes;
+    }
+
+    /**
+     * オブジェクトタイプを取得する
+     * return キャラクター画像タイプのセレクトボックス
+     */
+    function getObjectTypes() {
+        $objectTypes = '<select id="objectTypes" name="objectTypes" onchange="showObjectRegisterContainer()">';
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        foreach ($this->objectTypes AS $type) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($type, $excludes)) {
+                continue;
+            }
+            //最初の要素を選択状態に
+            // if ($type === reset($this->characterImageTypes)) {
+            //     $charaImgTypes .= '<option value="' . $type . '" selected>' . $type . '</option>';
+            // }
+            $objectTypes .= '<option value="' . $type . '">' . $type . '</option>';
+        }
+        $objectTypes .= '</select>';
+        $objectTypes .= '<div id="editObjInfo"></div>'; //オブジェクトタイプ毎に、登録内容を変化させて表示するコンテナ
+        return $objectTypes;
+    }
+
+    //全プロジェクトの全マップチップタイプのマルチマップチップの名前を取得する
+    //一プロジェクト毎にセレクトボックスを作成し、js側でidで取得する。
+    function getMultiMapChipNames() {
+        $dirs = scandir($this->maptipTypeDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        $projects = '<div id="" name="MMN">';
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            $projects .= '<span id="MMN_' . $dir . '" name="" style="display:none">';
+            //$project .= '<select id="" name="" onChange="">'; //MMN = Multi Mapchip name
+            foreach (scandir($this->maptipTypeDirPath . $dir) AS $chipType) {
+                //特定のディレクトリの場合は表示させない
+                if (!in_array($chipType, $this->MaptipTypes) || in_array($chipType, $excludes)) {
+                    continue;
+                }
+                $projects .= '<span id="MMN_' . $dir . '_' . $chipType . '" name="" style="">';
+                $projects .= '<select id="" name="" onChange="changeMMN(this)">'; //MMN = Multi Mapchip name
+                $projects .= '<option value="new" selected>新規</option>';
+                foreach (scandir($this->maptipTypeDirPath . $dir . '/' . $chipType) AS $file) {
+                    //特定のディレクトリの場合は表示させない
+                    if (fnmatch("*.png", $file) || in_array($file, $excludes)) {
+                        continue;
+                    }
+                    //最初の要素を選択状態に
+                    if ($file === reset(scandir($this->maptipTypeDirPath . $dir . '/' . $chipType))) {
+                        $projects .= '<option value="' . $file . '" selected>' . $file . '</option>';
+                    }
+                    $projects .= '<option value="' . $file . '">' . $file . '</option>';
+                }
+                $projects .= '</select>';
+                $projects .= '</span>';
+            }
+            // if (!file_exists($this->maptipTypeDirPath . $dir . "/characters/wipe")) {
+            //     continue;
+            // }
+            // $charas = scandir($this->projectDirPath . $dir . "/characters/wipe");
+            // foreach ($charas AS $chara) {
+            //     //特定のディレクトリの場合は表示させない
+            //     if (in_array($chara, $excludes)) {
+            //         continue;
+            //     }
+            //     //最初の要素を選択状態に
+            //     if ($chara === reset($charas)) {
+            //         $project .= '<option value="' . $chara . '" selected>' . $chara . '</option>';
+            //     }
+            //     $project .= '<option value="' . $chara . '">' . $chara . '</option>';
+            // }
+            // $project .= '</select>';
+            $projects .= '</span>';
+            //$projects .= $project;
+        }
+        $projects .= '</div>';
+        return $projects;
+    }
+
+    //全プロジェクトのキャラクター（ワイプ）の名前を取得する
+    //一プロジェクト毎にセレクトボックスを作成し、js側でidで取得する。
+    function getWipeCharaNames() {
+        $dirs = scandir($this->projectDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        $projects = '<div id="" name="">';
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            $project = '<span id="WCN_' . $dir . '" name="" style="display:none">';
+            $project .= '<select id="" name="" onChange="changeWCN(this)">'; //CON = chara object name
+            if (!file_exists($this->projectDirPath . $dir . "/characters/wipe")) {
+                continue;
+            }
+            $project .= '<option value="new" selected>新規</option>';
+            $charas = scandir($this->projectDirPath . $dir . "/characters/wipe");
+            foreach ($charas AS $chara) {
+                //特定のディレクトリの場合は表示させない
+                if (in_array($chara, $excludes)) {
+                    continue;
+                }
+                //最初の要素を選択状態に
+                if ($chara === reset($charas)) {
+                    $project .= '<option value="' . $chara . '" selected>' . $chara . '</option>';
+                }
+                $project .= '<option value="' . $chara . '">' . $chara . '</option>';
+            }
+            $project .= '</select>';
+            $project .= '</span>';
+            $projects .= $project;
+        }
+        $projects .= '</div>';
+        return $projects;
+    }
+
+    //全プロジェクトのキャラオブジェクトの名前を取得する
+    //一プロジェクト毎にセレクトボックスを作成し、js側でidで取得する。
+    function getCharaObjectNames() {
+        $dirs = scandir($this->projectDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        $projects = '<div id="" name="">';
+        $charaObjPattern = '<div id="" name="">';
+        foreach ($dirs AS $dir) {
+            $aryDirectionExist = array(
+                'f' => array(),
+                'fr' => array(),
+                'fl' => array(),
+                'b' => array(),
+                'br' => array(),
+                'bl' => array(),
+                'r' => array(),
+                'rr' => array(),
+                'l' => array(),
+                'll' => array(),
+                'ot' => array(),
+            );
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            $project = '<span id="CON_' . $dir . '" name="" style="display:none">';
+            $project .= '<select id="" name="" onChange="changeCON(this)">'; //CON = chara object name
+            if (!file_exists($this->projectDirPath . $dir . "/objects/characters")) {
+                continue;
+            }
+            $project .= '<option value="new" selected>新規</option>';
+            $charas = scandir($this->projectDirPath . $dir . "/objects/characters");
+            foreach ($charas AS $chara) {
+                //特定のディレクトリの場合は表示させない
+                if (in_array($chara, $excludes)) {
+                    continue;
+                }
+                //最初の要素を選択状態に
+                if ($chara === reset($charas)) {
+                    $project .= '<option value="' . $chara . '" selected>' . $chara . '</option>';
+                }
+                $project .= '<option value="' . $chara . '">' . $chara . '</option>';
+                ///ここでテーブルを作成（１キャラ１テーブル、新規の場合は空）
+                ///changeCONの際に、idかなんかでテーブルを取得する
+                //scandirする
+                $files = scandir($this->projectDirPath . $dir . "/objects/characters/" . $chara);
+                //foreachする（png）
+                foreach ($files AS $file) {
+                    //excludeすす
+                    if (in_array($file, $excludes)) {
+                        continue;
+                    }
+                    //_Dを読み取って、方向を確認する
+                    $sPos = strpos($file, '_D');
+                    $ePos = strpos($file, '.png');
+                    $direction = substr($file, $sPos+2, $ePos-($sPos+2));
+                    // 方向存在配列の該当の方向の値を更新する（方向存在配列キーは方向、バリューはまるばつ）
+                    $aryDirectionExist[$direction][] = $this->projectDirPath . $dir . "/objects/characters/" . $chara . '/' . $file;
+                //foreach終了
+                }
+                //charaObjPatternのテーブルを作成（あり→画像引っ張ってくる。その他も。なし→なし）
+                $charaObjPattern .= '<div id="tbl_' . $chara . '" style="display:none">';
+                $charaObjPattern .= '<table border="1">';
+                $charaObjPattern .= '<tr>';
+                $th = '';
+                $td = '';
+                foreach($aryDirectionExist AS $dire => $aryPath) {
+                    $th .= '<th>' . $dire . '</th>';
+                    $td .= '<td>';
+                    foreach($aryPath AS $key => $val) {
+                        $td .= '<img src="' . $val . '">';
+                    }
+                    $td .= '</td>';
+                }
+                $charaObjPattern .= $th;
+                $charaObjPattern .= '</tr>';
+                $charaObjPattern .= '<tr>';
+                $charaObjPattern .= $td;
+                $charaObjPattern .= '</tr>';
+                $charaObjPattern .= '</table>';
+                $charaObjPattern .= '</div>';
+                //changeCONも変更するよ
+            }
+            $project .= '</select>';
+            $project .= '</span>';
+
+            $projects .= $project;
+        }
+        $projects .= '</div>';
+        $projects .= $charaObjPattern;
+        return $projects;
+    }
+
+    /**
+     * キャラクター画像を既存プロジェクトに追加する
+     * param1 : 既存プロジェクト名
+     * param2 : param1 : マップ画像データ(ベース64エンコードずみのもの)
+     * param3 : マップオブジェクトデータ（jsonのテキストばんのもの）
+     * return bool
+     */
+    function addCharacterToProject($characterBackUpImageData, $characterBackUpImageHeight, $characterBackUpImageWidth, $characterImagetData, $project, $characterImageType, $characterHeight, $characterWidth, $characterName) {
+        //追加先ディレクトリ作成(player)
+        $targetImagePath = '';
+        if ($project == 'common') {
+            if ($characterImageType == 'wipe') {
+                $targetImagePath .= $this->projectDirPath . 'common/characters/wipe/' . $characterName;
+            } else {
+                $targetImagePath .= $this->projectDirPath . 'common/characters/battle';
+            }
+            if(!file_exists($targetImagePath)) mkdir($targetImagePath, 0755, TRUE);
+        } else {
+            if ($characterImageType == 'wipe') {
+                $targetImagePath .= $this->projectDirPath . $project . '/characters/wipe/' . $characterName;    
+            } else {
+                $targetImagePath .= $this->projectDirPath . $project . '/characters/battle';
+            }
+            if(!file_exists($targetImagePath)) mkdir($targetImagePath, 0755, TRUE);
+        }
+        //追加先ディレクトリ作成(dot-editor(バックアップ))
+        $targetBackUpPath = '';
+        if ($characterImageType == 'wipe') {
+            $targetBackUpPath .= $this->backUpDirPath . "characters/wipe/" . $project . "/" . $characterName;
+        } else {
+            $targetBackUpPath .= $this->backUpDirPath . "characters/battle/" . $project;
+        }
+        if(!file_exists($targetBackUpPath)) mkdir($targetBackUpPath, 0755, TRUE);
+        
+        //マップデータデコード
+        $decodedBackUpImageData = base64_decode($characterBackUpImageData);
+        $decodedImageData = base64_decode($characterImagetData);
+        $date = date('YmdHis'); //名前用時刻取得
+        //まずはバックアップ画像を保存
+        $fp = fopen($targetBackUpPath . "/" . $date . "_H" . $characterBackUpImageHeight . "_W" . $characterBackUpImageWidth . ".png", "wb");
+        fwrite($fp, $decodedBackUpImageData);
+        fclose($fp);
+        //次にrpg-playerへ保存
+        if ($characterImageType == 'wipe') {
+            $fp = fopen($targetImagePath . "/" . $date . "_H" . $characterHeight . "_W" . $characterWidth . "_N" . $characterName . ".png", "wb"); //_Nいらんかもだけど一応つける
+        } else {
+            $fp = fopen($targetImagePath . "/" . $date . "_H" . $characterHeight . "_W" . $characterWidth .".png", "wb"); //_Nいらんかもだけど一応つける
+        }
+        fwrite($fp, $decodedImageData);
+        fclose($fp);
+    }
+
+    /**
+     * ツールオブジェクトを追加する
+     * param1 : 既存プロジェクト名
+     * param2 : param1 : マップ画像データ(ベース64エンコードずみのもの)
+     * param3 : マップオブジェクトデータ（jsonのテキストばんのもの）
+     * return bool
+     */
+    function addToolObjToProject($toolBackUpImageData, $toolBackUpImageHeight, $toolBackUpImageWidth, $toolObjectData, $project, $toolHeight, $toolWidth, $toolName) {
+        //追加先ディレクトリ作成(player)
+        $targetObjectPath = '';
+        if ($project == 'common') {
+            $targetObjectPath = $this->projectDirPath . 'common/objects/tools';
+            if(!file_exists($targetObjectPath)) mkdir($targetObjectPath, 0755, TRUE);        
+        } else {
+            $targetObjectPath = $this->projectDirPath . $project . '/objects/tools/';
+            if(!file_exists($targetObjectPath)) mkdir($targetObjectPath, 0755, TRUE);
+        }
+        //追加先ディレクトリ作成(dot-editor(バックアップ))
+        $targetBackUpPath = $this->backUpDirPath . "objects/tools/" . $project;
+        if(!file_exists($targetBackUpPath)) mkdir($targetBackUpPath, 0755, TRUE);
+
+        //マップデータデコード
+        $decodedBackUpImageData = base64_decode($toolBackUpImageData);
+        $decodedImageData = base64_decode($toolObjectData);
+        $date = date('YmdHis'); //名前用時刻取得
+        //まずはバックアップ画像を保存
+        $fp = fopen($targetBackUpPath . "/" . $date . "_H" . $toolBackUpImageHeight . "_W" . $toolBackUpImageWidth . ".png", "wb");
+        fwrite($fp, $decodedBackUpImageData);
+        fclose($fp);
+        //次にrpg-playerへ保存
+        $fp = fopen($targetObjectPath . "/" . $date . "_H" . $toolHeight . "_W" . $toolWidth . "_" . $toolName . ".png", "wb");
+        fwrite($fp, $decodedImageData);
+        fclose($fp);
+    }
+
+    /**
+     * キャラクターオブジェクトを追加する
+     * param1 : 既存プロジェクト名
+     * param2 : param1 : マップ画像データ(ベース64エンコードずみのもの)
+     * param3 : マップオブジェクトデータ（jsonのテキストばんのもの）
+     * return bool
+     */
+    function addCharacterObjToProject($characterBackUpImageData, $characterBackUpImageHeight, $characterBackUpImageWidth, $characterObjectData, $project, $characterHeight, $characterWidth, $characterName, $characterPattern) {
+        //追加先ディレクトリ作成(player)
+        $targetObjectPath = '';
+        if ($project == 'common') {
+            $targetObjectPath = $this->projectDirPath . 'common/objects/characters/' . $characterName;
+            if(!file_exists($targetObjectPath)) mkdir($targetObjectPath, 0755, TRUE);        
+        } else {
+            $targetObjectPath = $this->projectDirPath . $project . '/objects/characters/' . $characterName;
+            if(!file_exists($targetObjectPath)) mkdir($targetObjectPath, 0755, TRUE);
+        }
+        //追加先ディレクトリ作成(dot-editor(バックアップ))
+        $targetBackUpPath = $this->backUpDirPath . "objects/characters/" . $project . "/" . $characterName;
+        if(!file_exists($targetBackUpPath)) mkdir($targetBackUpPath, 0755, TRUE);
+
+        //マップデータデコード
+        $decodedBackUpImageData = base64_decode($characterBackUpImageData);
+        $decodedImageData = base64_decode($characterObjectData);
+        $date = date('YmdHis'); //名前用時刻取得
+        //まずはバックアップ画像を保存
+        $fp = fopen($targetBackUpPath . "/" . $date . "_H" . $characterBackUpImageHeight . "_W" . $characterBackUpImageWidth . ".png", "wb");
+        fwrite($fp, $decodedBackUpImageData);
+        fclose($fp);
+        //次にrpg-playerへ保存
+        $fp = fopen($targetObjectPath . "/" . $date . "_H" . $characterHeight . "_W" . $characterWidth . "_N" . $characterName . "_D" . $characterPattern . ".png", "wb"); //_Nいらんかもだけど一応つける
+        fwrite($fp, $decodedImageData);
+        fclose($fp);
+    }
+
+    /**
+     * マップチップデータをサーバに追加する
+     * param1 : マップチップタイプ名
+     * param2 : param1 : マップ画像データ(ベース64エンコードずみのもの)
+     * return bool
+     */
+    function addMaptipData($project, $maptipBackUpImageData, $maptipBackUpImageHeight, $maptipBackUpImageWidth, $maptipTypeName, $maptipImageData, $maptipHeight, $maptipWidth, $multiMapChipName) {
+        //まずは全マップチップタイプのディレクトリを保存先のプロジェクトに作成（ドットエディタのバックアップディレと、マップエディタのマップチップディレ）
+        foreach ($this->MaptipTypes AS $MaptipType) {
+            if ($MaptipType == '選択してください') continue;
+            if (!file_exists($this->backUpDirPath . 'mapChips/' . $project . '/' . $MaptipType)) mkdir($this->backUpDirPath . 'mapChips/' . $project . '/' . $MaptipType);
+            if (!file_exists($this->maptipTypeDirPath . $project . '/' . $MaptipType)) mkdir($this->maptipTypeDirPath . $project . '/' . $MaptipType);
+        } 
+        //新規マップチップのパスを保存
+        $MaptipPath = $this->maptipTypeDirPath . $project. '/' . $maptipTypeName;
+        //新規プロジェクトディレクトリ作成
+        if(file_exists($MaptipPath)) {
+            //マップデータデコード
+            $decodedBackUpImageData = base64_decode($maptipBackUpImageData);
+            $decodedImageData = base64_decode($maptipImageData);
+            //名前用時刻取得
+            $date = date('YmdHis');
+            //マップ画像を保存
+            //まずはバックアップ画像を保存
+            //if(!file_exists($this->backUpDirPath . "mapChip")) mkdir($this->backUpDirPath . "mapChip");
+            if ($multiMapChipName == '') {
+                $fp = fopen($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/'. $date . "_H" . $maptipBackUpImageHeight . "_W" . $maptipBackUpImageWidth . ".png", "wb");
+            } else {
+                if (!file_exists($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/'. $multiMapChipName)) mkdir($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/'. $multiMapChipName);
+                $fp = fopen($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/'. $multiMapChipName . '/' . $date . "_H" . $maptipBackUpImageHeight . "_W" . $maptipBackUpImageWidth . ".png", "wb");
+            }
+            fwrite($fp, $decodedBackUpImageData);
+            fclose($fp);
+            //次にマップチップエディターへ保存
+            if ($multiMapChipName == '') {
+                $fp = fopen($MaptipPath . "/" . $date . "_H" . $maptipHeight . "_W" . $maptipWidth . ".png", "wb");
+            } else {
+                if (!file_exists($MaptipPath . "/" . $multiMapChipName)) mkdir($MaptipPath . "/" . $multiMapChipName);
+                $fp = fopen($MaptipPath . "/" . $multiMapChipName . '/' . $date . "_H" . $maptipHeight . "_W" . $maptipWidth . ".png", "wb");
+            }
+            fwrite($fp, $decodedImageData);
+            fclose($fp);
+
+            return true;
+        };
+    return false;
+    }
+
+    function isAdmin ($id, $pas) {
+        global $adminId;
+        global $adminPas;
+        if ($id == $adminId && $pas == $adminPas) {
+            return true;
+        }
+        return false;
+    }
+
+    function getSaveMaptipContainer() {
+        $html = '<div id="save-maptip-container"><form name="maptip_data" action="" method="post"><br><p>マップチップ登録</p>';
+        $html .= $this->getProjectsDataForMapChip(). '<br>';
+        $html .= $this->getMaptipTypes();
+        $html .= '<br><span id="save-maptip-data">この内容でサーバに保存</span>';
+        $html .= '<input type="hidden" name="maptip_backUpImage_data" value="" />';
+        $html .= '<input type="hidden" name="maptip_backUpImage_height" value="" />';
+        $html .= '<input type="hidden" name="maptip_backUpImage_width" value="" />';
+        $html .= '<input type="hidden" name="maptip_image_data" value="" />';
+        $html .= '<input type="hidden" name="maptip_height" value="" />';
+        $html .= '<input type="hidden" name="maptip_width" value="" /></form></div>';
+        return $html;
+    }
+
+    function getSaveCharacterContainer() {
+        $html = '<div id="save-character-container"><form name="character_data" action="" method="post"><br><p>キャラクター画像登録</p>';
+        $html .= $this->getProjectsDataForCharacter(). '<br>';
+        $html .= $this->getCharacterImageTypes();
+        $html .= '<br><span id="save-character-data">この内容でサーバに保存</span>';
+        $html .= '<input type="hidden" name="character_backUpImage_data" value="" />';
+        $html .= '<input type="hidden" name="character_backUpImage_height" value="" />';
+        $html .= '<input type="hidden" name="character_backUpImage_width" value="" />';
+        $html .= '<input type="hidden" name="character_image_data" value="" />';
+        $html .= '<input type="hidden" name="character_height" value="" />';
+        $html .= '<input type="hidden" name="character_width" value="" /></form></div>';
+        return $html;
+    }
+
+    //valueをつめるのは、jsの、saveObjectDataToSever
+    function getSaveObjectContainer() {
+        $html = '<div id="save-object-container"><form name="object_data" action="" method="post"><br><p>オブジェクト登録</p>';
+        $html .= $this->getProjectsDataForObj() . '<br>';
+        $html .= $this->getObjectTypes();
+        //$html .= $this->getProjetCharaObjNames(); //_Nをインデックスに、プロジェクトのキャラオブジェクト名を取得する
+        $html .= '<br><span id="save-object-data">この内容でサーバに保存</span>';
+        // ここからツール
+        $html .= '<input type="hidden" name="tool_backUpImage_data" value="" />';
+        $html .= '<input type="hidden" name="tool_backUpImage_height" value="" />';
+        $html .= '<input type="hidden" name="tool_backUpImage_width" value="" />';
+        $html .= '<input type="hidden" name="tool_object_data" value="" />';
+        $html .= '<input type="hidden" name="tool_height" value="" />';
+        $html .= '<input type="hidden" name="tool_width" value="" />';
+        // ここからキャラ
+        $html .= '<input type="hidden" name="character_backUpImage_data" value="" />';
+        $html .= '<input type="hidden" name="character_backUpImage_height" value="" />';
+        $html .= '<input type="hidden" name="character_backUpImage_width" value="" />';
+        $html .= '<input type="hidden" name="character_object_data" value="" />';
+        $html .= '<input type="hidden" name="character_height" value="" />';
+        $html .= '<input type="hidden" name="character_width" value="" /></form></div>';
+        return $html;
+    }
+
+    /**
+     * マップチップタイプを取得する
+     * return マップチップタイプのセレクトボックス
+     */
+    function getProjetCharaObjNames() {
         $dirs = scandir($this->maptipTypeDirPath);
         //表示させないディレクトリ配列
         $excludes = array(
@@ -42,48 +1138,39 @@ class dotEditor {
         return $projects;
     }
 
+    function delBkImage($delImgPath) {
+        $sPos = strpos($delImgPath, '/image');
+        $delPath = substr($delImgPath, $sPos);
+        $delPath = '.' . $delPath;
+        echo $delPath;
+        return unlink($delPath);
+    }
+
     /**
-     * マップチップデータをサーバに追加する
-     * param1 : マップチップタイプ名
-     * param2 : param1 : マップ画像データ(ベース64エンコードずみのもの)
-     * return bool
+     * マップチップを取得する
      */
-    function addMaptipData($maptipTypeName, $maptipImageData, $maptipHeight, $maptipWidth) {
-        //新規マップチップのパスを保存
-        $MaptipPath = $this->maptipTypeDirPath . $maptipTypeName;
-        //新規プロジェクトディレクトリ作成
-        if(file_exists($MaptipPath)) {
-            //マップデータデコード
-            $decodedImageData = base64_decode($maptipImageData);
-            //名前用時刻取得
-            $date = date('YmdHis');
-            //マップ画像を保存
-            $fp = fopen($MaptipPath . "/" . $date . "_H" . $maptipHeight . "_W" . $maptipWidth . ".png", "wb");
-            fwrite($fp, $decodedImageData);
-            fclose($fp);
-
-            return true;
-        };
-    return false;
-    }
-
-    function isAdmin ($id, $pas) {
-        global $adminId;
-        global $adminPas;
-        if ($id == $adminId && $pas == $adminPas) {
-            return true;
+    function getBkImages(){
+        //マップチップディレクトリのディレクトリ（カテゴリ）を取得する
+        $dirs = scandir($this->backUpDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            //ディレクトリの中のマップチップを取得する
+            foreach(glob($this->mapChipDirPath . $dir . '/*') AS $file){
+                if(is_file($file)){
+                    $mapChips[$dir][] = $file;
+                }
+            }
         }
-        return false;
-    }
-
-    function getSaveMaptipContainer() {
-        $html = '<div id="save-maptip-container"><form name="maptip_data" action="" method="post"><br><p>マップチップ属性</p>';
-        $html .= $this->getMaptipTypes();
-        $html .= '<br><span id="save-maptip-data">この内容でサーバに保存</span>';
-        $html .= '<input type="hidden" name="maptip_image_data" value="" />';
-        $html .= '<input type="hidden" name="maptip_height" value="" />';
-        $html .= '<input type="hidden" name="maptip_width" value="" /></form></div>';
-        return $html;
+        return $mapChips;
     }
 }
 
