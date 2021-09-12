@@ -25,7 +25,8 @@ class dotEditor {
             'tool',
             'building',
             'mapRepeat',
-            'mapTurn'
+            'mapTurn',
+            'design'
         );
         $this->maptipTypeDirPath = '../map-editor/image/map-editor/map-chip/';
         $this->rpgEditorPrjDirPath = '../rpg-editor/public/projects/';
@@ -794,19 +795,6 @@ class dotEditor {
         $projects = '<div id="" name="">';
         $charaObjPattern = '<div id="" name="">';
         foreach ($dirs AS $dir) {
-            $aryDirectionExist = array(
-                'f' => array(),
-                'fr' => array(),
-                'fl' => array(),
-                'b' => array(),
-                'br' => array(),
-                'bl' => array(),
-                'r' => array(),
-                'rr' => array(),
-                'l' => array(),
-                'll' => array(),
-                'ot' => array(),
-            );
             //特定のディレクトリの場合は表示させない
             if (in_array($dir, $excludes)) {
                 continue;
@@ -819,6 +807,19 @@ class dotEditor {
             $project .= '<option value="new" selected>新規</option>';
             $charas = scandir($this->projectDirPath . $dir . "/objects/characters");
             foreach ($charas AS $chara) {
+                $aryDirectionExist = array(
+                    'f' => array(),
+                    'fr' => array(),
+                    'fl' => array(),
+                    'b' => array(),
+                    'br' => array(),
+                    'bl' => array(),
+                    'r' => array(),
+                    'rr' => array(),
+                    'l' => array(),
+                    'll' => array(),
+                    'ot' => array(),
+                );
                 //特定のディレクトリの場合は表示させない
                 if (in_array($chara, $excludes)) {
                     continue;
