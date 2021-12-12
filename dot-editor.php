@@ -195,6 +195,10 @@ $mapChips = $obj->getBkImages();
 			<table id="palette">
 			</table>
 		</div>
+		<div id="real-chip-container">
+			<span>50×50</sapn><br>
+			<img id="real-chip" src="">
+		</div>
 		<!-- <div id="backUpImg-container">
 			<div id="bkMapChip">
                 <p class="mapCategory">

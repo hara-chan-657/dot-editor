@@ -223,7 +223,7 @@ for (var i=0; i<option.length; i++) {
 }
 canvas.addEventListener('mousedown', changeCellColor, false);
 canvas.addEventListener('mousemove', function (evt) {if (draggingFlg == true) changeCellColor(evt);}, false);
-canvas.addEventListener('mouseup', function () {if (draggingFlg == true) setDraggingFlg(false);}, false);
+canvas.addEventListener('mouseup', function () {if (draggingFlg == true) setDraggingFlg(false); setRealChip();}, false);
 canvas.addEventListener('mouseenter', function (evt) {if (draggingFlg == true) changeCellColor(evt);}, false);
 canvasContainer.addEventListener('mousedown', function () {
 	var currentModeId = currentModeElement[0].id;
@@ -237,6 +237,7 @@ canvasContainer.addEventListener('mouseup', function () {
 	var currentModeId = currentModeElement[0].id;
 	if (draggingFlg == true) {
 			setDraggingFlg(false);
+			setRealChip();
 	}
 }, false);
 back.addEventListener('click', function() {if (backArray.length > 0) doBack();}, false);
@@ -2157,5 +2158,11 @@ function makeDotsPicture() {
 			a_sum = 0;
 		}
 	}
+}
+
+//リアルマップチップを描画する
+var realChip = document.getElementById("real-chip");
+function setRealChip() {
+	realChip.src = canvas.toDataURL();
 }
 
