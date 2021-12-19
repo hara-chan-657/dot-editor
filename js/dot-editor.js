@@ -182,6 +182,8 @@ if (document.getElementById('save-object-data') != null) {
 }
 //ドット絵変換
 var makeDotsPic = document.getElementById('make-dots-picture');
+//ハーフモード
+var halfMode = document.getElementById('half-mode');
 //展開ボタン
 var unfoldButtons = document.getElementsByClassName('unfoldButton');
 //折り込みボタン
@@ -284,6 +286,7 @@ for (var i=0; i<delBkImg.length; i++) {
 
 //ロード時、各デフォルトの値をセットするために呼ばれる
 function setDefault() {
+	setRealChip();
 	showPalette();
 	setCurrentMode();
 	setCanvas('load');
@@ -658,16 +661,30 @@ function changeCellColor(evt) {
 			//ドラッグフラグ変更
 			setDraggingFlg(true);
 			//色付きかどうか調べる
-			if (isColoredCell(cell)) {
+			if (halfModeFlg) {
 				//現在ドットサイズでの塗りつぶしスタート位置
 				var startX = Math.floor(x/dotLength);
 				var startY = Math.floor(y/dotLength);
 				//消す
 				context.clearRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
+				//現在ドットサイズでの塗りつぶしスタート位置（反対側）
+				startX = (canvasWidth/dotLength)-1-startX;
+				context.clearRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
 				//canvas変更フラグ変更
 				canvasChangeFlg = true
+
+			} else {
+				if (isColoredCell(cell)) {
+					//現在ドットサイズでの塗りつぶしスタート位置
+					var startX = Math.floor(x/dotLength);
+					var startY = Math.floor(y/dotLength);
+					//消す
+					context.clearRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
+					//canvas変更フラグ変更
+					canvasChangeFlg = true
+				}
+				//色付きでなければ何もしない
 			}
-			//色付きでなければ何もしない
 			break;
 
 		case 'fill':
@@ -726,18 +743,37 @@ function changeCellColor(evt) {
 		case 'normal':
 			//ドラッグフラグ変更
 			setDraggingFlg(true);
-			//同じ色かどうか調べる
-			if (!isSameColoredCell(cell)) {
+			if (halfModeFlg) {
+				//ハーフモードの場合
+				//同じ色かどうかの判定を行わない（けっこう複雑になりそうなので、、）。
 				//現在ドットサイズでの塗りつぶしスタート位置
 				var startX = Math.floor(x/dotLength);
 				var startY = Math.floor(y/dotLength);
 				//色ぬり
 				context.fillStyle = currentColor.style.backgroundColor;
 				context.fillRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
+				//現在ドットサイズでの塗りつぶしスタート位置（反対側）
+				startX = (canvasWidth/dotLength)-1-startX;
+				//色ぬり
+				context.fillStyle = currentColor.style.backgroundColor;
+				context.fillRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
 				//canvas変更フラグ変更
 				canvasChangeFlg = true;
+
+			} else {
+				//同じ色かどうか調べる
+				if (!isSameColoredCell(cell)) {
+					//現在ドットサイズでの塗りつぶしスタート位置
+					var startX = Math.floor(x/dotLength);
+					var startY = Math.floor(y/dotLength);
+					//色ぬり
+					context.fillStyle = currentColor.style.backgroundColor;
+					context.fillRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
+					//canvas変更フラグ変更
+					canvasChangeFlg = true;
+				}
+				//同じ色なら何もしない
 			}
-			//同じ色なら何もしない
 			break;
 			
 		case 'circle':
@@ -2164,5 +2200,18 @@ function makeDotsPicture() {
 var realChip = document.getElementById("real-chip");
 function setRealChip() {
 	realChip.src = canvas.toDataURL();
+}
+
+//ハーフモードを切り替える
+//ハーフモード適用：消しゴム、通常ペン
+var halfModeFlg = false;
+function changeHalfMode() {
+	if (halfModeFlg) {
+		halfMode.style.backgroundColor = '';
+		halfModeFlg = false;
+	} else {
+		halfMode.style.backgroundColor = 'red';
+		halfModeFlg = true;
+	}
 }
 

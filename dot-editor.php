@@ -168,6 +168,9 @@ $mapChips = $obj->getBkImages();
 		<img id ="preview" src="">
 	</div>
 	<div id="canvas-container">
+		<div id="">
+			<button id="half-mode" onclick="changeHalfMode()">ハーフモード</button>
+		</div>
 		<div id="canvasBG-container">
 			<div id="canvasBG">
 				<canvas id="canvas"></canvas>
@@ -182,18 +185,27 @@ $mapChips = $obj->getBkImages();
 		?>
 		<div id="palette-container">
 			<table id="selectedColor">
-				<tr><th>現在色<th><td id="currentColor"></td><td><span style="font-weight:bold">ドット</span>
-					<select id="dotSizeSelect">
-						<option value="32">32px</option>
-						<option value="16">16px</option>
-						<option value="8">8px</option>
-						<option value="4">4px</option>
-					</select><td></tr>
-				<tr class="none"><th>現在色canvas<th><td><canvas id="currentColorCanvas" width="30px" height="30"></canvas></td>
+				<tr>
+					<th>現在色<th>
+					<td id="currentColor"></td>
+					<td><span style="font-weight:bold">ドット</span>
+						<select id="dotSizeSelect">
+							<option value="32">32px</option>
+							<option value="16">16px</option>
+							<option value="8">8px</option>
+							<option value="4">4px</option>
+						</select>
+					<td>
+				</tr>
+				<tr class="none">
+					<th>現在色canvas<th>
+					<td></td>
+					<td>
+						<canvas id="currentColorCanvas" width="30px" height="30"></canvas>
+					</td>
 				</tr>
 			</table>
-			<table id="palette">
-			</table>
+			<table id="palette"></table>
 		</div>
 		<div id="real-chip-container">
 			<span>50×50</sapn><br>
