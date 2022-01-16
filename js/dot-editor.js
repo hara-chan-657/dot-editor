@@ -1712,6 +1712,10 @@ function setDownloadSize (mode) {
 		setMinRowAndCol();
 		//キャンバスの大きさを変更するとキャンバスがクリアされてしまう。
 		//そのため、一個戻って一個進むの処理を実施し、変更前のキャンバスを描画する
+		if (backArray.length == 0 && forwardArray.length == 0){
+			//厳密には間違えているかもしれないが、、多分このパターン（初っ端でまずサイズを変える）でエラーになる可能性が一番高いので、、
+			return;
+		} 
 		doBack();
 		doForward();
 	} else {

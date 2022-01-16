@@ -12,27 +12,6 @@ if (isset($_POST['del_img_path'])) {
 	}
 }
 
-if(isset($_GET['id']) && isset($_GET['pas'])) {
-	$id = $_GET['id'];
-	$pas = $_GET['pas'];
-	$adminRes = $obj->isAdmin($id, $pas);
-	if ($adminRes) {
-		$bkMapChips = $obj->getBkMapChips();
-		$bkMapChipContainer = $obj->getBkMapChipContainer($bkMapChips);
-		$makeProjectContainer = $obj->getMakeProjectContainer();
-		$saveMaptipContainer = $obj->getSaveMaptipContainer();
-		$saveCharacterContainer = $obj->getSaveCharacterContainer();
-		$saveObjectContainer = $obj->getSaveObjectContainer();
-		$multiMapChipNames = $obj->getMultiMapChipNames();
-		$WipeCharaNames = $obj->getWipeCharaNames();
-		$CharaObjectNames = $obj->getCharaObjectNames();
-	}
-} else {
-	$saveMaptipContainer = '';
-	$saveCharacterContainer = '';
-	$saveObjectContainer = '';
-}
-
 if (isset($_POST['new_project_name'])) {
 	//マップ画像データとマップオブジェクトデータを取得
 	$newProjectName = $_POST['new_project_name'];
@@ -118,6 +97,27 @@ if ((isset($_POST['tool_object_data']) || isset($_POST['character_object_data'])
     		echo '保存しました！（キャラクターオブジェクト）';
 			break;
 	}
+}
+
+if(isset($_GET['id']) && isset($_GET['pas'])) {
+	$id = $_GET['id'];
+	$pas = $_GET['pas'];
+	$adminRes = $obj->isAdmin($id, $pas);
+	if ($adminRes) {
+		$bkMapChips = $obj->getBkMapChips();
+		$bkMapChipContainer = $obj->getBkMapChipContainer($bkMapChips);
+		$makeProjectContainer = $obj->getMakeProjectContainer();
+		$saveMaptipContainer = $obj->getSaveMaptipContainer();
+		$saveCharacterContainer = $obj->getSaveCharacterContainer();
+		$saveObjectContainer = $obj->getSaveObjectContainer();
+		$multiMapChipNames = $obj->getMultiMapChipNames();
+		$WipeCharaNames = $obj->getWipeCharaNames();
+		$CharaObjectNames = $obj->getCharaObjectNames();
+	}
+} else {
+	$saveMaptipContainer = '';
+	$saveCharacterContainer = '';
+	$saveObjectContainer = '';
 }
 
 //バックアップ画像取得
@@ -255,31 +255,39 @@ $mapChips = $obj->getBkImages();
 			<span>H:</span>
 			<select id="downloadSizeSelectHeight">
 				<!-- <option value="544">544×544</option> -->
-				<option value="480">480</option>
-				<option value="352">352</option>
-				<option value="224">224</option>
-				<option value="160">160</option>
-				<option value="128">128</option>
-				<option value="96">96</option>
-				<option value="64">64</option>
 				<option value="32">32</option>
+				<option value="64">64</option>
+				<option value="96">96</option>
+				<option value="128">128</option>
+				<option value="160">160</option>
+				<option value="224">224</option>
+				<option value="288">288</option>
+				<option value="352">352</option>
+				<option value="480">480</option>
 			</select>
 			<span>W:</span>
 			<select id="downloadSizeSelectWidth">
 				<!-- <option value="544">544×544</option> -->
-				<option value="480">480</option>
-				<option value="352">352</option>
-				<option value="224">224</option>
-				<option value="160">160</option>
-				<option value="128">128</option>
-				<option value="96">96</option>
-				<option value="64">64</option>
 				<option value="32">32</option>
+				<option value="64">64</option>
+				<option value="96">96</option>
+				<option value="128">128</option>
+				<option value="160">160</option>
+				<option value="224">224</option>
+				<option value="288">288</option>
+				<option value="352">352</option>
+				<option value="480">480</option>
 			</select>
 		</div>
 		<div id="preview-link-container">
 			<span><label for="preview-link" id="previewLinkButton">プレビュー&ダウンロード</label></span>
 			<button id="preview-link">プレビュー&ダウンロード</button>
+		</div>
+		<div style="background-color: white; margin-top: 10px; width: 250px;">
+			<p style="margin: 0 0 0 0;">通常チップ　：32 × 32</p>
+			<p style="margin: 0 0 0 0;">ワイプ　　　：96 × 96</p>
+			<p style="margin: 0 0 0 0;">バトルキャラ：224 × 224</p>
+			<p style="margin: 0 0 0 0;">カットシーン：480 × 288</p>
 		</div>
 	</div>
 	<div id="previewOptions-container">
