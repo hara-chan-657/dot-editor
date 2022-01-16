@@ -688,7 +688,7 @@ class dotEditor {
             '..',
             '.DS_Store'
         );
-        $projects = '<div id="" name="MMN">';
+        $projects = '<div id="MMN_container">';
         foreach ($dirs AS $dir) {
             //特定のディレクトリの場合は表示させない
             if (in_array($dir, $excludes)) {
@@ -751,7 +751,7 @@ class dotEditor {
             '..',
             '.DS_Store'
         );
-        $projects = '<div id="" name="">';
+        $projects = '<div id="WCN_container">';
         foreach ($dirs AS $dir) {
             //特定のディレクトリの場合は表示させない
             if (in_array($dir, $excludes)) {
@@ -793,8 +793,8 @@ class dotEditor {
             '..',
             '.DS_Store'
         );
-        $projects = '<div id="" name="">';
-        $charaObjPattern = '<div id="" name="">';
+        $projects = '<div id="CON_container">';
+        $charaObjPattern = '<div id="COP_container">';
         foreach ($dirs AS $dir) {
             //特定のディレクトリの場合は表示させない
             if (in_array($dir, $excludes)) {
