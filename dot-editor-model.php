@@ -11,6 +11,7 @@ class dotEditor {
     private $projectDirPath;    //プロジェクトディレクトリパス（RPGプレイヤー）
     private $characterImageTypes; //キャラクター画像タイプ
     private $objectTypes; //オブジェクトタイプ
+    private $cutSceneTypes; //カットシーンタイプ
     private $backUpDirPath; //バックアップディレクトリパス
 
     /**
@@ -34,6 +35,7 @@ class dotEditor {
         $this->projectDirPath = '../rpg-player/public/projects/';
         $this->characterImageTypes = ['選択してください', 'wipe', 'battle']; //必要に応じて足していく
         $this->objectTypes = ['選択してください','tool', 'character']; //必要に応じて足していく
+        $this->cutSceneTypes = ['選択してください','scene', 'specialSkill']; //必要に応じて足していく
         $this->backUpDirPath = './image/dot-editor/backUp/';
     }
 
@@ -54,7 +56,7 @@ class dotEditor {
             $retArray[0] = 'バックアップ画像がありません';
             return $retArray;
         }
-        foreach($bkTypes AS $bkType) { // charactersとmapChipsとobjects
+        foreach($bkTypes AS $bkType) { // charactersとmapChipsとobjectsとcutScenes
             if (in_array($bkType, $excludes)) continue;
             switch ($bkType) { // charactersとmapChipsとobjects
                 case 'characters':
@@ -208,6 +210,60 @@ class dotEditor {
                                     foreach($files AS $file) {
                                         if (in_array($file, $excludes)) continue;
                                         $retArray['objects']['tools'][$project][] = $file;
+                                    }
+                                }
+                            break;
+                        }
+                    }
+                break;
+                case 'cutScenes':
+                    $cutSceneTypes = scandir($this->backUpDirPath . 'cutScenes'); //sceneとspecialSkill
+                    if ($this->checkIsDirEmpty($cutSceneTypes)) {
+                        $retArray['cutScenes'][0] = 'cutScenes/は空です';
+                        continue 2;
+                    }
+                    foreach($cutSceneTypes AS $cutSceneType) {
+                        if (in_array($cutSceneType, $excludes)) continue;
+                        // if ($this->checkIsDirEmpty($charaImageType)) {
+                        //     $retArray['characters'][$charaImageType][0] = 'characters/' . $charaImageType . 'には画像がありません';
+                        //     return $retArray;
+                        // }
+                        switch ($cutSceneType) { //battleとwipe
+                            case 'specialSkill': //specialSkillの場合複数構成。
+                                $projects = scandir($this->backUpDirPath . 'cutScenes/specialSkill'); //プロジェクト毎
+                                if ($this->checkIsDirEmpty($projects)) {
+                                    $retArray['cutScenes']['specialSkill'][0] = 'cutScenes/specialSkill/は空です';
+                                    continue 2;
+                                }
+                                foreach($projects AS $project) { //プロジェクト毎
+                                    if (in_array($project, $excludes)) continue;
+                                    $charaDirs = scandir($this->backUpDirPath . 'cutScenes/specialSkill/' . $project); //バトルキャラのディレクトリ
+                                    if ($this->checkIsDirEmpty($charaDirs)) {
+                                        $retArray['cutScenes']['specialSkill'][$project][0] = 'cutScenes/specialSkill/' . $project . 'は空です';
+                                        continue;
+                                    }
+                                    foreach($charaDirs AS $charaDir) {
+                                        if (in_array($charaDir, $excludes)) continue;
+                                        $files = scandir($this->backUpDirPath . 'cutScenes/specialSkill/' . $project . '/' . $charaDir); //バトルキャラのディレクトリ
+                                        foreach($files AS $file) {
+                                            if (in_array($file, $excludes)) continue;
+                                            $retArray['cutScenes']['specialSkill'][$project][$charaDir][] = $file;
+                                        }
+                                    }
+                                }  
+                            break;
+                            case 'scene':
+                                $projects = scandir($this->backUpDirPath . 'cutScenes/scene'); //プロジェクト毎
+                                if ($this->checkIsDirEmpty($projects)) {
+                                    $retArray['cutScenes']['scene'][0] = 'cutScenes/scene/は空です';
+                                    continue 2;
+                                }
+                                foreach($projects AS $project) { //プロジェクト毎
+                                    if (in_array($project, $excludes)) continue;
+                                    $files = scandir($this->backUpDirPath . 'cutScenes/scene' . '/' . $project); //シーンのpmg
+                                    foreach($files AS $file) {
+                                        if (in_array($file, $excludes)) continue;
+                                        $retArray['cutScenes']['scene'][$project][] = $file;
                                     }
                                 }
                             break;
@@ -433,6 +489,69 @@ class dotEditor {
                 $html .= '<form name="del_bk_image" action="" method="post">';
                 $html .= '<input type="hidden" name="del_img_path" value="" />';
                 $html .= '</form>';
+
+            } else if ($bkTypeKey == 'cutScenes') {
+                $html .= '<div class="Cprojects" style="color:red">';
+                //$html .= '<p>';
+                $html .= '<span class="unfoldButton">＋</span>';
+                $html .= '<span class="foldButton">ー</span>' . $bkTypeKey;
+                //$html .= '</p>';
+                $html .= '</div>';
+                $html .= '<div class="acordion">';
+                foreach ($bkType AS $cutSceneTypeKey => $cutSceneType) {
+                    if (substr($cutSceneType[0], -9) == '空です') {
+                        $html .= '<div style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">' . $cutSceneTypeKey[0] . '</div>';
+                        continue;
+                    }
+                    $html .= '<div class="CmapTypes" style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">';
+                    //$html .= '<p>';
+                    $html .= '<span class="unfoldButton">＋</span>';
+                    $html .= '<span class="foldButton">ー</span>' . $cutSceneTypeKey;
+                    //$html .= '</p>';
+                    $html .= '</div>';
+                    $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
+                    foreach ($cutSceneType AS $projectKey => $project) {
+                        if (substr($project[0], -9) == '空です') {
+                            $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
+                            // $html .= '</div>';
+                            continue;
+                        }
+                        $html .= '<div class="Cmaps" style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
+                        //$html .= '<p class="projects">';
+                        $html .= '<span class="unfoldButton">＋</span>';
+                        $html .= '<span class="foldButton">ー</span>' . $projectKey;
+                        //$html .= '</p>';
+                        $html .= '</div>';
+                        $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
+                        foreach ($project AS $fileKey => $file) {
+                            if (is_array($file)) {
+                                if (substr($file[0], -9) == '空です') {
+                                    $html .= '<div style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
+                                    // $html .= '</div>';
+                                    continue;
+                                }
+                                $html .= '<div class="Cmaps" style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
+                                //$html .= '<p class="projects">';
+                                $html .= '<span class="unfoldButton">＋</span>';
+                                $html .= '<span class="foldButton">ー</span>' . $fileKey;
+                                //$html .= '</p>';
+                                $html .= '</div>';
+                                $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
+                                foreach ($file AS $png) {
+                                    //今のところここが最下層
+                                    $html .= '<span><img src="'. $this->backUpDirPath . $bkTypeKey . '/' . $cutSceneTypeKey . '/' . $projectKey . '/' . $fileKey . '/' .$png.'" alt="' . $png . '" class="bkImages"><button class="delBkImg">削除</button></span>';
+                                }
+                                $html .= '</div>';
+                            } else {
+                                //ここにはこないけど書いちゃった
+                                $html .= '<span><img src="'. $this->backUpDirPath . $bkTypeKey . '/' . $cutSceneTypeKey . '/' . $projectKey . '/' .$file.'" alt="' . $file . '" class="bkImages"><button class="delBkImg">削除</button></span>';
+                            }
+                        }
+                        $html .= '</div>';
+                    }
+                    $html .= '</div>';
+                }
+                $html .= '</div>';
             } else {
 
             }
@@ -613,6 +732,36 @@ class dotEditor {
     }
 
     /**
+     * 既存のプロジェクトのデータを取得する(カットシーン登録時)
+     * return プロジェクトのセレクトボックス
+     */
+    function getProjectsDataForCutScene() {
+        $dirs = scandir($this->projectDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store',
+            'common' //commonを除外対象に。ベタがきと重複されるため。
+        );
+        $projects = '<select id="projectsForCutScene" name="projects" onchange="resetCutSceneRegisterContainer()">';
+        $projects .= '<option value="common">common</option>';
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            //最初の要素を選択状態に
+            if ($dir === reset($dirs)) {
+                $projects .= '<option value="' . $dir . '" selected>' . $dir . '</option>';
+            }
+            $projects .= '<option value="' . $dir . '">' . $dir . '</option>';
+        }
+        $projects .= '</select>';
+        return $projects;
+    }
+
+    /**
      * マップチップタイプを取得する
      * return マップチップタイプのセレクトボックス
      */
@@ -676,6 +825,34 @@ class dotEditor {
         $objectTypes .= '</select>';
         $objectTypes .= '<div id="editObjInfo"></div>'; //オブジェクトタイプ毎に、登録内容を変化させて表示するコンテナ
         return $objectTypes;
+    }
+
+    /**
+     * カットシーンタイプを取得する
+     * return カットシーンタイプのセレクトボックス
+     */
+    function getCutSceneTypes() {
+        $cutSceneTypes = '<select id="cutSceneTypes" name="cutSceneTypes" onchange="showCutSceneRegisterContainer()">';
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        foreach ($this->cutSceneTypes AS $type) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($type, $excludes)) {
+                continue;
+            }
+            //最初の要素を選択状態に
+            // if ($type === reset($this->characterImageTypes)) {
+            //     $charaImgTypes .= '<option value="' . $type . '" selected>' . $type . '</option>';
+            // }
+            $cutSceneTypes .= '<option value="' . $type . '">' . $type . '</option>';
+        }
+        $cutSceneTypes .= '</select>';
+        $cutSceneTypes .= '<div id="editCutSceneInfo"></div>'; //カットシーンタイプ毎に、登録内容を変化させて表示するコンテナ
+        return $cutSceneTypes;
     }
 
     //全プロジェクトの全マップチップタイプのマルチマップチップの名前を取得する
@@ -881,6 +1058,50 @@ class dotEditor {
         return $projects;
     }
 
+    //全プロジェクトの大技ユーザーの名前を取得する
+    //一プロジェクト毎にセレクトボックスを作成し、js側でidで取得する。
+    function getSpecialSkillUserNames() {
+        $dirs = scandir($this->projectDirPath);
+        //表示させないディレクトリ配列
+        $excludes = array(
+            '.',
+            '..',
+            '.DS_Store'
+        );
+        $projects = '<div id="SUN_container">';
+        foreach ($dirs AS $dir) {
+            //特定のディレクトリの場合は表示させない
+            if (in_array($dir, $excludes)) {
+                continue;
+            }
+            $project = '<span id="SUN_' . $dir . '" name="" style="display:none">';
+            $project .= '<select id="" name="" onChange="changeSUN(this)">'; //CON = chara object name
+            if (!file_exists($this->projectDirPath . $dir . "/cutScenes/specialSkill")) {
+                continue;
+            }
+            $project .= '<option value="new" selected>新規</option>';
+            $charas = scandir($this->projectDirPath . $dir . "/cutScenes/specialSkill");
+            foreach ($charas AS $chara) {
+                //特定のディレクトリの場合は表示させない
+                if (in_array($chara, $excludes)) {
+                    continue;
+                }
+                //最初の要素を選択状態に
+                if ($chara === reset($charas)) {
+                    $project .= '<option value="' . $chara . '" selected>' . $chara . '</option>';
+                }
+                $project .= '<option value="' . $chara . '">' . $chara . '</option>';
+            }
+            $project .= '</select>';
+            $project .= '</span>';
+            $projects .= $project;
+        }
+        $projects .= '</div>';
+        return $projects;
+    }
+
+
+
     /**
      * キャラクター画像を既存プロジェクトに追加する
      * param1 : 既存プロジェクト名
@@ -928,6 +1149,58 @@ class dotEditor {
             $fp = fopen($targetImagePath . "/" . $date . "_H" . $characterHeight . "_W" . $characterWidth . "_N" . $characterName . ".png", "wb"); //_Nいらんかもだけど一応つける
         } else {
             $fp = fopen($targetImagePath . "/" . $date . "_H" . $characterHeight . "_W" . $characterWidth .".png", "wb"); //_Nいらんかもだけど一応つける
+        }
+        fwrite($fp, $decodedImageData);
+        fclose($fp);
+    }
+
+    /**
+     * カットシーン画像を既存プロジェクトに追加する
+     * param1 : 既存プロジェクト名
+     * param2 : param1 : マップ画像データ(ベース64エンコードずみのもの)
+     * param3 : マップオブジェクトデータ（jsonのテキストばんのもの）
+     * return bool
+     */
+    function addCutSceneToProject($cutSceneBackUpImageData, $cutSceneBackUpImageHeight, $cutSceneBackUpImageWidth, $cutSceneImageData, $project, $cutSceneType, $cutSceneHeight, $cutSceneWidth, $specialSkillUserName) {
+        //追加先ディレクトリ作成(player)
+        $targetImagePath = '';
+        if ($project == 'common') {
+            if ($cutSceneType == 'specialSkill') {
+                $targetImagePath .= $this->projectDirPath . 'common/cutScenes/specialSkill/' . $specialSkillUserName;
+            } else {
+                $targetImagePath .= $this->projectDirPath . 'common/cutScenes/scene';
+            }
+            if(!file_exists($targetImagePath)) mkdir($targetImagePath, 0755, TRUE);
+        } else {
+            if ($cutSceneType == 'specialSkill') {
+                $targetImagePath .= $this->projectDirPath . $project . '/cutScenes/specialSkill/' . $specialSkillUserName;    
+            } else {
+                $targetImagePath .= $this->projectDirPath . $project . '/cutScenes/scene';
+            }
+            if(!file_exists($targetImagePath)) mkdir($targetImagePath, 0755, TRUE);
+        }
+        //追加先ディレクトリ作成(dot-editor(バックアップ))
+        $targetBackUpPath = '';
+        if ($cutSceneType == 'specialSkill') {
+            $targetBackUpPath .= $this->backUpDirPath . "cutScenes/specialSkill/" . $project . "/" . $specialSkillUserName;
+        } else {
+            $targetBackUpPath .= $this->backUpDirPath . "cutScenes/scene/" . $project;
+        }
+        if(!file_exists($targetBackUpPath)) mkdir($targetBackUpPath, 0755, TRUE);
+        
+        //マップデータデコード
+        $decodedBackUpImageData = base64_decode($cutSceneBackUpImageData);
+        $decodedImageData = base64_decode($cutSceneImageData);
+        $date = date('YmdHis'); //名前用時刻取得
+        //まずはバックアップ画像を保存
+        $fp = fopen($targetBackUpPath . "/" . $date . "_H" . $cutSceneBackUpImageHeight . "_W" . $cutSceneBackUpImageWidth . ".png", "wb");
+        fwrite($fp, $decodedBackUpImageData);
+        fclose($fp);
+        //次にrpg-playerへ保存
+        if ($cutSceneType == 'specialSkill') {
+            $fp = fopen($targetImagePath . "/" . $date . "_H" . $cutSceneHeight . "_W" . $cutSceneWidth . "_N" . $specialSkillUserName . ".png", "wb"); //_Nいらんかもだけど一応つける
+        } else {
+            $fp = fopen($targetImagePath . "/" . $date . "_H" . $cutSceneHeight . "_W" . $cutSceneWidth .".png", "wb"); //_Nいらんかもだけど一応つける
         }
         fwrite($fp, $decodedImageData);
         fclose($fp);
@@ -1109,6 +1382,21 @@ class dotEditor {
         $html .= '<input type="hidden" name="character_object_data" value="" />';
         $html .= '<input type="hidden" name="character_height" value="" />';
         $html .= '<input type="hidden" name="character_width" value="" /></form></div>';
+        return $html;
+    }
+
+    function getSaveCutSceneContainer() {
+        $html = '<div id="save-cut-scene-container"><form name="cut_scene_data" action="" method="post"><br><p>カットシーン登録</p>';
+        $html .= $this->getProjectsDataForCutScene() . '<br>';
+        $html .= $this->getCutSceneTypes();
+        //$html .= $this->getProjetCharaObjNames(); //_Nをインデックスに、プロジェクトのキャラオブジェクト名を取得する
+        $html .= '<br><span id="save-cut-scene-data">この内容でサーバに保存</span>';
+        $html .= '<input type="hidden" name="cut_scene_backUpImage_data" value="" />';
+        $html .= '<input type="hidden" name="cut_scene_backUpImage_height" value="" />';
+        $html .= '<input type="hidden" name="cut_scene_backUpImage_width" value="" />';
+        $html .= '<input type="hidden" name="cut_scene_image_data" value="" />';
+        $html .= '<input type="hidden" name="cut_scene_height" value="" />';
+        $html .= '<input type="hidden" name="cut_scene_width" value="" />';
         return $html;
     }
 

@@ -180,6 +180,11 @@ if (document.getElementById('save-object-data') != null) {
 	var saveObjectData = document.getElementById('save-object-data');
 	saveObjectData.addEventListener('click', saveObjectDataToSever, false);
 }
+//この内容で保存ボタン（カットシーン）
+if (document.getElementById('save-cut-scene-data') != null) {
+	var saveCutSceneData = document.getElementById('save-cut-scene-data');
+	saveCutSceneData.addEventListener('click', saveCutSceneDataToSever, false);
+}
 //ドット絵変換
 var makeDotsPic = document.getElementById('make-dots-picture');
 //ハーフモード
@@ -1989,6 +1994,42 @@ function saveObjectDataToSever() {
 	}
 }
 
+//カットシーンデータをサーバに保存する
+function saveCutSceneDataToSever() {
+
+	if (downloadHeight != 288 || downloadWidth != 480) {
+		alert("カットシーンです。\n480 × 288に設定してください。");
+		return;
+	}
+
+	//フォーム取得
+	var cutSceneDataForm = document.forms['cut_scene_data'];
+	//選択中のカットシーンタイプを取得する
+	var cutSceneTypes = document.getElementById('cutSceneTypes').value;
+
+	var bkData = canvas.toDataURL("image/png");
+	bkData = bkData.replace("data:image/png;base64,", "");
+	//canvasの縦横を変更
+	canvas.height = downloadHeight;
+	canvas.width = downloadWidth;
+	//previewをcanvasに描画
+	context.drawImage(preview, 0, 0, downloadWidth, downloadHeight);
+	var data = canvas.toDataURL("image/png");
+	data = data.replace("data:image/png;base64,", "");
+	document.forms['cut_scene_data'].elements['cut_scene_image_data'].value = data;
+	document.forms['cut_scene_data'].elements['cut_scene_height'].value = downloadHeight;   //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+	document.forms['cut_scene_data'].elements['cut_scene_width'].value = downloadWidth;     //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+	document.forms['cut_scene_data'].elements['cut_scene_backUpImage_data'].value = bkData;
+	document.forms['cut_scene_data'].elements['cut_scene_backUpImage_height'].value = 288;  //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+	document.forms['cut_scene_data'].elements['cut_scene_backUpImage_width'].value = 480;   //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
+
+	var confirmTxt = '登録します';
+	var ret = confirm(confirmTxt);
+	if (ret) {
+		cutSceneDataForm.submit();
+	}
+}
+
 //マップチップタイプをchangeした際にコールされる
 function showMapChipRegisterContainer() {
 	var html = '';
@@ -2035,6 +2076,23 @@ function showObjectRegisterContainer() {
 	document.getElementById('editObjInfo').innerHTML = html;
 }
 
+//カットシーンタイプをchangeした際にコールされる
+function showCutSceneRegisterContainer() {
+	var html = '';
+	var cutSceneType = document.getElementById('cutSceneTypes').value;
+	if (cutSceneType == 'scene') {
+		html += '<span>シーン名</span><input type="text" id="scene_name" name="scene_name"></input><br>';
+	} else if (cutSceneType == 'specialSkill') {
+		//html += getCharaObjPatterns();
+		html += '<br>';
+		html += '<span>キャラ名（※新規のみ入力）</span><input type="text" id="special_skill_user_name" name="special_skill_user_name"></input>';
+		html += getSpecialSkillUserNames();
+	} else {
+		html = '';
+	}
+	document.getElementById('editCutSceneInfo').innerHTML = html;
+}
+
 //選択中プロジェクトに紐づくキャラオブジェクト名を取得する。
 //キャラオブジェクト名の一覧は、事前にphpで取得し、どこかに保持しておく
 function getMultiMapChipNames(chipType) {
@@ -2047,8 +2105,8 @@ function getMultiMapChipNames(chipType) {
 	}
 }
 
-//選択中プロジェクトに紐づくキャラオブジェクト名を取得する。
-//キャラオブジェクト名の一覧は、事前にphpで取得し、どこかに保持しておく
+//選択中プロジェクトに紐づくワイプキャラ名を取得する。
+//一覧は、事前にphpで取得し、どこかに保持しておく
 function getWipeCharaNames() {
 	var prj = document.getElementById('projectsForCharacters').value;
 	var charaSelect = document.getElementById('WCN_' + prj);
@@ -2068,6 +2126,18 @@ function getCharaObjNames() {
 		return '<span>キャラオブジェクトは登録されてません</span>'
 	} else {
 		return charaSelect.innerHTML;
+	}
+}
+
+//大技のユーザ名を取得する。
+//一覧は、事前にphpで取得し、どこかに保持しておく
+function getSpecialSkillUserNames() {
+	var prj = document.getElementById('projectsForCutScene').value;
+	var userSelect = document.getElementById('SUN_' + prj);
+	if (userSelect == null) {
+		return '<span>大技ユーザーは登録されてません</span>'
+	} else {
+		return userSelect.innerHTML;
 	}
 }
 
@@ -2130,6 +2200,12 @@ function resetCharacterRegisterContainer() {
 function resetObjectRegisterContainer() {
 	document.getElementById('objectTypes').options[0].selected = true; //選択してくださいに戻す
 	document.getElementById('editObjInfo').innerHTML = '';             //エディットエリアをクリアする
+}
+
+//キャラオブジェクト登録先を変更した際、入力内容をリセットする。
+function resetCutSceneRegisterContainer() {
+	document.getElementById('cutSceneTypes').options[0].selected = true; //選択してくださいに戻す
+	document.getElementById('editCutSceneInfo').innerHTML = '';             //エディットエリアをクリアする
 }
 
 

@@ -99,6 +99,24 @@ if ((isset($_POST['tool_object_data']) || isset($_POST['character_object_data'])
 	}
 }
 
+// カットシーン登録。
+if (isset($_POST['cut_scene_image_data']) && isset($_POST['projects']) && isset($_POST['cutSceneTypes'])) {
+	$cutSceneType = $_POST['cutSceneTypes'];
+	$cutSceneBackUpImageData = $_POST['cut_scene_backUpImage_data'];
+	$cutSceneBackUpImageHeight = $_POST['cut_scene_backUpImage_height'];
+	$cutSceneBackUpImageWidth = $_POST['cut_scene_backUpImage_width'];
+	$cutSceneImageData = $_POST['cut_scene_image_data'];
+	$project = $_POST['projects'];
+	//$objectType = $_POST['objectTypes'];
+	$cutSceneHeight = $_POST['cut_scene_height'];
+	$cutSceneWidth = $_POST['cut_scene_width'];
+	$specialSkillUserName = $_POST['special_skill_user_name'];
+	//echo "<pre>"; echo var_dump($_POST); echo "</pre>"; exit();
+    //カットシーン画像をサーバに保存
+    $obj->addCutSceneToProject($cutSceneBackUpImageData, $cutSceneBackUpImageHeight, $cutSceneBackUpImageWidth, $cutSceneImageData, $project, $cutSceneType, $cutSceneHeight, $cutSceneWidth, $specialSkillUserName);
+    echo '保存しました！（カットシーン）';
+}
+
 if(isset($_GET['id']) && isset($_GET['pas'])) {
 	$id = $_GET['id'];
 	$pas = $_GET['pas'];
@@ -107,12 +125,14 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 		$bkMapChips = $obj->getBkMapChips();
 		$bkMapChipContainer = $obj->getBkMapChipContainer($bkMapChips);
 		$makeProjectContainer = $obj->getMakeProjectContainer();
-		$saveMaptipContainer = $obj->getSaveMaptipContainer();
-		$saveCharacterContainer = $obj->getSaveCharacterContainer();
-		$saveObjectContainer = $obj->getSaveObjectContainer();
+		$saveMaptipContainer = $obj->getSaveMaptipContainer(); //マップチップ登録
+		$saveCharacterContainer = $obj->getSaveCharacterContainer(); //キャラクター画像登録
+		$saveObjectContainer = $obj->getSaveObjectContainer(); //オブジェクト登録
+		$saveCutSceneContainer = $obj->getSaveCutSceneContainer(); //カットシーン登録
 		$multiMapChipNames = $obj->getMultiMapChipNames();
 		$WipeCharaNames = $obj->getWipeCharaNames();
 		$CharaObjectNames = $obj->getCharaObjectNames();
+		$CharaObjectNames = $obj->getSpecialSkillUserNames();
 	}
 } else {
 	$saveMaptipContainer = '';
@@ -252,8 +272,8 @@ $mapChips = $obj->getBkImages();
 		<canvas id="hiddenCanvas" class="none"></canvas>
 		<div id="downloadSize-container">
 			<span>ダウンロードサイズ</span>
-			<span>H:</span>
-			<select id="downloadSizeSelectHeight">
+			<span>W:</span>
+			<select id="downloadSizeSelectWidth">
 				<!-- <option value="544">544×544</option> -->
 				<option value="32">32</option>
 				<option value="64">64</option>
@@ -265,8 +285,8 @@ $mapChips = $obj->getBkImages();
 				<option value="352">352</option>
 				<option value="480">480</option>
 			</select>
-			<span>W:</span>
-			<select id="downloadSizeSelectWidth">
+			<span>H:</span>
+			<select id="downloadSizeSelectHeight">
 				<!-- <option value="544">544×544</option> -->
 				<option value="32">32</option>
 				<option value="64">64</option>
@@ -299,6 +319,7 @@ $mapChips = $obj->getBkImages();
 				echo $saveMaptipContainer;
 				echo $saveCharacterContainer;
 				echo $saveObjectContainer;
+				echo $saveCutSceneContainer;
 				echo $multiMapChipNames;
 				echo $WipeCharaNames;
 				echo $CharaObjectNames;
