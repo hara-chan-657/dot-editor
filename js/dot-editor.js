@@ -2185,6 +2185,20 @@ function changeCON(obj) {
 	}
 }
 
+//切り替える
+//
+function changeSUN(obj) {
+	var idx = obj.selectedIndex;
+	var value = obj.options[idx].value; // 値
+	if (value == 'new') {
+		document.getElementById('special_skill_user_name').value = '';
+		document.getElementById('special_skill_user_name').readOnly = false;;
+	} else {
+		document.getElementById('special_skill_user_name').value = value;
+		document.getElementById('special_skill_user_name').readOnly = true;;
+	}
+}
+
 function resetMapChipRegisterContainer() {
 	document.getElementById('maptipTypes').options[0].selected = true; //選択してくださいに戻す
 	document.getElementById('editMapChipInfo').innerHTML = '';             //エディットエリアをクリアする	

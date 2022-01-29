@@ -130,9 +130,9 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 		$saveObjectContainer = $obj->getSaveObjectContainer(); //オブジェクト登録
 		$saveCutSceneContainer = $obj->getSaveCutSceneContainer(); //カットシーン登録
 		$multiMapChipNames = $obj->getMultiMapChipNames();
-		$WipeCharaNames = $obj->getWipeCharaNames();
-		$CharaObjectNames = $obj->getCharaObjectNames();
-		$CharaObjectNames = $obj->getSpecialSkillUserNames();
+		$wipeCharaNames = $obj->getWipeCharaNames();
+		$charaObjectNames = $obj->getCharaObjectNames();
+		$specialSkillUserNames = $obj->getSpecialSkillUserNames();
 	}
 } else {
 	$saveMaptipContainer = '';
@@ -231,50 +231,11 @@ $mapChips = $obj->getBkImages();
 			<span>50×50</sapn><br>
 			<img id="real-chip" src="">
 		</div>
-		<!-- <div id="backUpImg-container">
-			<div id="bkMapChip">
-                <p class="mapCategory">
-                <span class="unfoldButton">＋</span>
-                <span class="foldButton">ー</span>マップチップ
-                </p>
-            <div class="acordion">
-                <?php
-                    // foreach ($bkImages['mapChip'] AS $file) {
-                    //     echo '<img src="'.$file.'" alt="マップチップ" class="mapchip">';
-                    // }
-                ?>
-            </div>
-			<div id="bkBattleCharacter">
-                <p class="mapCategory">
-                <span class="unfoldButton">＋</span>
-                <span class="foldButton">ー</span>バトルキャラ
-                </p>
-            <div class="acordion">
-                <?php
-                    // foreach ($bkImages['battleCharacter'] AS $file) {
-                    //     echo '<img src="'.$file.'" alt="バトルキャラ" class="mapchip">';
-                    // }
-                ?>
-            </div>
-			<div id="bkWipe">
-                <p class="mapCategory">
-                <span class="unfoldButton">＋</span>
-                <span class="foldButton">ー</span>ワイプ
-                </p>
-            <div class="acordion">
-                <?php
-                    // foreach ($bkImages['wipe'] AS $file) {
-                    //     echo '<img src="'.$file.'" alt="wipe" class="mapchip">';
-                    // }
-                ?>
-            </div>
-		</div> -->
 		<canvas id="hiddenCanvas" class="none"></canvas>
 		<div id="downloadSize-container">
 			<span>ダウンロードサイズ</span>
 			<span>W:</span>
 			<select id="downloadSizeSelectWidth">
-				<!-- <option value="544">544×544</option> -->
 				<option value="32">32</option>
 				<option value="64">64</option>
 				<option value="96">96</option>
@@ -287,7 +248,6 @@ $mapChips = $obj->getBkImages();
 			</select>
 			<span>H:</span>
 			<select id="downloadSizeSelectHeight">
-				<!-- <option value="544">544×544</option> -->
 				<option value="32">32</option>
 				<option value="64">64</option>
 				<option value="96">96</option>
@@ -321,8 +281,9 @@ $mapChips = $obj->getBkImages();
 				echo $saveObjectContainer;
 				echo $saveCutSceneContainer;
 				echo $multiMapChipNames;
-				echo $WipeCharaNames;
-				echo $CharaObjectNames;
+				echo $wipeCharaNames;
+				echo $charaObjectNames;
+				echo $specialSkillUserNames;
 			}
 		?>
 	</div>

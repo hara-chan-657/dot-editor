@@ -236,7 +236,18 @@ body {
 	display: none;
 }
 
-#save-maptip-data {
+#make-project {
+	background-color: yellow;
+	color: black;
+	padding: 8px;
+	border-radius: 20px;
+	display: inline-block;
+	margin-top: 20px;
+	margin-left: 30px;
+	cursor: pointer;	
+}
+
+.save-button {
 	background-color: green;
 	color: white;
 	padding: 8px;
@@ -244,5 +255,11 @@ body {
 	display: inline-block;
 	margin-top: 20px;
 	margin-left: 30px;
-	cursor: pointer;
+	cursor: pointer;	
+}
+
+.save-container {
+	border: solid lime 1px;
+	margin-top: 20px;
+	max-width: 800px;
 }

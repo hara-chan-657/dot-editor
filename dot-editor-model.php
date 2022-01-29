@@ -67,10 +67,6 @@ class dotEditor {
                     }
                     foreach($charaImageTypes AS $charaImageType) {
                         if (in_array($charaImageType, $excludes)) continue;
-                        // if ($this->checkIsDirEmpty($charaImageType)) {
-                        //     $retArray['characters'][$charaImageType][0] = 'characters/' . $charaImageType . 'には画像がありません';
-                        //     return $retArray;
-                        // }
                         switch ($charaImageType) { //battleとwipe
                             case 'battle':
                                 $projects = scandir($this->backUpDirPath . 'characters/battle'); //プロジェクト毎
@@ -145,10 +141,8 @@ class dotEditor {
                                 } else {
                                     //ディレクトリの場合
                                     //正直ここからはマップチップの構成が変わると階層をいじる必要が出てくるかも。まあそん時はそん時。
-                                    //var_dump($rets);
                                     $files = scandir($this->backUpDirPath . 'mapChips/' . $project . '/' . $mapType . '/' . $ret);
                                     if ($this->checkIsDirEmpty($files)) {
-                                        //$retArray[$project][$mapType][$ret][0] = $project . '/' . $mapType . '/' . $ret. 'は空です';
                                         $retArray['mapChips'][$project][$mapType][$ret][0] = $ret. 'は空です';
                                         continue;
                                     }
@@ -170,10 +164,6 @@ class dotEditor {
                     }
                     foreach($objectTypes AS $objectType) {
                         if (in_array($objectType, $excludes)) continue;
-                        // if ($this->checkIsDirEmpty($charaImageType)) {
-                        //     $retArray['characters'][$charaImageType][0] = 'characters/' . $charaImageType . 'には画像がありません';
-                        //     return $retArray;
-                        // }
                         switch ($objectType) { //charactersとtools
                             case 'characters': //wipeの場合複数構成。
                                 $projects = scandir($this->backUpDirPath . 'objects/characters'); //プロジェクト毎
@@ -224,10 +214,6 @@ class dotEditor {
                     }
                     foreach($cutSceneTypes AS $cutSceneType) {
                         if (in_array($cutSceneType, $excludes)) continue;
-                        // if ($this->checkIsDirEmpty($charaImageType)) {
-                        //     $retArray['characters'][$charaImageType][0] = 'characters/' . $charaImageType . 'には画像がありません';
-                        //     return $retArray;
-                        // }
                         switch ($cutSceneType) { //battleとwipe
                             case 'specialSkill': //specialSkillの場合複数構成。
                                 $projects = scandir($this->backUpDirPath . 'cutScenes/specialSkill'); //プロジェクト毎
@@ -276,7 +262,6 @@ class dotEditor {
     }
 
     function checkIsDirEmpty($dir) {
-        //var_dump($dir);
         if (count($dir) == 0) return true;
         foreach ($dir AS $file) {
             if ($file == '.' || $file == '..') continue;
@@ -300,10 +285,8 @@ class dotEditor {
             }
             if ($bkTypeKey == 'characters') {
                 $html .= '<div class="Cprojects" style="color:red">';
-                //$html .= '<p>';
                 $html .= '<span class="unfoldButton">＋</span>';
                 $html .= '<span class="foldButton">ー</span>' . $bkTypeKey;
-                //$html .= '</p>';
                 $html .= '</div>';
                 $html .= '<div class="acordion">';
                 foreach ($bkType AS $charaImageTypeKey => $charaImageType) {
@@ -312,37 +295,29 @@ class dotEditor {
                         continue;
                     }
                     $html .= '<div class="CmapTypes" style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">';
-                    //$html .= '<p>';
                     $html .= '<span class="unfoldButton">＋</span>';
                     $html .= '<span class="foldButton">ー</span>' . $charaImageTypeKey;
-                    //$html .= '</p>';
                     $html .= '</div>';
                     $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
                     foreach ($charaImageType AS $projectKey => $project) {
                         if (substr($project[0], -9) == '空です') {
                             $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
-                            // $html .= '</div>';
                             continue;
                         }
                         $html .= '<div class="Cmaps" style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
-                        //$html .= '<p class="projects">';
                         $html .= '<span class="unfoldButton">＋</span>';
                         $html .= '<span class="foldButton">ー</span>' . $projectKey;
-                        //$html .= '</p>';
                         $html .= '</div>';
                         $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
                         foreach ($project AS $fileKey => $file) {
                             if (is_array($file)) {
                                 if (substr($file[0], -9) == '空です') {
-                                    $html .= '<div style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
-                                    // $html .= '</div>';
+                                    $html .= '<div style="color:black; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
                                     continue;
                                 }
-                                $html .= '<div class="Cmaps" style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
-                                //$html .= '<p class="projects">';
+                                $html .= '<div class="Cmaps" style="color:black; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
                                 $html .= '<span class="unfoldButton">＋</span>';
                                 $html .= '<span class="foldButton">ー</span>' . $fileKey;
-                                //$html .= '</p>';
                                 $html .= '</div>';
                                 $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
                                 foreach ($file AS $png) {
@@ -363,10 +338,8 @@ class dotEditor {
 
             } else if ($bkTypeKey == 'mapChips') {
                 $html .= '<div class="Cprojects" style="color:red">';
-                //$html .= '<p>';
                 $html .= '<span class="unfoldButton">＋</span>';
                 $html .= '<span class="foldButton">ー</span>' . $bkTypeKey;
-                //$html .= '</p>';
                 $html .= '</div>';
                 $html .= '<div class="acordion">';
                 foreach ($bkType AS $projectKey => $project) {
@@ -375,37 +348,29 @@ class dotEditor {
                         continue;
                     }
                     $html .= '<div class="CmapTypes" style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">';
-                    //$html .= '<p>';
                     $html .= '<span class="unfoldButton">＋</span>';
                     $html .= '<span class="foldButton">ー</span>' . $projectKey;
-                    //$html .= '</p>';
                     $html .= '</div>';
                     $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
                     foreach ($project AS $mapTypeKey => $mapType) {
                         if (substr($mapType[0], -9) == '空です') {
                             $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $mapType[0] . '</div>';
-                            // $html .= '</div>';
                             continue;
                         }
                         $html .= '<div class="Cmaps" style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
-                        //$html .= '<p class="projects">';
                         $html .= '<span class="unfoldButton">＋</span>';
                         $html .= '<span class="foldButton">ー</span>' . $mapTypeKey;
-                        //$html .= '</p>';
                         $html .= '</div>';
                         $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
                         foreach ($mapType AS $fileKey => $file) {
                             if (is_array($file)) {
                                 if (substr($file[0], -9) == '空です') {
-                                    $html .= '<div style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
-                                    // $html .= '</div>';
+                                    $html .= '<div style="color:black; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
                                     continue;
                                 }
-                                $html .= '<div class="Cmaps" style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
-                                //$html .= '<p class="projects">';
+                                $html .= '<div class="Cmaps" style="color:black; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
                                 $html .= '<span class="unfoldButton">＋</span>';
                                 $html .= '<span class="foldButton">ー</span>' . $fileKey;
-                                //$html .= '</p>';
                                 $html .= '</div>';
                                 $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
                                 foreach ($file AS $png) {
@@ -426,10 +391,8 @@ class dotEditor {
 
             } else if ($bkTypeKey == 'objects') {
                 $html .= '<div class="Cprojects" style="color:red">';
-                //$html .= '<p>';
                 $html .= '<span class="unfoldButton">＋</span>';
                 $html .= '<span class="foldButton">ー</span>' . $bkTypeKey;
-                //$html .= '</p>';
                 $html .= '</div>';
                 $html .= '<div class="acordion">';
                 foreach ($bkType AS $objectTypeKey => $objectType) {
@@ -438,37 +401,29 @@ class dotEditor {
                         continue;
                     }
                     $html .= '<div class="CmapTypes" style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">';
-                    //$html .= '<p>';
                     $html .= '<span class="unfoldButton">＋</span>';
                     $html .= '<span class="foldButton">ー</span>' . $objectTypeKey;
-                    //$html .= '</p>';
                     $html .= '</div>';
                     $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
                     foreach ($objectType AS $projectKey => $project) {
                         if (substr($project[0], -9) == '空です') {
                             $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
-                            // $html .= '</div>';
                             continue;
                         }
                         $html .= '<div class="Cmaps" style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
-                        //$html .= '<p class="projects">';
                         $html .= '<span class="unfoldButton">＋</span>';
                         $html .= '<span class="foldButton">ー</span>' . $projectKey;
-                        //$html .= '</p>';
                         $html .= '</div>';
                         $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
                         foreach ($project AS $fileKey => $file) {
                             if (is_array($file)) {
                                 if (substr($file[0], -9) == '空です') {
-                                    $html .= '<div style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
-                                    // $html .= '</div>';
+                                    $html .= '<div style="color:black; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
                                     continue;
                                 }
-                                $html .= '<div class="Cmaps" style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
-                                //$html .= '<p class="projects">';
+                                $html .= '<div class="Cmaps" style="color:black; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
                                 $html .= '<span class="unfoldButton">＋</span>';
                                 $html .= '<span class="foldButton">ー</span>' . $fileKey;
-                                //$html .= '</p>';
                                 $html .= '</div>';
                                 $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
                                 foreach ($file AS $png) {
@@ -492,10 +447,8 @@ class dotEditor {
 
             } else if ($bkTypeKey == 'cutScenes') {
                 $html .= '<div class="Cprojects" style="color:red">';
-                //$html .= '<p>';
                 $html .= '<span class="unfoldButton">＋</span>';
                 $html .= '<span class="foldButton">ー</span>' . $bkTypeKey;
-                //$html .= '</p>';
                 $html .= '</div>';
                 $html .= '<div class="acordion">';
                 foreach ($bkType AS $cutSceneTypeKey => $cutSceneType) {
@@ -504,37 +457,29 @@ class dotEditor {
                         continue;
                     }
                     $html .= '<div class="CmapTypes" style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">';
-                    //$html .= '<p>';
                     $html .= '<span class="unfoldButton">＋</span>';
                     $html .= '<span class="foldButton">ー</span>' . $cutSceneTypeKey;
-                    //$html .= '</p>';
                     $html .= '</div>';
                     $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
                     foreach ($cutSceneType AS $projectKey => $project) {
                         if (substr($project[0], -9) == '空です') {
                             $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
-                            // $html .= '</div>';
                             continue;
                         }
                         $html .= '<div class="Cmaps" style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
-                        //$html .= '<p class="projects">';
                         $html .= '<span class="unfoldButton">＋</span>';
                         $html .= '<span class="foldButton">ー</span>' . $projectKey;
-                        //$html .= '</p>';
                         $html .= '</div>';
                         $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
                         foreach ($project AS $fileKey => $file) {
                             if (is_array($file)) {
                                 if (substr($file[0], -9) == '空です') {
-                                    $html .= '<div style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
-                                    // $html .= '</div>';
+                                    $html .= '<div style="color:black; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $file[0] . '</div>';
                                     continue;
                                 }
-                                $html .= '<div class="Cmaps" style="color:pink; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
-                                //$html .= '<p class="projects">';
+                                $html .= '<div class="Cmaps" style="color:black; margin-left:20px; margin-top:4px; border-left:1px solid black;">';
                                 $html .= '<span class="unfoldButton">＋</span>';
                                 $html .= '<span class="foldButton">ー</span>' . $fileKey;
-                                //$html .= '</p>';
                                 $html .= '</div>';
                                 $html .= '<div class="acordion" style="margin-left:20px; border-left:1px solid black;">';
                                 foreach ($file AS $png) {
@@ -612,6 +557,8 @@ class dotEditor {
             if(!file_exists($this->backUpDirPath . 'mapChips/common')) mkdir($this->backUpDirPath . 'mapChips/common', 0755, TRUE);
             if(!file_exists($this->backUpDirPath . 'objects/characters/common')) mkdir($this->backUpDirPath . 'objects/characters/common', 0755, TRUE);
             if(!file_exists($this->backUpDirPath . 'objects/tools/common')) mkdir($this->backUpDirPath . 'objects/tools/common', 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'cutScenes/scene/common')) mkdir($this->backUpDirPath . 'cutScenes/scene/common', 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'cutScenes/specialSkill/common')) mkdir($this->backUpDirPath . 'cutScenes/specialSkill/common', 0755, TRUE);
             //マップエディタ
             if(!file_exists($this->maptipTypeDirPath . 'common')) mkdir($this->maptipTypeDirPath . 'common', 0755, TRUE);
             //rpgエディタ
@@ -621,12 +568,16 @@ class dotEditor {
             if(!file_exists($this->projectDirPath . 'common/characters/wipe')) mkdir($this->projectDirPath . 'common/characters/wipe', 0755, TRUE);
             if(!file_exists($this->projectDirPath . 'common/objects/characters')) mkdir($this->projectDirPath . 'common/objects/characters', 0755, TRUE);
             if(!file_exists($this->projectDirPath . 'common/objects/tools')) mkdir($this->projectDirPath . 'common/objects/tools', 0755, TRUE);
+            if(!file_exists($this->projectDirPath . 'common/cutScenes/scene')) mkdir($this->projectDirPath . 'common/cutScenes/scene', 0755, TRUE);
+            if(!file_exists($this->projectDirPath . 'common/cutScenes/specialSkill')) mkdir($this->projectDirPath . 'common/cutScenes/specialSkill', 0755, TRUE);
         } else {
             if(!file_exists($this->backUpDirPath . 'characters/battle/'.$newProjectName)) mkdir($this->backUpDirPath . 'characters/battle/'.$newProjectName, 0755, TRUE);
             if(!file_exists($this->backUpDirPath . 'characters/wipe/'.$newProjectName)) mkdir($this->backUpDirPath . 'characters/wipe/'.$newProjectName, 0755, TRUE);
             if(!file_exists($this->backUpDirPath . 'mapChips/'.$newProjectName)) mkdir($this->backUpDirPath . 'mapChips/'.$newProjectName, 0755, TRUE);
             if(!file_exists($this->backUpDirPath . 'objects/characters/'.$newProjectName)) mkdir($this->backUpDirPath . 'objects/characters/'.$newProjectName, 0755, TRUE);
             if(!file_exists($this->backUpDirPath . 'objects/tools/'.$newProjectName)) mkdir($this->backUpDirPath . 'objects/tools/'.$newProjectName, 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'cutScenes/scene/'.$newProjectName)) mkdir($this->backUpDirPath . 'cutScenes/scene/'.$newProjectName, 0755, TRUE);
+            if(!file_exists($this->backUpDirPath . 'cutScenes/specialSkill/'.$newProjectName)) mkdir($this->backUpDirPath . 'cutScenes/specialSkill/'.$newProjectName, 0755, TRUE);
             //マップエディタ
             if(!file_exists($this->maptipTypeDirPath .$newProjectName)) mkdir($this->maptipTypeDirPath .$newProjectName, 0755, TRUE);
             //rpgエディタ
@@ -636,6 +587,8 @@ class dotEditor {
             if(!file_exists($this->projectDirPath . $newProjectName .'/characters/wipe')) mkdir($this->projectDirPath . $newProjectName . '/characters/wipe', 0755, TRUE);
             if(!file_exists($this->projectDirPath . $newProjectName .'/objects/characters')) mkdir($this->projectDirPath . $newProjectName . '/objects/characters', 0755, TRUE);
             if(!file_exists($this->projectDirPath . $newProjectName .'/objects/tools')) mkdir($this->projectDirPath . $newProjectName . '/objects/tools', 0755, TRUE);
+            if(!file_exists($this->projectDirPath . $newProjectName .'/cutScenes/scene')) mkdir($this->projectDirPath . $newProjectName . '/cutScenes/scene', 0755, TRUE);
+            if(!file_exists($this->projectDirPath . $newProjectName .'/cutScenes/specialSkill')) mkdir($this->projectDirPath . $newProjectName . '/cutScenes/specialSkill', 0755, TRUE);
         }
 
         return true;
@@ -895,22 +848,6 @@ class dotEditor {
                 $projects .= '</select>';
                 $projects .= '</span>';
             }
-            // if (!file_exists($this->maptipTypeDirPath . $dir . "/characters/wipe")) {
-            //     continue;
-            // }
-            // $charas = scandir($this->projectDirPath . $dir . "/characters/wipe");
-            // foreach ($charas AS $chara) {
-            //     //特定のディレクトリの場合は表示させない
-            //     if (in_array($chara, $excludes)) {
-            //         continue;
-            //     }
-            //     //最初の要素を選択状態に
-            //     if ($chara === reset($charas)) {
-            //         $project .= '<option value="' . $chara . '" selected>' . $chara . '</option>';
-            //     }
-            //     $project .= '<option value="' . $chara . '">' . $chara . '</option>';
-            // }
-            // $project .= '</select>';
             $projects .= '</span>';
             //$projects .= $project;
         }
@@ -1055,6 +992,7 @@ class dotEditor {
         }
         $projects .= '</div>';
         $projects .= $charaObjPattern;
+
         return $projects;
     }
 
@@ -1334,10 +1272,10 @@ class dotEditor {
     }
 
     function getSaveMaptipContainer() {
-        $html = '<div id="save-maptip-container"><form name="maptip_data" action="" method="post"><br><p>マップチップ登録</p>';
+        $html = '<div id="save-maptip-container" class="save-container"><form name="maptip_data" action="" method="post"><p>マップチップ登録</p>';
         $html .= $this->getProjectsDataForMapChip(). '<br>';
         $html .= $this->getMaptipTypes();
-        $html .= '<br><span id="save-maptip-data">この内容でサーバに保存</span>';
+        $html .= '<span id="save-maptip-data" class="save-button">この内容でサーバに保存</span>';
         $html .= '<input type="hidden" name="maptip_backUpImage_data" value="" />';
         $html .= '<input type="hidden" name="maptip_backUpImage_height" value="" />';
         $html .= '<input type="hidden" name="maptip_backUpImage_width" value="" />';
@@ -1348,10 +1286,10 @@ class dotEditor {
     }
 
     function getSaveCharacterContainer() {
-        $html = '<div id="save-character-container"><form name="character_data" action="" method="post"><br><p>キャラクター画像登録</p>';
+        $html = '<div id="save-character-container" class="save-container"><form name="character_data" action="" method="post"><p>キャラクター画像登録（wipe、battle）</p>';
         $html .= $this->getProjectsDataForCharacter(). '<br>';
         $html .= $this->getCharacterImageTypes();
-        $html .= '<br><span id="save-character-data">この内容でサーバに保存</span>';
+        $html .= '<span id="save-character-data" class="save-button">この内容でサーバに保存</span>';
         $html .= '<input type="hidden" name="character_backUpImage_data" value="" />';
         $html .= '<input type="hidden" name="character_backUpImage_height" value="" />';
         $html .= '<input type="hidden" name="character_backUpImage_width" value="" />';
@@ -1363,11 +1301,11 @@ class dotEditor {
 
     //valueをつめるのは、jsの、saveObjectDataToSever
     function getSaveObjectContainer() {
-        $html = '<div id="save-object-container"><form name="object_data" action="" method="post"><br><p>オブジェクト登録</p>';
+        $html = '<div id="save-object-container" class="save-container"><form name="object_data" action="" method="post"><p>オブジェクト登録（tool、character）</p>';
         $html .= $this->getProjectsDataForObj() . '<br>';
         $html .= $this->getObjectTypes();
         //$html .= $this->getProjetCharaObjNames(); //_Nをインデックスに、プロジェクトのキャラオブジェクト名を取得する
-        $html .= '<br><span id="save-object-data">この内容でサーバに保存</span>';
+        $html .= '<span id="save-object-data" class="save-button">この内容でサーバに保存</span>';
         // ここからツール
         $html .= '<input type="hidden" name="tool_backUpImage_data" value="" />';
         $html .= '<input type="hidden" name="tool_backUpImage_height" value="" />';
@@ -1386,11 +1324,11 @@ class dotEditor {
     }
 
     function getSaveCutSceneContainer() {
-        $html = '<div id="save-cut-scene-container"><form name="cut_scene_data" action="" method="post"><br><p>カットシーン登録</p>';
+        $html = '<div id="save-cut-scene-container" class="save-container"><form name="cut_scene_data" action="" method="post"><p>カットシーン登録（scene、specialSkill）</p>';
         $html .= $this->getProjectsDataForCutScene() . '<br>';
         $html .= $this->getCutSceneTypes();
         //$html .= $this->getProjetCharaObjNames(); //_Nをインデックスに、プロジェクトのキャラオブジェクト名を取得する
-        $html .= '<br><span id="save-cut-scene-data">この内容でサーバに保存</span>';
+        $html .= '<span id="save-cut-scene-data" class="save-button">この内容でサーバに保存</span>';
         $html .= '<input type="hidden" name="cut_scene_backUpImage_data" value="" />';
         $html .= '<input type="hidden" name="cut_scene_backUpImage_height" value="" />';
         $html .= '<input type="hidden" name="cut_scene_backUpImage_width" value="" />';
