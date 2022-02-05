@@ -1370,7 +1370,10 @@ class dotEditor {
         $sPos = strpos($delImgPath, '/image');
         $delPath = substr($delImgPath, $sPos);
         $delPath = '.' . $delPath;
-        echo $delPath;
+        //以下、ディレクトリ削除を試みようとしたが、パスに日本語が入っているためにうまくいかず、、
+        //めんどくさいので一旦やめににするが、後々は直したい。
+        // $delPathDir = dirname($delPath);
+        // $img2 = scandir($delPathDir);
         return unlink($delPath);
     }
 

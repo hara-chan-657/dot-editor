@@ -155,8 +155,15 @@ body {
 	display: none;
 }
 
+.optionShortCut {
+	/*background-color: yellow;*/
+	width: 34px;
+	margin:0px 0px 0px 0px;
+	display: inline-block;
+}
+
 #options {
-	height: 33px;
+	height: 70px;
 	background-color:white;
 	max-width: 860px;
 	padding: 2px;

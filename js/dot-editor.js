@@ -305,17 +305,71 @@ function setDefault() {
 
 //キーボードからの入力でイベントを実行する
 function doKeyEvent (evt) {
-	//戻る
-	if (evt.key === 'z' && (evt.ctrlKey || evt.metaKey)) {
+	// //戻る
+	// if (evt.key === 'z' && (evt.ctrlKey || evt.metaKey)) {
+	// 	if (backArray.length > 0) {
+	// 		doBack();
+	// 	}
+	// //進む
+	// } else if (evt.key === 'u' && (evt.ctrlKey || event.metaKey)) {
+	// 	if (forwardArray.length > 0) {
+	// 		doForward();
+	// 	}
+	// } else if (evt.key === 'e' && (evt.ctrlKey || event.metaKey)) {
+	// 	eraser.click(this);
+	// } else if (evt.key === 'c' && (evt.ctrlKey || event.metaKey)) {
+	// 	colorPicker.click(this);
+	// } else if (evt.key === 'd' && (evt.ctrlKey || event.metaKey)) {
+	// 	normal.click(this);
+	// } else if (evt.key === 'ArrowLeft' && (evt.ctrlKey || event.metaKey)) {
+	// 	shiftCanvas('left');
+	// } else if (evt.key === 'ArrowRight' && (evt.ctrlKey || event.metaKey)) {
+	// 	shiftCanvas('right');
+	// } else if (evt.key === 'ArrowUp' && (evt.ctrlKey || event.metaKey)) {
+	// 	shiftCanvas('above');
+	// } else if (evt.key === 'ArrowDown' && (evt.ctrlKey || event.metaKey)) {
+	// 	shiftCanvas('below');
+	// }
+		//戻る
+	if (evt.key === 'z') {
 		if (backArray.length > 0) {
 			doBack();
 		}
 	//進む
-	} else if (evt.key === 'u' && (evt.ctrlKey || event.metaKey)) {
+	} else if (evt.key === 'u') {
 		if (forwardArray.length > 0) {
 			doForward();
 		}
-	} else {
+	} else if (evt.key === 'e') {
+		eraser.click(this);
+	} else if (evt.key === 'c') {
+		colorPicker.click(this);
+	} else if (evt.key === 'd') {
+		normal.click(this);
+	} else if (evt.key === 't') {
+		straightLine.click(this);
+	} else if (evt.key === 'f') {
+		fill.click(this);
+	} else if (evt.key === '1') {
+		circle.click(this);
+	} else if (evt.key === '2') {
+		fillCircle.click(this);
+	} else if (evt.key === '3') {
+		square.click(this);
+	} else if (evt.key === '4') {
+		fillSquare.click(this);
+	} else if (evt.key === 'ArrowLeft') {
+		shiftCanvas('left');
+	} else if (evt.key === 'ArrowRight') {
+		shiftCanvas('right');
+	} else if (evt.key === 'ArrowUp') {
+		shiftCanvas('above');
+	} else if (evt.key === 'ArrowDown') {
+		shiftCanvas('below');
+	}
+
+
+	 else {
 		return;
 	}
 }

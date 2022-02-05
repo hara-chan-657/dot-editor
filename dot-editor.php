@@ -162,6 +162,27 @@ $mapChips = $obj->getBkImages();
 		<img src="./image/dot-editor/header.png" alt="ヘッダー画像">
 	</div>
 	<div id="options">
+			<p class="optionShortCut">z</p>
+			<p class="optionShortCut">u</p>
+			<p class="optionShortCut">e</p>
+			<p class="optionShortCut">c</p>
+			<p class="optionShortCut">d</p>
+			<p class="optionShortCut">t</p>
+			<p class="optionShortCut">f</p>
+			<p class="optionShortCut">1</p>
+			<p class="optionShortCut">2</p>
+			<p class="optionShortCut">3</p>
+			<p class="optionShortCut">4</p>
+			<p class="optionShortCut">h</p>
+			<p class="optionShortCut">v</p>
+			<p class="optionShortCut">r</p>
+			<p class="optionShortCut">←</p>
+			<p class="optionShortCut">→</p>
+			<p class="optionShortCut">↑</p>
+			<p class="optionShortCut">↓</p>
+			<p class="optionShortCut">*</p>
+			<p class="optionShortCut">*</p>
+			<br>
 			<span class="option"><img src="./image/dot-editor/back.png" alt="戻るダミー" id="backDummy"><img src="./image/dot-editor/backActv.png" alt="戻る" id="back"><span class="z2">戻る</span></span>
 			<span class="option"><img src="./image/dot-editor/forward.png" alt="進むダミー" id="forwardDummy"><img src="./image/dot-editor/forwardActv.png" alt="進む" id="forward"><span class="z2">進む</span></span>
 			<span class="option"><img src="./image/dot-editor/eraser.png" alt="消しゴム" id="eraser" class="z1"><span class="z2">消しゴム</span></span>
