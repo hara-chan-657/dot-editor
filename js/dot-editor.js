@@ -331,32 +331,32 @@ function doKeyEvent (evt) {
 	// 	shiftCanvas('below');
 	// }
 		//戻る
-	if (evt.key === 'z') {
+	if (evt.key === 'a') {
 		if (backArray.length > 0) {
 			doBack();
 		}
 	//進む
-	} else if (evt.key === 'u') {
+	} else if (evt.key === 's') {
 		if (forwardArray.length > 0) {
 			doForward();
 		}
-	} else if (evt.key === 'e') {
-		eraser.click(this);
-	} else if (evt.key === 'c') {
-		colorPicker.click(this);
 	} else if (evt.key === 'd') {
-		normal.click(this);
-	} else if (evt.key === 't') {
-		straightLine.click(this);
+		eraser.click(this);
 	} else if (evt.key === 'f') {
+		colorPicker.click(this);
+	} else if (evt.key === 'g') {
+		normal.click(this);
+	} else if (evt.key === 'v') {
+		straightLine.click(this);
+	} else if (evt.key === 'b') {
 		fill.click(this);
-	} else if (evt.key === '1') {
+	} else if (evt.key === 'q') {
 		circle.click(this);
-	} else if (evt.key === '2') {
+	} else if (evt.key === 'w') {
 		fillCircle.click(this);
-	} else if (evt.key === '3') {
+	} else if (evt.key === 'e') {
 		square.click(this);
-	} else if (evt.key === '4') {
+	} else if (evt.key === 'r') {
 		fillSquare.click(this);
 	} else if (evt.key === 'ArrowLeft') {
 		shiftCanvas('left');
@@ -366,10 +366,19 @@ function doKeyEvent (evt) {
 		shiftCanvas('above');
 	} else if (evt.key === 'ArrowDown') {
 		shiftCanvas('below');
-	}
-
-
-	 else {
+	} else if (evt.key === '1') {
+		dotSizeSelect.options[0].selected = true;
+		setDotSize('change');
+	} else if (evt.key === '2') {
+		dotSizeSelect.options[1].selected = true;
+		setDotSize('change');
+	} else if (evt.key === '3') {
+		dotSizeSelect.options[2].selected = true;
+		setDotSize('change');
+	} else if (evt.key === '4') {
+		dotSizeSelect.options[3].selected = true;
+		setDotSize('change');
+	} else {
 		return;
 	}
 }

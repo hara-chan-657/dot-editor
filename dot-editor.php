@@ -162,20 +162,20 @@ $mapChips = $obj->getBkImages();
 		<img src="./image/dot-editor/header.png" alt="ヘッダー画像">
 	</div>
 	<div id="options">
-			<p class="optionShortCut">z</p>
-			<p class="optionShortCut">u</p>
-			<p class="optionShortCut">e</p>
-			<p class="optionShortCut">c</p>
-			<p class="optionShortCut">d</p>
-			<p class="optionShortCut">t</p>
-			<p class="optionShortCut">f</p>
-			<p class="optionShortCut">1</p>
-			<p class="optionShortCut">2</p>
-			<p class="optionShortCut">3</p>
-			<p class="optionShortCut">4</p>
-			<p class="optionShortCut">h</p>
-			<p class="optionShortCut">v</p>
-			<p class="optionShortCut">r</p>
+			<p class="optionShortCut">A</p>
+			<p class="optionShortCut">S</p>
+			<p class="optionShortCut">D</p>
+			<p class="optionShortCut">F</p>
+			<p class="optionShortCut">G</p>
+			<p class="optionShortCut">V</p>
+			<p class="optionShortCut">B</p>
+			<p class="optionShortCut">Q</p>
+			<p class="optionShortCut">W</p>
+			<p class="optionShortCut">E</p>
+			<p class="optionShortCut">R</p>
+			<p class="optionShortCut">*</p>
+			<p class="optionShortCut">*</p>
+			<p class="optionShortCut">*</p>
 			<p class="optionShortCut">←</p>
 			<p class="optionShortCut">→</p>
 			<p class="optionShortCut">↑</p>
@@ -231,10 +231,10 @@ $mapChips = $obj->getBkImages();
 					<td id="currentColor"></td>
 					<td><span style="font-weight:bold">ドット</span>
 						<select id="dotSizeSelect">
-							<option value="32">32px</option>
-							<option value="16">16px</option>
-							<option value="8">8px</option>
-							<option value="4">4px</option>
+							<option value="32">32px(key1)</option>
+							<option value="16">16px(key2)</option>
+							<option value="8">8px(key3)</option>
+							<option value="4">4px(key4)</option>
 						</select>
 					<td>
 				</tr>
