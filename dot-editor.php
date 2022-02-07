@@ -186,8 +186,8 @@ $mapChips = $obj->getBkImages();
 			<span class="option"><img src="./image/dot-editor/back.png" alt="戻るダミー" id="backDummy"><img src="./image/dot-editor/backActv.png" alt="戻る" id="back"><span class="z2">戻る</span></span>
 			<span class="option"><img src="./image/dot-editor/forward.png" alt="進むダミー" id="forwardDummy"><img src="./image/dot-editor/forwardActv.png" alt="進む" id="forward"><span class="z2">進む</span></span>
 			<span class="option"><img src="./image/dot-editor/eraser.png" alt="消しゴム" id="eraser" class="z1"><span class="z2">消しゴム</span></span>
-			<span class="option"><img src="./image/dot-editor/colorPick.png" alt="カラーピッカー" id="colorPicker" class="z1"><span class="z2">カラーピッカー</span></span>
 			<span class="option"><img src="./image/dot-editor/normal.png" alt="ノーマル" id="normal" class="z1"><span class="z2">ノーマル</span></span>
+			<span class="option"><img src="./image/dot-editor/colorPick.png" alt="カラーピッカー" id="colorPicker" class="z1"><span class="z2">カラーピッカー</span></span>
 			<span class="option"><img src="./image/dot-editor/line.png" alt="直線" id="straight-line" class="z1"><span class="z2">直線</span></span>
 			<span class="option"><img src="./image/dot-editor/fill.png" alt="塗りつぶし" id="fill" class="z1"><span class="z2">塗りつぶし</span></span>
 			<span class="option"><img src="./image/dot-editor/circle.png" alt="円" id="circle" class="z1"><span class="z2">円</span></span>

@@ -343,9 +343,9 @@ function doKeyEvent (evt) {
 	} else if (evt.key === 'd') {
 		eraser.click(this);
 	} else if (evt.key === 'f') {
-		colorPicker.click(this);
-	} else if (evt.key === 'g') {
 		normal.click(this);
+	} else if (evt.key === 'g') {
+		colorPicker.click(this);
 	} else if (evt.key === 'v') {
 		straightLine.click(this);
 	} else if (evt.key === 'b') {
@@ -2161,11 +2161,16 @@ function showCutSceneRegisterContainer() {
 function getMultiMapChipNames(chipType) {
 	var prj = document.getElementById('projectsForMapChip').value;
 	var multiChip = document.getElementById('MMN_' + prj + '_' + chipType);
+	var html = '';
 	if (multiChip == null) {
-		return '<span>マルチチップは登録されてません</span>'
+		html += '<span>マルチチップは登録されてません</span>';
 	} else {
-		return multiChip.innerHTML;
+		html += multiChip.innerHTML;
+		if (chipType == 'mapTurn') {
+			html += '<br><span style="color: red;">※mapTurnの場合は、必ず複数構成マップチップにしてください。</span>';
+		}
 	}
+	return html;
 }
 
 //選択中プロジェクトに紐づくワイプキャラ名を取得する。

@@ -723,7 +723,8 @@ class dotEditor {
         foreach ($this->MaptipTypes AS $MaptipType) {
             $html .= '<option value="' . $MaptipType . '">' . $MaptipType . '</option>';
         }
-        $html .= '</select><span style="color: red;">mapTurnの場合は、必ず複数構成マップチップにしてください。</span>';
+        $html .= '</select>';
+        //$html .= '<span style="color: red;">mapTurnの場合は、必ず複数構成マップチップにしてください。</span>';
         $html .= '<div id="editMapChipInfo"></div>'; //キャラクタータイプ毎に、登録内容を変化させて表示するコンテナ
         return $html;
     }
