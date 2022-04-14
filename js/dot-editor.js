@@ -2096,9 +2096,20 @@ function saveCutSceneDataToSever() {
 //マップチップタイプをchangeした際にコールされる
 function showMapChipRegisterContainer() {
 	var html = '';
-	var maptipTypes = document.getElementById('maptipTypes').value;
-	html += '<span>複数構成マップチップ名（※新規のみ入力）</span><input type="text" id="mapchip_name" name="mapchip_name"></input>';
-	html += getMultiMapChipNames(maptipTypes);
+	var maptipType = document.getElementById('maptipTypes').value;
+	if (maptipType == 'mapRepeat') {
+		html += '<span>※上下左右を選択</span>';
+		html += '<select name="mapRepeatDirection" id="mapRepeatDirection">';
+		html += '<option value="6">左</option>';
+		html += '<option value="10">右</option>';
+		html += '<option value="11">上</option>';
+		html += '<option value="12">下</option>';
+		html += '</select>';
+	} else {
+		html += '<span>複数構成マップチップ名（※新規のみ入力）</span><input type="text" id="mapchip_name" name="mapchip_name"></input>';
+		html += getMultiMapChipNames(maptipType);
+	}
+
 	document.getElementById('editMapChipInfo').innerHTML = html;
 }
 

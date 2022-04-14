@@ -32,10 +32,17 @@ if (isset($_POST['maptip_image_data']) && isset($_POST['maptipTypes'])) {
 	$maptipType = $_POST['maptipTypes'];
 	$maptipHeight = $_POST['maptip_height'];
 	$maptipWidth = $_POST['maptip_width'];
-	$multiMapChipName = $_POST['mapchip_name'];
+	if ($maptipType == 'mapRepeat') {
+		//マップリピートの保存
+		$mapRepeatDirection = $_POST['mapRepeatDirection'];
+		$ret = $obj->addMaptipData($project, $maptipBackUpImageData, $maptipBackUpImageHeight, $maptipBackUpImageWidth, $maptipType, $maptipImageData, $maptipHeight, $maptipWidth, $mapRepeatDirection);
+	} else {
+		//マップリピート以外のマップチップの保存
+		$multiMapChipName = $_POST['mapchip_name'];
+    	//マップチップをサーバに保存
+    	$ret = $obj->addMaptipData($project, $maptipBackUpImageData, $maptipBackUpImageHeight, $maptipBackUpImageWidth, $maptipType, $maptipImageData, $maptipHeight, $maptipWidth, $multiMapChipName);
+	}
 
-    //マップチップをサーバに保存
-    $ret = $obj->addMaptipData($project, $maptipBackUpImageData, $maptipBackUpImageHeight, $maptipBackUpImageWidth, $maptipType, $maptipImageData, $maptipHeight, $maptipWidth, $multiMapChipName);
     if ($ret) {
 		echo '保存しました！（マップチップ）';
 	}

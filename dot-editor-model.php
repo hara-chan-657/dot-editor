@@ -1237,21 +1237,74 @@ class dotEditor {
             $decodedImageData = base64_decode($maptipImageData);
             //名前用時刻取得
             $date = date('YmdHis');
+
             //マップ画像を保存
             //まずはバックアップ画像を保存
             //if(!file_exists($this->backUpDirPath . "mapChip")) mkdir($this->backUpDirPath . "mapChip");
             if ($multiMapChipName == '') {
                 $fp = fopen($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/'. $date . "_H" . $maptipBackUpImageHeight . "_W" . $maptipBackUpImageWidth . ".png", "wb");
+
+            } else if ($maptipTypeName == 'mapRepeat') {
+                //mapRepeatの場合、$multiMapChipNameが「上下左右」のどれかになっている
+                switch ($multiMapChipName) {
+                    case '6'://left
+                        if (!file_exists($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/left')) mkdir($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/left');
+                        $fp = fopen($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/left/' . $date . "_H" . $maptipBackUpImageHeight . "_W" . $maptipBackUpImageWidth . ".png", "wb");
+                    break;
+                    case '10'://right
+                        if (!file_exists($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/right')) mkdir($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/right');
+                        $fp = fopen($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/right/' . $date . "_H" . $maptipBackUpImageHeight . "_W" . $maptipBackUpImageWidth . ".png", "wb");
+                    break;
+                    case '11'://up
+                        if (!file_exists($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/up')) mkdir($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/up');
+                        $fp = fopen($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/up/' . $date . "_H" . $maptipBackUpImageHeight . "_W" . $maptipBackUpImageWidth . ".png", "wb");
+                    break;
+                    case '12'://down
+                        if (!file_exists($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/down')) mkdir($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/down');
+                        $fp = fopen($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/down/' . $date . "_H" . $maptipBackUpImageHeight . "_W" . $maptipBackUpImageWidth . ".png", "wb");
+                    break;
+                    default:
+                        # code...
+                    break;
+                }
             } else {
+                //通常の場合
                 if (!file_exists($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/'. $multiMapChipName)) mkdir($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/'. $multiMapChipName);
                 $fp = fopen($this->backUpDirPath . "mapChips/" . $project . '/' . $maptipTypeName . '/'. $multiMapChipName . '/' . $date . "_H" . $maptipBackUpImageHeight . "_W" . $maptipBackUpImageWidth . ".png", "wb");
             }
             fwrite($fp, $decodedBackUpImageData);
             fclose($fp);
-            //次にマップチップエディターへ保存
+
+            //次にマップエディターへ保存
             if ($multiMapChipName == '') {
                 $fp = fopen($MaptipPath . "/" . $date . "_H" . $maptipHeight . "_W" . $maptipWidth . ".png", "wb");
+
+            } else if ($maptipTypeName == 'mapRepeat') {
+                //mapRepeatの場合、$multiMapChipNameが「上下左右」のどれかになっている
+                switch ($multiMapChipName) {
+                    case '6'://left
+                        if (!file_exists($MaptipPath . '/left')) mkdir($MaptipPath . '/left');
+                        $fp = fopen($MaptipPath . '/left/' . $date . "_H" . $maptipHeight . "_W" . $maptipWidth . ".png", "wb");
+                    break;
+                    case '10'://right
+                        if (!file_exists($MaptipPath . '/right')) mkdir($MaptipPath . '/right');
+                        $fp = fopen($MaptipPath . '/right/' . $date . "_H" . $maptipHeight . "_W" . $maptipWidth . ".png", "wb");
+                    break;
+                    case '11'://up
+                        if (!file_exists($MaptipPath . '/up')) mkdir($MaptipPath . '/up');
+                        $fp = fopen($MaptipPath . '/up/' . $date . "_H" . $maptipHeight . "_W" . $maptipWidth . ".png", "wb");
+                    break;
+                    case '12'://down
+                        if (!file_exists($MaptipPath . '/down')) mkdir($MaptipPath . '/down');
+                        $fp = fopen($MaptipPath . '/down/' . $date . "_H" . $maptipHeight . "_W" . $maptipWidth . ".png", "wb");
+                    break;
+                    default:
+                        # code...
+                    break;
+                }
+
             } else {
+                //通常の場合
                 if (!file_exists($MaptipPath . "/" . $multiMapChipName)) mkdir($MaptipPath . "/" . $multiMapChipName);
                 $fp = fopen($MaptipPath . "/" . $multiMapChipName . '/' . $date . "_H" . $maptipHeight . "_W" . $maptipWidth . ".png", "wb");
             }
