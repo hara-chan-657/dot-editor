@@ -1421,14 +1421,23 @@ class dotEditor {
     }
 
     function delBkImage($delImgPath) {
+        $ret = array();
+        // ファイル削除
         $sPos = strpos($delImgPath, '/image');
         $delPath = substr($delImgPath, $sPos);
         $delPath = '.' . $delPath;
-        //以下、ディレクトリ削除を試みようとしたが、パスに日本語が入っているためにうまくいかず、、
-        //めんどくさいので一旦やめににするが、後々は直したい。
-        // $delPathDir = dirname($delPath);
-        // $img2 = scandir($delPathDir);
-        return unlink($delPath);
+        $delBase = basename(dirname($delPath));
+        $ret['file'] = unlink($delPath);
+        //ディレクトリ削除
+        $delPathDir = dirname($delPath);
+        $dirs = scandir($this->projectDirPath);
+        if (!in_array($delBase, $dirs) && !in_array($delBase, $this->MaptipTypes)) { //プロジェクトとマップチップタイプのディレクトリの場合消さない
+            $files = array_diff(scandir($delPathDir), array('.','..'));
+            if (empty($files)) {
+                $ret['dir'] = rmdir($delPathDir);
+            }
+        }
+        return $ret;
     }
 
     /**
@@ -1449,7 +1458,7 @@ class dotEditor {
                 continue;
             }
             //ディレクトリの中のマップチップを取得する
-            foreach(glob($this->mapChipDirPath . $dir . '/*') AS $file){
+            foreach(glob($this->backUpDirPath . $dir . '/*') AS $file){
                 if(is_file($file)){
                     $mapChips[$dir][] = $file;
                 }

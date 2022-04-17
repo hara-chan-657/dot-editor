@@ -5,10 +5,17 @@ $obj = new dotEditor();
 
 if (isset($_POST['del_img_path'])) {
     $ret = $obj->delBkImage($_POST['del_img_path']);
-    if ($ret) {
+    if ($ret['file']) {
 		echo $_POST['del_img_path'] . ' を削除しました！';
 	} else {
-		echo '削除できませんでした。';
+		echo $_POST['del_img_path'] . ' を削除できませんでした。';
+	}
+    if (isset($ret['dir'])) {
+    	if ($ret['dir']) {
+			echo '<br>最後のファイルなのでディレクトリも削除しました！';
+		} else {
+			echo '<br>最後のファイルでしたがディレクトリを削除できませんでした';
+		}
 	}
 }
 
@@ -148,7 +155,7 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 }
 
 //バックアップ画像取得
-$mapChips = $obj->getBkImages();
+//$mapChips = $obj->getBkImages();
 
 ?>
 
