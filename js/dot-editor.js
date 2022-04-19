@@ -498,8 +498,9 @@ function reverseCanvas (mode) {
 		}
 	}
 	//戻る・進む用
+	evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
 	canvasChangeFlg = true;
-	setDraggingFlg(false);
+	setDraggingFlg(false, false, true);
 }
 
 //キャンバスを上下左右にシフトする
@@ -536,8 +537,9 @@ function shiftCanvas (direction) {
 		//何もしない
 	}
 	//戻る・進む用
+	evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
 	canvasChangeFlg = true;
-	setDraggingFlg(false);
+	setDraggingFlg(false, false, true);
 }
 
 //背景罫線を描画するためのファンクション（普段はoff）
@@ -614,7 +616,7 @@ function setMinRowAndCol() {
 //円モードだった場合、最後に描画されていた円を退避していたcanvasとマージしてから動作終了させる
 //param1 : boolean
 //param2 : boolean(ファイル読み込み時のみ）
-function setDraggingFlg (bool, readFileFlg) {
+function setDraggingFlg (bool, readFileFlg=false, shiftCanvas=false) {
 	draggingFlg = bool;
 	var currentModeId = currentModeElement[0].id;
 	if (bool == false) {
@@ -623,29 +625,31 @@ function setDraggingFlg (bool, readFileFlg) {
 			currentModeId == 'square' ||
 			currentModeId == 'fill-square' ||
 			currentModeId == 'straight-line') {
-			canvas.style.backgroundImage = 'url()';
-			context.clearRect(0,0,canvasWidth,canvasHeight);
-			context.putImageData(evacuateCanvas,0,0);
-			var cellColorData2 = context2.getImageData(0, 0, 1, 1);
-			for (var i=0; i<figureColoredCells.length; i++) {
-				//今回塗りつぶしセルについて、ミニマムセル単位で違う色かどうか調べる
-				for (var j=0; j<dotLength/minCell; j++) {
-					if (canvasChangeFlg == true) {
-						break;
-					}
-					for (var k=0; k<dotLength/minCell; k++) {
-						var gotColor = context.getImageData(figureColoredCells[i][0]+k*minCell,figureColoredCells[i][1]+j*minCell,1,1);
-						if (gotColor.data[0] != cellColorData2.data[0]
-						 || gotColor.data[1] != cellColorData2.data[1]
-						 || gotColor.data[2] != cellColorData2.data[2]
-						 || gotColor.data[3] != cellColorData2.data[3]) {
-							canvasChangeFlg = true;
+				canvas.style.backgroundImage = 'url()';
+				context.clearRect(0,0,canvasWidth,canvasHeight);
+				context.putImageData(evacuateCanvas,0,0);
+				var cellColorData2 = context2.getImageData(0, 0, 1, 1);
+				for (var i=0; i<figureColoredCells.length; i++) {
+					//今回塗りつぶしセルについて、ミニマムセル単位で違う色かどうか調べる
+					for (var j=0; j<dotLength/minCell; j++) {
+						if (canvasChangeFlg == true) {
 							break;
 						}
+						for (var k=0; k<dotLength/minCell; k++) {
+							var gotColor = context.getImageData(figureColoredCells[i][0]+k*minCell,figureColoredCells[i][1]+j*minCell,1,1);
+							if (gotColor.data[0] != cellColorData2.data[0]
+						 	|| gotColor.data[1] != cellColorData2.data[1]
+						 	|| gotColor.data[2] != cellColorData2.data[2]
+						 	|| gotColor.data[3] != cellColorData2.data[3]) {
+								canvasChangeFlg = true;
+								break;
+							}
+						}
+					}
+					if (!shiftCanvas) {
+						context.fillRect(figureColoredCells[i][0],figureColoredCells[i][1],dotLength,dotLength);
 					}
 				}
-				context.fillRect(figureColoredCells[i][0],figureColoredCells[i][1],dotLength,dotLength);
-			}
 		}
 		//やむなく実装、、
 		if (readFileFlg == true) {
