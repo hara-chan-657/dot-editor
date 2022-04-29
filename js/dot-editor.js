@@ -2307,10 +2307,10 @@ function resetCutSceneRegisterContainer() {
 
 
 var charaObjPatterns = [
-	['f','前向'],
-	['fr','前向右足前'],
-	['fl','前向左足前'],
-	['b','後向'],
+	['f','(前向)'],
+	['fr','★前向右足前'],
+	['fl','★前向左足前'],
+	['b','(後向)'],
 	['br','後向右足前'],
 	['bl','後向左足前'],
 	['r','右向'],
