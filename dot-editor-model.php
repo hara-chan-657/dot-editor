@@ -271,7 +271,6 @@ class dotEditor {
     }
 
 
-
     function getBkMapChipContainer($mapChips) {
         $html = '';
         if ($mapChips[0] == 'バックアップ画像がありません') {
@@ -546,7 +545,7 @@ class dotEditor {
     }
 
     /**
-     * 新規プロジェクト作成する
+     * 新規プロジェクト作成する（プロジェクト削除の時はこのファンクションを参考にする）
      */
     function makeNewProject($newProjectName) {
         //プロジェクトディレクトリが必要な各所にプロジェクトディレクトリを作成する。
@@ -571,6 +570,7 @@ class dotEditor {
             if(!file_exists($this->projectDirPath . 'common/cutScenes/scene')) mkdir($this->projectDirPath . 'common/cutScenes/scene', 0755, TRUE);
             if(!file_exists($this->projectDirPath . 'common/cutScenes/specialSkill')) mkdir($this->projectDirPath . 'common/cutScenes/specialSkill', 0755, TRUE);
         } else {
+            //ドットエディタ
             if(!file_exists($this->backUpDirPath . 'characters/battle/'.$newProjectName)) mkdir($this->backUpDirPath . 'characters/battle/'.$newProjectName, 0755, TRUE);
             if(!file_exists($this->backUpDirPath . 'characters/wipe/'.$newProjectName)) mkdir($this->backUpDirPath . 'characters/wipe/'.$newProjectName, 0755, TRUE);
             if(!file_exists($this->backUpDirPath . 'mapChips/'.$newProjectName)) mkdir($this->backUpDirPath . 'mapChips/'.$newProjectName, 0755, TRUE);
@@ -798,10 +798,6 @@ class dotEditor {
             if (in_array($type, $excludes)) {
                 continue;
             }
-            //最初の要素を選択状態に
-            // if ($type === reset($this->characterImageTypes)) {
-            //     $charaImgTypes .= '<option value="' . $type . '" selected>' . $type . '</option>';
-            // }
             $cutSceneTypes .= '<option value="' . $type . '">' . $type . '</option>';
         }
         $cutSceneTypes .= '</select>';
@@ -873,7 +869,7 @@ class dotEditor {
                 continue;
             }
             $project = '<span id="WCN_' . $dir . '" name="" style="display:none">';
-            $project .= '<select id="" name="" onChange="changeWCN(this)">'; //CON = chara object name
+            $project .= '<select id="" name="" onChange="changeWCN(this)">'; //WCN = WipeCharaNames
             if (!file_exists($this->projectDirPath . $dir . "/characters/wipe")) {
                 continue;
             }
@@ -916,7 +912,7 @@ class dotEditor {
                 continue;
             }
             $project = '<span id="CON_' . $dir . '" name="" style="display:none">';
-            $project .= '<select id="" name="" onChange="changeCON(this)">'; //CON = chara object name
+            $project .= '<select id="" name="" onChange="changeCON(this)">'; //CON = CharaObjectNames
             if (!file_exists($this->projectDirPath . $dir . "/objects/characters")) {
                 continue;
             }
@@ -1014,7 +1010,7 @@ class dotEditor {
                 continue;
             }
             $project = '<span id="SUN_' . $dir . '" name="" style="display:none">';
-            $project .= '<select id="" name="" onChange="changeSUN(this)">'; //CON = chara object name
+            $project .= '<select id="" name="" onChange="changeSUN(this)">'; //SUN = SkillUserNames
             if (!file_exists($this->projectDirPath . $dir . "/cutScenes/specialSkill")) {
                 continue;
             }

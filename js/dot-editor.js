@@ -201,27 +201,8 @@ var delBkImg = document.getElementsByClassName('delBkImg');
 ///////////////////////////////　　以下イベント   ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 window.addEventListener('load', setDefault, false);
-// History APIが使用可能ブラウザか確認
-if(history && history.pushState && history.state != undefined){
-	// ブラウザの履歴に戻る無効を追加
-	history.pushState(null, null, null);
-	// 戻るボタン押下でイベント発動
-	window.addEventListener("popstate", function() {
-	// 確認メッセージ表示
-	window.onbeforeunload = function(e) {
-	return 'このページから離れますか？';
-	};
-	// このページを離れるを押した場合さらに１つ履歴を戻る
-	// (通常のブラウザバックと同じ挙動)
-	// ページを離れない場合は再度ブラウザ戻るボタンを押した時用に
-	// 履歴無効を追加
-	history.go(-1);
-	history.pushState(null, null, null);
-	});
-}
 window.addEventListener('beforeunload', function (evt) {evt.returnValue =  'ほんと？'}, false);
 document.addEventListener('keydown', function (evt) {doKeyEvent(evt);}, false);
-//options.addEventListener('mouseenter', showDetail, false);
 for (var i=0; i<option.length; i++) {
 	option[i].addEventListener('mouseenter', function(evt) {showDetail(evt);}, false);
 }
@@ -303,34 +284,19 @@ function setDefault() {
 //	setBackGround();//背景の罫線を描画する為だけのファンクション。普段はoff
 }
 
+//背景罫線を描画するためのファンクション（普段はoff）
+function setBackGround () {
+	for (var i=0; i<120; i++) {
+		for (var j=0; j<120; j++) {
+			context.strokeStyle = 'blue';
+			context.strokeRect(4*i,4*j,4,4);
+		}
+	}
+}
+
 //キーボードからの入力でイベントを実行する
 function doKeyEvent (evt) {
-	// //戻る
-	// if (evt.key === 'z' && (evt.ctrlKey || evt.metaKey)) {
-	// 	if (backArray.length > 0) {
-	// 		doBack();
-	// 	}
-	// //進む
-	// } else if (evt.key === 'u' && (evt.ctrlKey || event.metaKey)) {
-	// 	if (forwardArray.length > 0) {
-	// 		doForward();
-	// 	}
-	// } else if (evt.key === 'e' && (evt.ctrlKey || event.metaKey)) {
-	// 	eraser.click(this);
-	// } else if (evt.key === 'c' && (evt.ctrlKey || event.metaKey)) {
-	// 	colorPicker.click(this);
-	// } else if (evt.key === 'd' && (evt.ctrlKey || event.metaKey)) {
-	// 	normal.click(this);
-	// } else if (evt.key === 'ArrowLeft' && (evt.ctrlKey || event.metaKey)) {
-	// 	shiftCanvas('left');
-	// } else if (evt.key === 'ArrowRight' && (evt.ctrlKey || event.metaKey)) {
-	// 	shiftCanvas('right');
-	// } else if (evt.key === 'ArrowUp' && (evt.ctrlKey || event.metaKey)) {
-	// 	shiftCanvas('above');
-	// } else if (evt.key === 'ArrowDown' && (evt.ctrlKey || event.metaKey)) {
-	// 	shiftCanvas('below');
-	// }
-		//戻る
+	//戻る
 	if (evt.key === 'a') {
 		if (backArray.length > 0) {
 			doBack();
@@ -410,7 +376,7 @@ function hideDetail(evt) {
 }
 
 //ファイルを読み込む
-//このファンクションだけほぼ外注
+//このファンクションはほぼ外注
 function readImgFile(evt) {
     // ファイル情報を取得
     var fileData = evt.target.files[0];
@@ -540,16 +506,6 @@ function shiftCanvas (direction) {
 	evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
 	canvasChangeFlg = true;
 	setDraggingFlg(false, false, true);
-}
-
-//背景罫線を描画するためのファンクション（普段はoff）
-function setBackGround () {
-	for (var i=0; i<120; i++) {
-		for (var j=0; j<120; j++) {
-			context.strokeStyle = 'blue';
-			context.strokeRect(4*i,4*j,4,4);
-		}
-	}
 }
 
 //canvasを一動作前の状態に戻す
@@ -1690,18 +1646,6 @@ function deleteBkImg(evt) {
 
 //プレビューを表示する
 function showPreview () {
-	//ダウンロードサイズを取得する
-	//最初からダウンロードサイズをいじってない場合、一個目のやつをセレクト
-	// if (downloadSizeSelectHeight.selectedIndex === null && downloadSizeSelectWidth.selectedIndex === null) {
-	// 	downloadSizeSelectHeight.options[0].selected = true;
-	// 	downloadSizeSelectWidth.options[0].selected = true;
-	// }
-	// var downloadSizeIndexHeight =  downloadSizeSelectHeight.selectedIndex;
-	// var downloadSizeIndexWidth =  downloadSizeSelectWidth.selectedIndex;
-	// downloadSize = downloadSizeSelect.options[downloadSizeIndexHeight].value;
-	// downloadSize = downloadSizeSelect.options[downloadSizeIndexWidth].value;
-	//canvasのデータURLをpreviewimgにセット
-	//backUpImg.src = canvas.toDataURL();
 	preview.src = canvas.toDataURL();
 	//プレビューの表示
 	previewContainer.style.display = 'block';
@@ -2054,7 +1998,7 @@ function saveObjectDataToSever() {
 			break;
 	}
 
-	var confirmTxt = '登録します';
+	var confirmTxt = 'オブジェクトデータをサーバに保存する登録します';
 	var ret = confirm(confirmTxt);
 	if (ret) {
 		objectDataForm.submit();
@@ -2063,7 +2007,6 @@ function saveObjectDataToSever() {
 
 //カットシーンデータをサーバに保存する
 function saveCutSceneDataToSever() {
-
 	if (downloadHeight != 288 || downloadWidth != 480) {
 		alert("カットシーンです。\n480 × 288に設定してください。");
 		return;
@@ -2090,7 +2033,7 @@ function saveCutSceneDataToSever() {
 	document.forms['cut_scene_data'].elements['cut_scene_backUpImage_height'].value = 288;  //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
 	document.forms['cut_scene_data'].elements['cut_scene_backUpImage_width'].value = 480;   //これは名前にサイズつけるために使うだけ、サイズを変更するためではないので注意
 
-	var confirmTxt = '登録します';
+	var confirmTxt = 'カットシーンを登録します';
 	var ret = confirm(confirmTxt);
 	if (ret) {
 		cutSceneDataForm.submit();
@@ -2125,10 +2068,6 @@ function showCharacterRegisterContainer() {
 		html += '<span>キャラ名（※新規のみ入力）</span><input type="text" id="chara_name" name="chara_name"></input>';
 		html += getWipeCharaNames();
 	} else if (characterImageType == 'battle') {
-		// html += getCharaObjPatterns();
-		// html += '<br>';
-		// html += '<span>キャラ名（※新規のみ入力）</span><input type="text" id="chara_name" name="character_name"></input>';
-		// html += getCharaObjNames();
 		html = '';
 	} else {
 		html = '';
@@ -2161,7 +2100,6 @@ function showCutSceneRegisterContainer() {
 	if (cutSceneType == 'scene') {
 		html += '<span>シーン名</span><input type="text" id="scene_name" name="scene_name"></input><br>';
 	} else if (cutSceneType == 'specialSkill') {
-		//html += getCharaObjPatterns();
 		html += '<br>';
 		html += '<span>キャラ名（※新規のみ入力）</span><input type="text" id="special_skill_user_name" name="special_skill_user_name"></input>';
 		html += getSpecialSkillUserNames();
@@ -2171,8 +2109,8 @@ function showCutSceneRegisterContainer() {
 	document.getElementById('editCutSceneInfo').innerHTML = html;
 }
 
-//選択中プロジェクトに紐づくキャラオブジェクト名を取得する。
-//キャラオブジェクト名の一覧は、事前にphpで取得し、どこかに保持しておく
+//選択中プロジェクトに紐づくマルチマップチップ名を取得する。
+//マルチマップチップ名の一覧は、事前にphpで取得し、どこかに保持しておく
 function getMultiMapChipNames(chipType) {
 	var prj = document.getElementById('projectsForMapChip').value;
 	var multiChip = document.getElementById('MMN_' + prj + '_' + chipType);
@@ -2224,8 +2162,9 @@ function getSpecialSkillUserNames() {
 	}
 }
 
-//切り替える
-//
+//マルチマップチップ名の入力値を切り替える
+//MMN = Multi Mapchip name
+//新規を選んだ場合⇨テキストをenableに、それいがいはテキストをdisableにし、選択値のバリューをいれる。
 function changeMMN(obj) {
 	var idx = obj.selectedIndex;
 	var value = obj.options[idx].value; // 値
@@ -2238,7 +2177,8 @@ function changeMMN(obj) {
 	}
 }
 
-//キャラクターオブジェクトの名前入力値を切り替える
+//ワイプキャラ名の入力値を切り替える
+//WCN = WipeCharaNames
 //新規を選んだ場合⇨テキストをenableに、それいがいはテキストをdisableにし、選択値のバリューをいれる。
 function changeWCN(obj) {
 	var idx = obj.selectedIndex;
@@ -2253,6 +2193,7 @@ function changeWCN(obj) {
 }
 
 //キャラクターオブジェクトの名前入力値を切り替える
+//CON = CharaObjectNames
 //新規を選んだ場合⇨テキストをenableに、それいがいはテキストをdisableにし、選択値のバリューをいれる。
 function changeCON(obj) {
 	var idx = obj.selectedIndex;
@@ -2268,8 +2209,9 @@ function changeCON(obj) {
 	}
 }
 
-//切り替える
-//
+//スキルユーザ名の入力値を切り替える
+//SUN = SkillUserNames
+//新規を選んだ場合⇨テキストをenableに、それいがいはテキストをdisableにし、選択値のバリューをいれる。
 function changeSUN(obj) {
 	var idx = obj.selectedIndex;
 	var value = obj.options[idx].value; // 値

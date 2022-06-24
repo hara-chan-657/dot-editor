@@ -125,7 +125,6 @@ if (isset($_POST['cut_scene_image_data']) && isset($_POST['projects']) && isset(
 	$cutSceneHeight = $_POST['cut_scene_height'];
 	$cutSceneWidth = $_POST['cut_scene_width'];
 	$specialSkillUserName = $_POST['special_skill_user_name'];
-	//echo "<pre>"; echo var_dump($_POST); echo "</pre>"; exit();
     //カットシーン画像をサーバに保存
     $obj->addCutSceneToProject($cutSceneBackUpImageData, $cutSceneBackUpImageHeight, $cutSceneBackUpImageWidth, $cutSceneImageData, $project, $cutSceneType, $cutSceneHeight, $cutSceneWidth, $specialSkillUserName);
     echo '保存しました！（カットシーン）';
@@ -153,9 +152,6 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 	$saveCharacterContainer = '';
 	$saveObjectContainer = '';
 }
-
-//バックアップ画像取得
-//$mapChips = $obj->getBkImages();
 
 ?>
 
