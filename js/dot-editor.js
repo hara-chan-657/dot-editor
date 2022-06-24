@@ -270,6 +270,12 @@ for (var i=0; i<delBkImg.length; i++) {
 ////////////////////////////　　以下ファンクション   //////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+//戻るの完全禁止
+history.pushState(null, null, location.href);
+window.addEventListener('popstate', (e) => {
+  history.go(1);
+});
+
 //ロード時、各デフォルトの値をセットするために呼ばれる
 function setDefault() {
 	setRealChip();
