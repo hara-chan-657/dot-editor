@@ -409,7 +409,13 @@ function readImgFile(evt) {
         var img = new Image();
         img.src = uploadImgSrc;
         img.onload = function() {
-            context.drawImage(img, 0, 0, canvasWidth, this.height * (canvasWidth / this.width));
+        	if (this.height > this.width) {
+        	//縦の方が長い画像のとき（縦をキャンバスに収める）
+            	context.drawImage(img, 0, 0, this.width * (canvasHeight / this.height), canvasHeight);
+        	} else  {
+        	//横の方が長い画像のとき（横をキャンバスに収める）
+            	context.drawImage(img, 0, 0, canvasWidth, this.height * (canvasWidth / this.width));
+        	}
             //戻る・進む用
             canvasChangeFlg = true;
             setDraggingFlg(false, true);
