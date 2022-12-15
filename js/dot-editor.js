@@ -187,6 +187,8 @@ if (document.getElementById('save-cut-scene-data') != null) {
 }
 //ドット絵変換
 var makeDotsPic = document.getElementById('make-dots-picture');
+//カットアウト
+var cutOut = document.getElementById('cutOut');
 //ハーフモード
 var halfMode = document.getElementById('half-mode');
 //展開ボタン
@@ -254,6 +256,7 @@ fillSquare.addEventListener('click', setCurrentMode, false);
 straightLine.addEventListener('click', setCurrentMode, false);
 colorPicker.addEventListener('click', setCurrentMode, false);
 makeDotsPic.addEventListener('click', makeDotsPicture, false);
+cutOut.addEventListener('click', setCurrentMode, false);
 for (var i=0; i<unfoldButtons.length; i++) {
 	unfoldButtons[i].addEventListener('click', function(evt) {changeCategoryDisplay(evt, 'unfold');}, false);
 }
@@ -728,10 +731,19 @@ function changeCellColor(evt) {
 			break;
 
 		case 'fill':
+		case 'cutOut':
 			//ドラッグフラグ変更
 			setDraggingFlg(true);
-			//同じ色かどうか調べる
-			var result = isSameColoredCell(cell);
+			var result;
+			if (currentModeId == 'fill') {
+			//fillの場合
+				//同じ色かどうか調べる
+				result = isSameColoredCell(cell);
+			} else {
+			//cutOutの場合
+				//同じ色の場合のスキップをしない
+				result = false;
+			}
 			if (!result) {
 				//塗りつぶし配列にプッシュ
 				fillingCells = [];
@@ -769,10 +781,16 @@ function changeCellColor(evt) {
 					//一個左のセルが一番左の列より左でない、かつ同じ色のセル、かつ次回チェックセルにない場合、次回チェックセルにプッシュ
 					if (leftCell[0] >= 0 && isSameColoredCell(leftCell, cell) && !isCellExist(nextCheckCells, leftCell)) nextCheckCells.push(leftCell);
 				}
-				//塗りつぶし配列を、まとめて塗りつぶし
 				for (var i=0; i<fillingCells.length; i++) {
-					context.fillStyle = currentColor.style.backgroundColor;
-					context.fillRect(minCell*fillingCells[i][0],minCell*fillingCells[i][1],minCell,minCell);
+					if (currentModeId == 'fill') {
+					//塗りつぶし配列を、まとめて塗りつぶし
+						context.fillStyle = currentColor.style.backgroundColor;
+						context.fillRect(minCell*fillingCells[i][0],minCell*fillingCells[i][1],minCell,minCell);
+					} else {
+					//塗りつぶし配列を、まとめてカットアウト
+						// context.clearRect(dotLength*startX,dotLength*startY,dotLength,dotLength);
+						context.clearRect(minCell*fillingCells[i][0],minCell*fillingCells[i][1],minCell,minCell);
+					}
 				}
 				//canvas変更フラグ変更
 				canvasChangeFlg = true;
