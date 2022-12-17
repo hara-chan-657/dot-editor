@@ -165,7 +165,7 @@ body {
 #options {
 	height: 70px;
 	background-color:white;
-	max-width: 860px;
+/*	max-width: 860px;*/
 	padding: 2px;
 	margin-bottom:3px;
 }

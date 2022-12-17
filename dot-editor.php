@@ -193,6 +193,8 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 			<p class="optionShortCut">*</p>
 			<p class="optionShortCut">*</p>
 			<p class="optionShortCut">*</p>
+			<p class="optionShortCut">*</p>
+			<p class="optionShortCut">*</p>
 			<br>
 			<span class="option"><img src="./image/dot-editor/back.png" alt="戻るダミー" id="backDummy"><img src="./image/dot-editor/backActv.png" alt="戻る" id="back"><span class="z2">戻る</span></span>
 			<span class="option"><img src="./image/dot-editor/forward.png" alt="進むダミー" id="forwardDummy"><img src="./image/dot-editor/forwardActv.png" alt="進む" id="forward"><span class="z2">進む</span></span>
@@ -215,6 +217,8 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 			<span class="option"><label for="readFile" id="readFileButton" class="z1"></label><span class="z2">画像を読み込む</span></span>
 			<span class="option"><label for="make-dots-picture" id="make-dots-picture" class="z1"></label><span class="z2">ドットに変換</span></span>
 			<span class="option"><img src="./image/dot-editor/cutOut.png" alt="カットアウト" id="cutOut" class="z1"><span class="z2">カットアウト</span></span>
+			<span class="option"><img src="./image/dot-editor/zoomIn.png" alt="拡大" id="zoomIn" class="z1"><span class="z2">拡大</span></span>
+			<span class="option"><img src="./image/dot-editor/zoomOut.png" alt="縮小" id="zoomOut" class="z1"><span class="z2">縮小</span></span>
 			<input type="file" id="readFile" value="画像を読み込む">
 	</div>
 	<div id="preview-container">
@@ -320,6 +324,7 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 			}
 		?>
 	</div>
+	<img id="inOut" src="" style="display: none;">
 <script src="./js/dot-editor.js"></script>
 </body>
 </html>

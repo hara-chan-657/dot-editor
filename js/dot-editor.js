@@ -189,6 +189,10 @@ if (document.getElementById('save-cut-scene-data') != null) {
 var makeDotsPic = document.getElementById('make-dots-picture');
 //カットアウト
 var cutOut = document.getElementById('cutOut');
+//拡大
+var zoomIn = document.getElementById('zoomIn');
+//縮小
+var zoomOut = document.getElementById('zoomOut');
 //ハーフモード
 var halfMode = document.getElementById('half-mode');
 //展開ボタン
@@ -257,6 +261,8 @@ straightLine.addEventListener('click', setCurrentMode, false);
 colorPicker.addEventListener('click', setCurrentMode, false);
 makeDotsPic.addEventListener('click', makeDotsPicture, false);
 cutOut.addEventListener('click', setCurrentMode, false);
+zoomIn.addEventListener('click', function () {zoomInOut('in');}, false);
+zoomOut.addEventListener('click', function () {zoomInOut('out');}, false);
 for (var i=0; i<unfoldButtons.length; i++) {
 	unfoldButtons[i].addEventListener('click', function(evt) {changeCategoryDisplay(evt, 'unfold');}, false);
 }
@@ -1833,6 +1839,38 @@ function setDotSize (mode) {
 	} else {
 		return;
 	}
+}
+
+//拡大縮小
+function zoomInOut (mode) {
+
+	//キャンバスを画像化
+	var inOut = document.getElementById("inOut");
+	inOut.src = canvas.toDataURL();
+
+	// Image オブジェクトを生成、画像化したキャンバスを設定
+	var img = new Image();
+	img.src = inOut.src;
+
+	img.onload = function(){
+		//まずはキャンバスクリア
+		context.clearRect(0,0,canvasWidth,canvasHeight);
+		//拡大
+		context.save()
+		var scale = 1.0;
+		mode == 'in' ? scale += 0.08 : scale -= 0.08;
+		context.scale(scale, scale);
+		//描画
+		context.drawImage(img, 0, 0);
+		//スケール戻し
+		context.restore()
+	}
+
+	// //戻る・進む用
+	evacuateCanvas = context.getImageData(0,0,canvasWidth,canvasHeight);
+	canvasChangeFlg = true;
+	setDraggingFlg(false);
+
 }
 
 //パレットを表示する
