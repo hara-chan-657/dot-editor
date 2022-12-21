@@ -262,7 +262,8 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 					</td>
 				</tr>
 			</table>
-			<table id="palette"></table>
+			<table id="palette" style="display: inline-block;"></table>
+			<table id="historyPalette" style="display: inline-block; margin-left: 10px;"></table>
 		</div>
 		<div id="real-chip-container">
 			<span>50×50</sapn><br>

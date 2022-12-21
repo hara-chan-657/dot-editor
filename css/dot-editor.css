@@ -19,7 +19,7 @@ body {
 	display: block;
 	border:1px solid green;
 	padding: 30px;
-	max-width: 1400px;
+	max-width: 1500px;
 	background-image:url("../image/dot-editor/background.png");
 }
 
@@ -111,6 +111,12 @@ body {
 }
 
 #palette td {
+	height: 12px;
+	width: 35px;
+	border: 1px solid gray;
+}
+
+#historyPalette td {
 	height: 12px;
 	width: 35px;
 	border: 1px solid gray;

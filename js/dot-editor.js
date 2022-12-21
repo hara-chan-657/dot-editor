@@ -155,6 +155,8 @@ var colorPicker = document.getElementById('colorPicker');
 var paletteContainer = document.getElementById('palette-container');
 //パレット
 var palette = document.getElementById('palette');
+//履歴パレット
+var historyPalette = document.getElementById('historyPalette');
 //現在色
 var currentColor = document.getElementById('currentColor');
 //現在色canvas
@@ -289,6 +291,7 @@ window.addEventListener('popstate', (e) => {
 function setDefault() {
 	setRealChip();
 	showPalette();
+	showHistoryPalette();
 	setCurrentMode();
 	setCanvas('load');
 	setCurrentColor();
@@ -1892,8 +1895,25 @@ function showPalette() {
 	for (var i=0; i<tr.length; i++) palette.appendChild(tr[i]);
 }
 
+//履歴パレットを表示する
+function showHistoryPalette() {
+	//パレット行配列
+	var tr = [];
+	//各パレット行に色をセット
+	for (var i=0; i<25; i++) {
+		tr[i] = document.createElement('tr');
+		var td = document.createElement('td');
+		td.style.backgroundColor = 'white';
+		td.setAttribute('class', 'histPalette');
+		td.setAttribute('onclick', 'setCurrentColor(this, true)');
+		tr[i].appendChild(td);
+	}
+	//全ての行をパレットにセット
+	for (var i=0; i<tr.length; i++) historyPalette.appendChild(tr[i]);
+}
+
 //現在色にパレットの色をセットする
-function setCurrentColor(evt) {
+function setCurrentColor(evt, histFlg=false) {
 	//ロード時はパレットの一個目の色
 	if (evt === undefined || evt === null) {
 		currentColor.style.backgroundColor = paletteColors[0];
@@ -1907,6 +1927,26 @@ function setCurrentColor(evt) {
 		//現在色を非表示canvasに描画
 		context2.fillStyle = currentColor.style.backgroundColor
 		context2.fillRect(0,0,30,30);
+
+		if (!histFlg) {
+		//履歴パレット更新
+			//まず現在のインデックスで全部の色取得
+			var histPalettes = document.getElementsByClassName('histPalette');
+			var curHIstColors = [];
+			for (var i=0; i<histPalettes.length; i++) {
+				curHIstColors[i] = histPalettes[i].style.backgroundColor;
+			}
+
+			//次に、インデックスの色をインデックス+1のパレットにあてる
+			//最後のインデックスの場合、インデックス+1がないのでスキップ
+			for (var i=0; i<curHIstColors.length; i++) {
+				if (i+1 == curHIstColors.length) break;
+				histPalettes[i+1].style.backgroundColor = curHIstColors[i];
+			}
+
+			//インデックス最初にgotColorを入れる
+			histPalettes[0].style.backgroundColor = gotColor;
+		}
 	}
 }
 
