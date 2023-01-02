@@ -2367,6 +2367,10 @@ var charaObjPatterns = [
 	['rr','右向足前'],
 	['l','左向'],
 	['ll','左向足前'],
+	['ru','右向仰向け'],
+	['rd','右向うつ伏'],
+	['lu','左向仰向け'],
+	['ld','左向うつ伏'],
 	['ot','その他'],
 ];
 function getCharaObjPatterns() {

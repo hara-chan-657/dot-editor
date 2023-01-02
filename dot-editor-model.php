@@ -930,6 +930,10 @@ class dotEditor {
                     'rr' => array(),
                     'l' => array(),
                     'll' => array(),
+                    'ru' => array(),
+                    'rd' => array(),
+                    'lu' => array(),
+                    'ld' => array(),
                     'ot' => array(),
                 );
                 //特定のディレクトリの場合は表示させない
