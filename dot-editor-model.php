@@ -837,7 +837,9 @@ class dotEditor {
                         continue;
                     }
                     //最初の要素を選択状態に
-                    if ($file === reset(scandir($this->maptipTypeDirPath . $dir . '/' . $chipType))) {
+                    $chip = scandir($this->maptipTypeDirPath . $dir . '/' . $chipType);
+                    $file2 = reset($chip);
+                    if ($file === $file2){
                         $projects .= '<option value="' . $file . '" selected>' . $file . '</option>';
                     }
                     $projects .= '<option value="' . $file . '">' . $file . '</option>';
