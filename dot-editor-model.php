@@ -273,12 +273,12 @@ class dotEditor {
 
     function getBkMapChipContainer($mapChips) {
         $html = '';
-        if ($mapChips[0] == 'バックアップ画像がありません') {
+        if (isset($mapChips[0]) && $mapChips[0] == 'バックアップ画像がありません') {
             $html .= '<div>バックアップ画像がありません</div>';
             return $html;
         }
         foreach($mapChips AS $bkTypeKey => $bkType){
-            if (substr($bkType[0], -9) == '空です') {
+            if (isset($bkType[0]) && substr($bkType[0], -9) == '空です') {
                 $html .= '<div style="color:red;">' . $bkType[0] . '</div>';
                 continue;
             }
@@ -289,7 +289,7 @@ class dotEditor {
                 $html .= '</div>';
                 $html .= '<div class="acordion">';
                 foreach ($bkType AS $charaImageTypeKey => $charaImageType) {
-                    if (substr($charaImageType[0], -9) == '空です') {
+                    if (isset($charaImageType[0]) && substr($charaImageType[0], -9) == '空です') {
                         $html .= '<div style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">' . $charaImageType[0] . '</div>';
                         continue;
                     }
@@ -299,7 +299,7 @@ class dotEditor {
                     $html .= '</div>';
                     $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
                     foreach ($charaImageType AS $projectKey => $project) {
-                        if (substr($project[0], -9) == '空です') {
+                        if (isset($project[0]) && substr($project[0], -9) == '空です') {
                             $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
                             continue;
                         }
@@ -342,7 +342,7 @@ class dotEditor {
                 $html .= '</div>';
                 $html .= '<div class="acordion">';
                 foreach ($bkType AS $projectKey => $project) {
-                    if (substr($project[0], -9) == '空です') {
+                    if (isset($project[0]) && substr($project[0], -9) == '空です') {
                         $html .= '<div style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
                         continue;
                     }
@@ -352,7 +352,7 @@ class dotEditor {
                     $html .= '</div>';
                     $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
                     foreach ($project AS $mapTypeKey => $mapType) {
-                        if (substr($mapType[0], -9) == '空です') {
+                        if (isset($mapType[0]) && substr($mapType[0], -9) == '空です') {
                             $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $mapType[0] . '</div>';
                             continue;
                         }
@@ -395,7 +395,7 @@ class dotEditor {
                 $html .= '</div>';
                 $html .= '<div class="acordion">';
                 foreach ($bkType AS $objectTypeKey => $objectType) {
-                    if (substr($objectType[0], -9) == '空です') {
+                    if (isset($objectType[0]) && substr($objectType[0], -9) == '空です') {
                         $html .= '<div style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">' . $objectType[0] . '</div>';
                         continue;
                     }
@@ -405,7 +405,7 @@ class dotEditor {
                     $html .= '</div>';
                     $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
                     foreach ($objectType AS $projectKey => $project) {
-                        if (substr($project[0], -9) == '空です') {
+                        if (isset($project[0]) && substr($project[0], -9) == '空です') {
                             $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
                             continue;
                         }
@@ -451,7 +451,7 @@ class dotEditor {
                 $html .= '</div>';
                 $html .= '<div class="acordion">';
                 foreach ($bkType AS $cutSceneTypeKey => $cutSceneType) {
-                    if (substr($cutSceneType[0], -9) == '空です') {
+                    if (isset($cutSceneType[0]) && substr($cutSceneType[0], -9) == '空です') {
                         $html .= '<div style="color:orange; margin-left:10px; margin-top:4px; border-left:1px solid black;">' . $cutSceneTypeKey[0] . '</div>';
                         continue;
                     }
@@ -461,7 +461,7 @@ class dotEditor {
                     $html .= '</div>';
                     $html .= '<div class="acordion" style="margin-left:10px; border-left:1px solid black;">';
                     foreach ($cutSceneType AS $projectKey => $project) {
-                        if (substr($project[0], -9) == '空です') {
+                        if (isset($project[0]) && substr($project[0], -9) == '空です') {
                             $html .= '<div style="color:green; margin-left:20px; margin-top:4px; border-left:1px solid black;">' . $project[0] . '</div>';
                             continue;
                         }
