@@ -130,28 +130,17 @@ if (isset($_POST['cut_scene_image_data']) && isset($_POST['projects']) && isset(
     echo '保存しました！（カットシーン）';
 }
 
-if(isset($_GET['id']) && isset($_GET['pas'])) {
-	$id = $_GET['id'];
-	$pas = $_GET['pas'];
-	$adminRes = $obj->isAdmin($id, $pas);
-	if ($adminRes) {
-		$bkMapChips = $obj->getBkMapChips();
-		$bkMapChipContainer = $obj->getBkMapChipContainer($bkMapChips);
-		$makeProjectContainer = $obj->getMakeProjectContainer();
-		$saveMaptipContainer = $obj->getSaveMaptipContainer(); //マップチップ登録
-		$saveCharacterContainer = $obj->getSaveCharacterContainer(); //キャラクター画像登録
-		$saveObjectContainer = $obj->getSaveObjectContainer(); //オブジェクト登録
-		$saveCutSceneContainer = $obj->getSaveCutSceneContainer(); //カットシーン登録
-		$multiMapChipNames = $obj->getMultiMapChipNames();
-		$wipeCharaNames = $obj->getWipeCharaNames();
-		$charaObjectNames = $obj->getCharaObjectNames();
-		$specialSkillUserNames = $obj->getSpecialSkillUserNames();
-	}
-} else {
-	$saveMaptipContainer = '';
-	$saveCharacterContainer = '';
-	$saveObjectContainer = '';
-}
+$bkMapChips = $obj->getBkMapChips();
+$bkMapChipContainer = $obj->getBkMapChipContainer($bkMapChips);
+$makeProjectContainer = $obj->getMakeProjectContainer();
+$saveMaptipContainer = $obj->getSaveMaptipContainer(); //マップチップ登録
+$saveCharacterContainer = $obj->getSaveCharacterContainer(); //キャラクター画像登録
+$saveObjectContainer = $obj->getSaveObjectContainer(); //オブジェクト登録
+$saveCutSceneContainer = $obj->getSaveCutSceneContainer(); //カットシーン登録
+$multiMapChipNames = $obj->getMultiMapChipNames();
+$wipeCharaNames = $obj->getWipeCharaNames();
+$charaObjectNames = $obj->getCharaObjectNames();
+$specialSkillUserNames = $obj->getSpecialSkillUserNames();
 
 ?>
 
@@ -234,11 +223,9 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 			</div>
 		</div>
 		<?php 
-			if ($adminRes) {
-				echo '<div id="bkMapChipContainer">';
-				echo $bkMapChipContainer;
-				echo '</div>';
-			} 
+			echo '<div id="bkMapChipContainer">';
+			echo $bkMapChipContainer;
+			echo '</div>';
 		?>
 		<div id="palette-container">
 			<table id="selectedColor">
@@ -312,17 +299,15 @@ if(isset($_GET['id']) && isset($_GET['pas'])) {
 		<span id="rewrite">書き直す</span>
 		<a id="download-link" href="" download="">ダウンロード</a>
 		<?php
-			if ($adminRes) {
-				echo $makeProjectContainer;
-				echo $saveMaptipContainer;
-				echo $saveCharacterContainer;
-				echo $saveObjectContainer;
-				echo $saveCutSceneContainer;
-				echo $multiMapChipNames;
-				echo $wipeCharaNames;
-				echo $charaObjectNames;
-				echo $specialSkillUserNames;
-			}
+			echo $makeProjectContainer;
+			echo $saveMaptipContainer;
+			echo $saveCharacterContainer;
+			echo $saveObjectContainer;
+			echo $saveCutSceneContainer;
+			echo $multiMapChipNames;
+			echo $wipeCharaNames;
+			echo $charaObjectNames;
+			echo $specialSkillUserNames;
 		?>
 	</div>
 	<img id="inOut" src="" style="display: none;">

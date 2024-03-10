@@ -1,8 +1,6 @@
 <?php
 //dot-editorのmodel
 //クラスを作って、コンストラクタと各ファンクションを記述する
-require("admin.php");
-
 class dotEditor {
 
     private $maptipTypes; //マップチップ種類
@@ -1316,15 +1314,6 @@ class dotEditor {
             return true;
         };
     return false;
-    }
-
-    function isAdmin ($id, $pas) {
-        global $adminId;
-        global $adminPas;
-        if ($id == $adminId && $pas == $adminPas) {
-            return true;
-        }
-        return false;
     }
 
     function getSaveMaptipContainer() {
